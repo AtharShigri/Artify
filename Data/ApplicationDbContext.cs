@@ -11,18 +11,18 @@ namespace Artify.Api.Data
         {
         }
 
-        // 🎨 Core Entities
+        // Core Entities
         public DbSet<ArtistProfile> ArtistProfiles { get; set; }
         public DbSet<Artwork> Artworks { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Review> Reviews { get; set; }
 
-        // 💳 Supporting / Advanced Entities
+        // Supporting / Advanced Entities
         public DbSet<AIHashRecord> AIHashRecords { get; set; }
         public DbSet<TransactionLog> TransactionLogs { get; set; }
         public DbSet<AdminActivity> AdminActivities { get; set; }
 
-        // 🧭 Optional: Configure relationships & constraints
+        // Optional: Configure relationships & constraints
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
