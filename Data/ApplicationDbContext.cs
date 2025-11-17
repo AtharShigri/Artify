@@ -39,6 +39,7 @@ namespace Artify.Api.Data
                 .WithOne()
                 .HasForeignKey<AIHashRecord>(h => h.ArtworkId)
                 .OnDelete(DeleteBehavior.Cascade);
+     
 
             builder.Entity<Order>()
                 .HasOne(o => o.ArtistProfile)
