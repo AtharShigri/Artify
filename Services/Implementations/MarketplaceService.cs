@@ -1,0 +1,145 @@
+﻿using AutoMapper;
+using Artify.Api.DTOs.Shared;
+using Artify.Api.Repositories.Interfaces;
+using Artify.Api.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
+namespace Artify.Api.Services.Implementations
+{
+    public class MarketplaceService : IMarketplaceService
+    {
+        private readonly IMapper _mapper;
+        private readonly IBuyerRepository _buyerRepository;
+        private readonly IReviewRepository _reviewRepository;
+
+        public MarketplaceService(
+            IMapper mapper,
+            IBuyerRepository buyerRepository,
+            IReviewRepository reviewRepository)
+        {
+            _mapper = mapper;
+            _buyerRepository = buyerRepository;
+            _reviewRepository = reviewRepository;
+        }
+
+        public async Task<IEnumerable<ArtworkResponseDto>> GetAllArtworksAsync(int page = 1, int pageSize = 20)
+        {
+            var artworks = await _buyerRepository.GetArtworksByCategoryAsync("", page, pageSize);
+            return _mapper.Map<IEnumerable<ArtworkResponseDto>>(artworks);
+        }
+
+        public async Task<ArtworkDetailDto?> GetArtworkDetailsAsync(int artworkId)
+        {
+            var artwork = await _buyerRepository.GetArtworkByIdAsync(artworkId);
+            if (artwork == null) return null;
+
+            // Increment view count
+            await _buyerRepository.IncrementArtworkViewsAsync(artworkId);
+
+            var dto = _mapper.Map<ArtworkDetailDto>(artwork);
+
+            // Get artist details
+            if (artwork.ArtistProfile != null)
+            {
+                dto.ArtistBio = artwork.ArtistProfile.Bio ?? "";
+                dto.ArtistLocation = artwork.ArtistProfile.Location ?? "";
+                dto.ArtistProfileImage = artwork.ArtistProfile.ProfileImageUrl ?? "";
+                dto.ArtistSkills = !string.IsNullOrEmpty(artwork.ArtistProfile.Skills)
+                    ? artwork.ArtistProfile.Skills.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(s => s.Trim()).ToList()
+                    : new List<string>();
+            }
+
+            // Get average rating
+            var reviews = await _reviewRepository.GetReviewsByArtworkIdAsync(artworkId);
+            dto.Rating = reviews.Any() ? reviews.Average(r => r.Rating) : 0;
+
+            return dto;
+        }
+
+        public async Task<IEnumerable<ArtworkResponseDto>> GetArtworksByCategoryAsync(string category)
+        {
+            var artworks = await _buyerRepository.GetArtworksByCategoryAsync(category);
+            return _mapper.Map<IEnumerable<ArtworkResponseDto>>(artworks);
+        }
+
+        public async Task<IEnumerable<ArtworkResponseDto>> SearchArtworksAsync(SearchArtworksDto searchDto)
+        {
+            var artworks = await _buyerRepository.SearchArtworksAsync(
+                searchDto.Query,
+                searchDto.Category,
+                searchDto.MinPrice,
+                searchDto.MaxPrice,
+                searchDto.SortBy ?? "newest");
+
+            return _mapper.Map<IEnumerable<ArtworkResponseDto>>(artworks);
+        }
+
+        public async Task<ArtistProfileDto?> GetArtistProfileAsync(int artistProfileId)
+        {
+            var artistProfile = await _buyerRepository.GetArtistProfileByIdAsync(artistProfileId);
+            if (artistProfile == null) return null;
+
+            var dto = _mapper.Map<ArtistProfileDto>(artistProfile);
+
+            // Set FeaturedArtworks
+            if (artistProfile.Artworks != null && artistProfile.Artworks.Any())
+            {
+                dto.FeaturedArtworks = _mapper.Map<List<ArtworkResponseDto>>(
+                    artistProfile.Artworks
+                        .Where(a => a.IsForSale && a.Stock > 0)
+                        .OrderByDescending(a => a.LikesCount)
+                        .Take(6)
+                        .ToList());
+            }
+
+            // Get artist's rating
+            var reviews = await _reviewRepository.GetReviewsByArtistIdAsync(artistProfileId);
+            dto.Rating = reviews.Any() ? reviews.Average(r => r.Rating) : 0;
+            dto.TotalReviews = reviews.Count();
+            dto.TotalArtworks = artistProfile.Artworks?.Count ?? 0;
+
+            return dto;
+        }
+
+        public async Task<IEnumerable<ArtistProfileDto>> GetFeaturedArtistsAsync(int count = 10)
+        {
+            var artists = await _buyerRepository.GetFeaturedArtistsAsync(count);
+            var artistDtos = new List<ArtistProfileDto>();
+
+            foreach (var artist in artists)
+            {
+                var dto = _mapper.Map<ArtistProfileDto>(artist);
+
+                // Get rating
+                var reviews = await _reviewRepository.GetReviewsByArtistIdAsync(artist.ArtistProfileId);
+                dto.Rating = reviews.Any() ? reviews.Average(r => r.Rating) : 0;
+                dto.TotalReviews = reviews.Count();
+
+                // Get artworks count
+                dto.TotalArtworks = artist.Artworks?.Count ?? 0;
+
+                artistDtos.Add(dto);
+            }
+
+            return artistDtos;
+        }
+
+        public async Task<IEnumerable<string>> GetArtworkCategoriesAsync()
+        {
+            var artworks = await _buyerRepository.GetArtworksByCategoryAsync("", 1, 1000);
+            return artworks
+                .Select(a => a.Category)
+                .Distinct()
+                .Where(c => !string.IsNullOrEmpty(c))
+                .ToList();
+        }
+
+        public async Task<IEnumerable<ArtworkResponseDto>> GetTrendingArtworksAsync()
+        {
+            // Trending = Most viewed + most liked in last 30 days
+            var artworks = await _buyerRepository.GetFeaturedArtworksAsync(20);
+            return _mapper.Map<IEnumerable<ArtworkResponseDto>>(artworks);
+        }
+    }
+}

@@ -8,10 +8,10 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\Shared\MarketplaceController.cs" />
-    <Compile Remove="Repositories\Implementations\BuyerRepository.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="15.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.*" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.*" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.*">
@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <None Include="Controllers\Shared\MarketplaceController.cs" />
-    <None Include="Repositories\Implementations\BuyerRepository.cs" />
   </ItemGroup>
 
 </Project>
