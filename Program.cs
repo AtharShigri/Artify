@@ -1,3 +1,4 @@
+using AutoMapper;
 using Artify.Api.Data;
 using Artify.Api.Models;
 using Microsoft.AspNetCore.Identity;
@@ -17,6 +18,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 
