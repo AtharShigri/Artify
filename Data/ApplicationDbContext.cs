@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿// ========================= ApplicationDbContext.cs (Safe, Code-Only Version) =========================
 using Artify.Api.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace Artify.Api.Data
 {
@@ -11,52 +12,58 @@ namespace Artify.Api.Data
         {
         }
 
-        // 🎨 Core Entities
-        public DbSet<ArtistProfile> ArtistProfiles { get; set; }
+        // Existing models (already in DB)
         public DbSet<Artwork> Artworks { get; set; }
+        public DbSet<ArtistProfile> ArtistProfiles { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Review> Reviews { get; set; }
-
-        // 💳 Supporting / Advanced Entities
-        public DbSet<AIHashRecord> AIHashRecords { get; set; }
         public DbSet<TransactionLog> TransactionLogs { get; set; }
         public DbSet<AdminActivity> AdminActivities { get; set; }
+        public DbSet<AIHashRecord> AIHashRecords { get; set; }
 
-        // 🧭 Optional: Configure relationships & constraints
+        public DbSet<ApplicationUser> Users { get; set; }
+
+        // ----------------- Safe code-only additions -----------------
+        public DbSet<PlagiarismLog> PlagiarismLogs { get; set; }
+        public DbSet<Service> Services { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<ArtworkTag> ArtworkTags { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            // Example: One-to-one between Artwork and AIHashRecord
+            // ----------------- Safe relationship configurations -----------------
+
+            // Many-to-many: Artwork <-> Tags
             builder.Entity<Artwork>()
-                .HasOne(a => a.ArtistProfile)
-                .WithMany(ap => ap.Artworks)
-                .HasForeignKey(a => a.ArtistProfileId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasMany(a => a.Tags)
+                .WithMany(t => t.Artworks);
 
-            builder.Entity<AIHashRecord>()
-                .HasOne(h => h.Artwork)
-                .WithOne()
-                .HasForeignKey<AIHashRecord>(h => h.ArtworkId)
-                .OnDelete(DeleteBehavior.Cascade);
+            // Category -> Artworks
+            builder.Entity<Category>()
+                .HasMany(c => c.Artworks)
+                .WithOne(a => a.CategoryEntity)
+                .OnDelete(DeleteBehavior.SetNull); 
 
-            builder.Entity<Order>()
-                .HasOne(o => o.ArtistProfile)
-                .WithMany(ap => ap.Orders)
-                .HasForeignKey(o => o.ArtistProfileId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // Category -> Services
+            builder.Entity<Category>()
+                .HasMany(c => c.Services)
+                .WithOne(s => s.CategoryEntity)
+                .OnDelete(DeleteBehavior.SetNull); 
 
-            builder.Entity<Order>()
-                .HasOne(o => o.Buyer)
+            // PlagiarismLog relationships
+            builder.Entity<PlagiarismLog>()
+                .HasOne(p => p.Artwork)
                 .WithMany()
-                .HasForeignKey(o => o.BuyerId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(p => p.ArtworkId)
+                .OnDelete(DeleteBehavior.Restrict); 
 
-            builder.Entity<TransactionLog>()
-                .HasOne(t => t.Order)
-                .WithOne()
-                .HasForeignKey<TransactionLog>(t => t.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<PlagiarismLog>()
+                .HasOne(p => p.SuspectedArtwork)
+                .WithMany()
+                .HasForeignKey(p => p.SuspectedArtworkId)
+                .OnDelete(DeleteBehavior.Restrict); 
         }
     }
 }
