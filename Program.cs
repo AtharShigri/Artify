@@ -1,3 +1,4 @@
+using AutoMapper;
 using Artify.Api.Data;
 using Artify.Api.Models;
 using Artify.Api.Repositories.Interfaces;
@@ -51,6 +52,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
 builder.Services.AddScoped<IArtServiceRepository, ArtServiceRepository>();
