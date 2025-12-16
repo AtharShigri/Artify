@@ -6,8 +6,12 @@ namespace Artify.Api.Models
     {
         // Additional fields
         public string FullName { get; set; }
-        public string RoleType { get; set; } // e.g., "Artist" or "Buyer"
+        public string RoleType { get; set; } 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public string ProfileImageUrl { get; set; }
+
+        public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
+
     }
 }
