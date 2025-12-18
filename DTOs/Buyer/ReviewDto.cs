@@ -6,7 +6,7 @@ namespace Artify.Api.DTOs.Buyer
     {
         [Required][Range(1, 5)] public int Rating { get; set; }
         [Required][StringLength(500)] public string Comment { get; set; } = string.Empty;
-        public int? ArtworkId { get; set; }
+        public Guid? ArtworkId { get; set; }
         public int? ArtistProfileId { get; set; }
     }
 
@@ -19,7 +19,7 @@ namespace Artify.Api.DTOs.Buyer
         public int Rating { get; set; }
         public string Comment { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
-        public int? ArtworkId { get; set; }
+        public Guid? ArtworkId { get; set; }
         public int? ArtistProfileId { get; set; }
     }
 }

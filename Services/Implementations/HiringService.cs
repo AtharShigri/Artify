@@ -48,7 +48,7 @@ namespace Artify.Api.Services.Implementations
             return await MapHiringRequestToDto(createdRequest, hireDto);
         }
 
-        public async Task<HiringResponseDto> GetHiringRequestAsync(int requestId, string buyerId)
+        public async Task<HiringResponseDto> GetHiringRequestAsync(Guid requestId, string buyerId)
         {
             var request = await _hiringRepository.GetHiringRequestByIdAsync(requestId);
             if (request == null || request.BuyerId != buyerId)
@@ -70,7 +70,7 @@ namespace Artify.Api.Services.Implementations
             return requestDtos;
         }
 
-        public async Task<bool> DeleteHiringRequestAsync(int requestId, string buyerId)
+        public async Task<bool> DeleteHiringRequestAsync(Guid requestId, string buyerId)
         {
             if (!await _hiringRepository.IsHiringRequestOwnerAsync(requestId, buyerId))
                 return false;
@@ -78,7 +78,7 @@ namespace Artify.Api.Services.Implementations
             return await _hiringRepository.DeleteHiringRequestAsync(requestId);
         }
 
-        public async Task<HiringResponseDto> UpdateHiringRequestStatusAsync(int requestId, string status)
+        public async Task<HiringResponseDto> UpdateHiringRequestStatusAsync(Guid requestId, string status)
         {
             var request = await _hiringRepository.GetHiringRequestByIdAsync(requestId);
             if (request == null)
@@ -118,7 +118,7 @@ namespace Artify.Api.Services.Implementations
             return true;
         }
 
-        public async Task<string> InitiateArtistCommunicationAsync(int requestId)
+        public async Task<string> InitiateArtistCommunicationAsync(Guid requestId)
         {
             var request = await _hiringRepository.GetHiringRequestByIdAsync(requestId);
             if (request == null)

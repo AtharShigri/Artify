@@ -9,7 +9,7 @@ namespace Artify.Api.Repositories.Implementations
     {
         public HiringRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<Order?> GetHiringRequestByIdAsync(int requestId)
+        public async Task<Order?> GetHiringRequestByIdAsync(Guid requestId)
         {
             return await _context.Orders
                 .Include(o => o.ArtistProfile)
@@ -47,7 +47,7 @@ namespace Artify.Api.Repositories.Implementations
             return await SaveAsync();
         }
 
-        public async Task<bool> DeleteHiringRequestAsync(int requestId)
+        public async Task<bool> DeleteHiringRequestAsync(Guid requestId)
         {
             var request = await GetHiringRequestByIdAsync(requestId);
             if (request == null)
@@ -61,13 +61,13 @@ namespace Artify.Api.Repositories.Implementations
             return await SaveAsync();
         }
 
-        public async Task<bool> HiringRequestExistsAsync(int requestId)
+        public async Task<bool> HiringRequestExistsAsync(Guid requestId)
         {
             return await _context.Orders
                 .AnyAsync(o => o.OrderId == requestId && o.OrderType == "Hiring");
         }
 
-        public async Task<bool> IsHiringRequestOwnerAsync(int requestId, string buyerId)
+        public async Task<bool> IsHiringRequestOwnerAsync(Guid requestId, string buyerId)
         {
             return await _context.Orders
                 .AnyAsync(o => o.OrderId == requestId &&

@@ -1,11 +1,6 @@
-﻿// ========================= AdminReportService.cs =========================
-using Artify.Api.DTOs.Admin;
-using Artify.Api.Mappings;
+﻿using Artify.Api.DTOs.Admin;
 using Artify.Api.Repositories.Interfaces;
 using Artify.Api.Services.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Artify.Api.Services.Implementations
 {
@@ -18,28 +13,37 @@ namespace Artify.Api.Services.Implementations
             _repository = repository;
         }
 
-        // Summary report
         public async Task<object> GetSummaryReportAsync()
-        {
-            return await _repository.GetSummaryReportAsync();
-        }
+            => await _repository.GetSummaryReportAsync();
 
-        // Users report
+        public async Task<object> GetUserReportAsync()
+            => await _repository.GetUserReportAsync(new ReportFilterDto());
+
+        public async Task<object> GetArtworkReportAsync()
+            => await _repository.GetArtworksReportAsync(new ReportFilterDto());
+
+        public async Task<object> GetSalesReportAsync()
+            => await _repository.GetSalesReportAsync(new ReportFilterDto());
+
         public async Task<object> GetUserReportAsync(ReportFilterDto filter)
-        {
-            return await _repository.GetUserReportAsync(filter);
-        }
+            => await _repository.GetUserReportAsync(filter);
 
-        // Artworks report
         public async Task<object> GetArtworkReportAsync(ReportFilterDto filter)
-        {
-            return await _repository.GetArtworksReportAsync(filter);
-        }
+            => await _repository.GetArtworksReportAsync(filter);
 
-        // Sales report
         public async Task<object> GetSalesReportAsync(ReportFilterDto filter)
-        {
-            return await _repository.GetSalesReportAsync(filter);
-        }
+            => await _repository.GetSalesReportAsync(filter);
+
+        public async Task<object> GetMonthlyRegistrationsAsync()
+            => await _repository.GetMonthlyRegistrationsAsync();
+
+        public async Task<object> GetTopArtistsAsync()
+            => await _repository.GetTopArtistsAsync();
+
+        public async Task<object> GetTopArtworksAsync()
+            => await _repository.GetTopArtworksAsync();
+
+        public async Task<object> GetPlagiarismStatsAsync()
+            => await _repository.GetPlagiarismStatsAsync();
     }
 }

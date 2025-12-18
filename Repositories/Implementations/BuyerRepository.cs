@@ -49,7 +49,7 @@ namespace Artify.Api.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task<Artwork?> GetArtworkByIdAsync(int artworkId)
+        public async Task<Artwork?> GetArtworkByIdAsync(Guid artworkId)
         {
             return await _context.Artworks
                 .Include(a => a.ArtistProfile)
@@ -57,19 +57,26 @@ namespace Artify.Api.Repositories.Implementations
                 .FirstOrDefaultAsync(a => a.ArtworkId == artworkId);
         }
 
-        public async Task<IEnumerable<Artwork>> GetArtworksByCategoryAsync(string category, int page = 1, int pageSize = 20)
+        public async Task<IEnumerable<Artwork>> GetArtworksByCategoryAsync(Category? category, int page = 1, int pageSize = 20)
         {
-            return await _context.Artworks
-                .Where(a => a.Category == category && a.IsForSale && a.Stock > 0)
+            var query = _context.Artworks
+                .Where(a => a.IsForSale && a.Stock > 0);
+
+            if (category != null)
+            {
+                query = query.Where(a => a.CategoryEntity == category);
+            }
+
+            return await query
                 .OrderByDescending(a => a.CreatedAt)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Include(a => a.ArtistProfile)
-                .ThenInclude(ap => ap.User)
+                    .ThenInclude(ap => ap.User)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Artwork>> SearchArtworksAsync(string query, string? category = null, decimal? minPrice = null, decimal? maxPrice = null, string sortBy = "newest")
+        public async Task<IEnumerable<Artwork>> SearchArtworksAsync(string query, decimal? minPrice = null, decimal? maxPrice = null, string sortBy = "newest")
         {
             var artworksQuery = _context.Artworks.AsQueryable();
 
@@ -77,13 +84,7 @@ namespace Artify.Api.Repositories.Implementations
             {
                 artworksQuery = artworksQuery.Where(a =>
                     a.Title.Contains(query) ||
-                    a.Description.Contains(query) ||
-                    a.Category.Contains(query));
-            }
-
-            if (!string.IsNullOrWhiteSpace(category))
-            {
-                artworksQuery = artworksQuery.Where(a => a.Category == category);
+                    a.Description.Contains(query));
             }
 
             if (minPrice.HasValue)
@@ -133,7 +134,7 @@ namespace Artify.Api.Repositories.Implementations
             return await SaveAsync();
         }
 
-        public async Task<bool> IncrementArtworkViewsAsync(int artworkId)
+        public async Task<bool> IncrementArtworkViewsAsync(Guid artworkId)
         {
             var artwork = await _context.Artworks.FindAsync(artworkId);
             if (artwork == null) return false;

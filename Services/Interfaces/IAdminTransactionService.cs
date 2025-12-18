@@ -8,8 +8,8 @@ namespace Artify.Api.Services.Interfaces
     public interface IAdminTransactionService
     {
         Task<IEnumerable<object>> GetTransactionsAsync(TransactionFilterDto dto);
-        Task<object?> GetTransactionByIdAsync(int transactionId);
+        Task<object?> GetTransactionByIdAsync(Guid transactionId);
         Task<IEnumerable<object>> GetOrdersAsync();
-        Task<object?> GetOrderByIdAsync(int orderId);
+        Task<object?> GetOrderByIdAsync(Guid orderId);
     }
 }

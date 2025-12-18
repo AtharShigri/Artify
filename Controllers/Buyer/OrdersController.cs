@@ -100,7 +100,7 @@ namespace Artify.Api.Controllers.Buyer
         [ProducesResponseType(typeof(OrderResponseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetOrderById(int orderId)
+        public async Task<IActionResult> GetOrderById(Guid orderId)
         {
             try
             {
@@ -131,7 +131,7 @@ namespace Artify.Api.Controllers.Buyer
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> CancelOrder(int orderId)
+        public async Task<IActionResult> CancelOrder(Guid orderId)
         {
             try
             {
@@ -161,7 +161,7 @@ namespace Artify.Api.Controllers.Buyer
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetOrderStatus(int orderId)
+        public async Task<IActionResult> GetOrderStatus(Guid orderId)
         {
             try
             {

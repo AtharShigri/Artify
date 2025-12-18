@@ -86,7 +86,7 @@ namespace Artify.Api.Controllers.Buyer
         [ProducesResponseType(typeof(HiringResponseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetHiringRequest(int requestId)
+        public async Task<IActionResult> GetHiringRequest(Guid requestId)
         {
             try
             {
@@ -115,7 +115,7 @@ namespace Artify.Api.Controllers.Buyer
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> DeleteHiringRequest(int requestId)
+        public async Task<IActionResult> DeleteHiringRequest(Guid requestId)
         {
             try
             {
@@ -144,7 +144,7 @@ namespace Artify.Api.Controllers.Buyer
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> InitiateCommunication(int requestId)
+        public async Task<IActionResult> InitiateCommunication(Guid requestId)
         {
             try
             {

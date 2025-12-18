@@ -95,7 +95,7 @@ namespace Artify.Api.Controllers.Buyer
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateCartItem(int artworkId, [FromBody] int quantity)
+        public async Task<IActionResult> UpdateCartItem(Guid artworkId, [FromBody] int quantity)
         {
             try
             {
@@ -125,7 +125,7 @@ namespace Artify.Api.Controllers.Buyer
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> RemoveFromCart(int artworkId)
+        public async Task<IActionResult> RemoveFromCart(Guid artworkId)
         {
             try
             {

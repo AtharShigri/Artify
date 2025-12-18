@@ -75,13 +75,13 @@ namespace Artify.Api.Services.Implementations
             return _mapper.Map<IEnumerable<ArtworkResponseDto>>(artworks);
         }
 
-        public async Task<IEnumerable<ArtworkResponseDto>> GetArtworksByCategoryAsync(string category)
+        public async Task<IEnumerable<ArtworkResponseDto>> GetArtworksByCategoryAsync(Category category)
         {
             var artworks = await _buyerRepository.GetArtworksByCategoryAsync(category);
             return _mapper.Map<IEnumerable<ArtworkResponseDto>>(artworks);
         }
 
-        public async Task<IEnumerable<ArtworkResponseDto>> SearchArtworksAsync(string query, string? category = null)
+        /*public async Task<IEnumerable<ArtworkResponseDto>> SearchArtworksAsync(string query, Category? category = null)
         {
             var artworks = await _buyerRepository.SearchArtworksAsync(query);
             if (!string.IsNullOrEmpty(category))
@@ -89,9 +89,9 @@ namespace Artify.Api.Services.Implementations
                 artworks = artworks.Where(a => a.Category.Equals(category, StringComparison.OrdinalIgnoreCase));
             }
             return _mapper.Map<IEnumerable<ArtworkResponseDto>>(artworks);
-        }
+        }*/
 
-        public async Task<ArtworkDetailDto?> GetArtworkDetailAsync(int artworkId)
+        public async Task<ArtworkDetailDto?> GetArtworkDetailAsync(Guid artworkId)
         {
             var artwork = await _buyerRepository.GetArtworkByIdAsync(artworkId);
             if (artwork == null) return null;

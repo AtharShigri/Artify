@@ -18,9 +18,10 @@ namespace Artify.Api.Controllers.Artist
         }
 
         [HttpPost("watermark")]
-        public async Task<IActionResult> ApplyWatermark([FromForm] IFormFile file)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> ApplyWatermark([FromForm] WatermarkDto dto)
         {
-            return Ok(await _protectionService.ApplyWatermarkAsync(User, file));
+            return Ok(await _protectionService.ApplyWatermarkAsync(User, dto.File));
         }
 
         [HttpPost("metadata")]
@@ -36,9 +37,10 @@ namespace Artify.Api.Controllers.Artist
         }
 
         [HttpPost("plagiarism-check")]
-        public async Task<IActionResult> PlagiarismCheck([FromForm] IFormFile file)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> PlagiarismCheck([FromForm] PlagiarismCheckDto dto)
         {
-            return Ok(await _protectionService.CheckPlagiarismAsync(User, file));
+            return Ok(await _protectionService.CheckPlagiarismAsync(User, dto.File));
         }
     }
 }

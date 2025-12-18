@@ -13,7 +13,7 @@ namespace Artify.Api.Mappings
                 .ForMember(dest => dest.ArtworkId, opt => opt.MapFrom(src => src.ArtworkId))
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
-                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.CategoryEntity))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
                 .ForMember(dest => dest.ArtistName, opt => opt.MapFrom(src =>

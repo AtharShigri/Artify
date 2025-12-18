@@ -1,5 +1,4 @@
-﻿// ========================= AdminUserMappings.cs =========================
-using Artify.Api.DTOs.Admin;
+﻿using Artify.Api.DTOs.Admin;
 using Artify.Api.Models;
 
 namespace Artify.Api.Mappings

@@ -6,16 +6,16 @@ namespace Artify.Api.Services.Interfaces
     {
         // Hiring Operations (Using Orders table with OrderType = "Hiring")
         Task<HiringResponseDto> CreateHiringRequestAsync(string buyerId, HireArtistDto hireDto);
-        Task<HiringResponseDto> GetHiringRequestAsync(int requestId, string buyerId);
+        Task<HiringResponseDto> GetHiringRequestAsync(Guid requestId, string buyerId);
         Task<IEnumerable<HiringResponseDto>> GetBuyerHiringRequestsAsync(string buyerId);
-        Task<bool> DeleteHiringRequestAsync(int requestId, string buyerId);
-        Task<HiringResponseDto> UpdateHiringRequestStatusAsync(int requestId, string status);
+        Task<bool> DeleteHiringRequestAsync(Guid requestId, string buyerId);
+        Task<HiringResponseDto> UpdateHiringRequestStatusAsync(Guid requestId, string status);
 
         // Hiring Validation
         Task<bool> IsArtistAvailableForHireAsync(int artistProfileId);
         Task<bool> ValidateHiringRequestAsync(HireArtistDto hireDto);
 
         // Communication
-        Task<string> InitiateArtistCommunicationAsync(int requestId);
+        Task<string> InitiateArtistCommunicationAsync(Guid requestId);
     }
 }

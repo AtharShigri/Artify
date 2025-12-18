@@ -98,21 +98,33 @@ namespace Artify.Api.Services.Implementations
                 await file.CopyToAsync(stream);
             }
 
-            // Call Python plagiarism microservice
-            var plagiarismResult = await CallPythonPlagiarismServiceAsync(tempFile);
+            var plagiarismResultString = await CallPythonPlagiarismServiceAsync(tempFile);
 
-            // Save log
+            double plagiarismResult = double.TryParse(
+                plagiarismResultString,
+                out var score)
+                ? score
+                : 0.0;
+
             var log = new PlagiarismLog
             {
-                ArtistId = artistId,
-                FileName = file.FileName,
-                Result = plagiarismResult,
-                CheckedAt = DateTime.UtcNow
+                ArtworkId = Guid.Empty,             
+                SuspectedArtworkId = Guid.NewGuid(),
+                SimilarityScore = plagiarismResult,
+                IsReviewed = false,
+                ActionTaken = false,
+                CreatedAt = DateTime.UtcNow
             };
+
             await _protectionRepo.AddPlagiarismLogAsync(log);
 
-            return new { Success = true, Result = plagiarismResult };
+            return new
+            {
+                Success = true,
+                Result = plagiarismResult
+            };
         }
+
 
         // Dummy placeholders for calling Python microservices
         private Task<string> CallPythonWatermarkServiceAsync(string filePath)

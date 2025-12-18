@@ -7,12 +7,12 @@ namespace Artify.Api.Services.Interfaces
         // Cart Operations
         Task<CartResponseDto> GetCartAsync(string buyerId);
         Task<CartResponseDto> AddToCartAsync(string buyerId, CartItemDto cartItem);
-        Task<CartResponseDto> UpdateCartItemAsync(string buyerId, int artworkId, int quantity);
-        Task<bool> RemoveFromCartAsync(string buyerId, int artworkId);
+        Task<CartResponseDto> UpdateCartItemAsync(string buyerId, Guid artworkId, int quantity);
+        Task<bool> RemoveFromCartAsync(string buyerId, Guid artworkId);
         Task<bool> ClearCartAsync(string buyerId);
 
         // Cart Validation
-        Task<bool> IsArtworkInCartAsync(string buyerId, int artworkId);
+        Task<bool> IsArtworkInCartAsync(string buyerId, Guid artworkId);
         Task<int> GetCartItemCountAsync(string buyerId);
         Task<decimal> GetCartTotalAsync(string buyerId);
 

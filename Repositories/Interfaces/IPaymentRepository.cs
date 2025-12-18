@@ -5,13 +5,13 @@ namespace Artify.Api.Repositories.Interfaces
     public interface IPaymentRepository
     {
         // Payment Operations
-        Task<TransactionLog?> GetTransactionByIdAsync(int transactionId);
+        Task<TransactionLog?> GetTransactionByIdAsync(Guid transactionId);
         Task<TransactionLog> CreateTransactionAsync(TransactionLog transaction);
         Task<bool> UpdateTransactionAsync(TransactionLog transaction);
 
         // Order-Payment Linking
-        Task<bool> LinkPaymentToOrderAsync(int orderId, string paymentIntentId, string status);
-        Task<string?> GetOrderPaymentStatusAsync(int orderId);
+        Task<bool> LinkPaymentToOrderAsync(Guid orderId, string paymentIntentId, string status);
+        Task<string?> GetOrderPaymentStatusAsync(Guid orderId);
 
         // Transaction History
         Task<IEnumerable<TransactionLog>> GetBuyerTransactionsAsync(string buyerId, int page = 1, int pageSize = 20);

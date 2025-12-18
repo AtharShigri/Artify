@@ -2,7 +2,7 @@
 {
     public class DeleteArtworkDto
     {
-        public int ArtworkId { get; set; }
+        public Guid ArtworkId { get; set; }
         public string Reason { get; set; }
     }
 }

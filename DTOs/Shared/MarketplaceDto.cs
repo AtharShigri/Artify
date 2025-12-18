@@ -2,7 +2,7 @@
 {
     public class ArtworkResponseDto
     {
-        public int ArtworkId { get; set; }
+        public Guid ArtworkId { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;

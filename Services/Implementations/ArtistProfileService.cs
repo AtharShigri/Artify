@@ -35,7 +35,6 @@ namespace Artify.Api.Services.Implementations
             var artist = new Artist
             {
                 FullName = dto.FullName,
-                UserName = dto.Email,
                 Email = dto.Email,
                 Category = dto.Category
             };

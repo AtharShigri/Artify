@@ -5,25 +5,25 @@ namespace Artify.Api.Services.Interfaces
     public interface IPaymentService
     {
         // Payment Operations
-        Task<PaymentResponseDto> CreatePaymentIntentAsync(int orderId, string buyerId);
-        Task<PaymentResponseDto> ConfirmPaymentAsync(string paymentIntentId, int orderId);
+        Task<PaymentResponseDto> CreatePaymentIntentAsync(Guid orderId, string buyerId);
+        Task<PaymentResponseDto> ConfirmPaymentAsync(string paymentIntentId, Guid orderId);
         Task<bool> ProcessPaymentWebhookAsync(PaymentCallbackDto webhookDto);
 
         // Payment Status
-        Task<string> GetPaymentStatusAsync(int orderId);
-        Task<bool> UpdatePaymentStatusAsync(int orderId, string status);
+        Task<string> GetPaymentStatusAsync(Guid orderId);
+        Task<bool> UpdatePaymentStatusAsync(Guid orderId, string status);
 
         // Transaction History
         Task<IEnumerable<TransactionLogDto>> GetBuyerTransactionsAsync(string buyerId);
 
         // Refunds
-        Task<bool> ProcessRefundAsync(int orderId, decimal amount);
+        Task<bool> ProcessRefundAsync(Guid orderId, decimal amount);
     }
 
     public class TransactionLogDto
     {
-        public int TransactionId { get; set; }
-        public int OrderId { get; set; }
+        public Guid TransactionId { get; set; }
+        public Guid OrderId { get; set; }
         public string PaymentMethod { get; set; } = string.Empty;
         public decimal TransactionAmount { get; set; }
         public string Status { get; set; } = string.Empty;

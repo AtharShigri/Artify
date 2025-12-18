@@ -2,14 +2,14 @@
 {
     public class PaymentIntentDto
     {
-        public int OrderId { get; set; }
+        public Guid OrderId { get; set; }
         public string PaymentMethod { get; set; } = "Stripe";
     }
 
     public class PaymentConfirmDto
     {
         public string PaymentIntentId { get; set; } = string.Empty;
-        public int OrderId { get; set; }
+        public Guid OrderId { get; set; }
     }
 
     public class PaymentCallbackDto
@@ -17,7 +17,7 @@
         public string EventType { get; set; } = string.Empty;
         public string PaymentIntentId { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
-        public int OrderId { get; set; }
+        public Guid OrderId { get; set; }
     }
 
     public class PaymentResponseDto

@@ -1,5 +1,4 @@
-﻿// ========================= AdminArtworkService.cs =========================
-using Artify.Api.DTOs.Admin;
+﻿using Artify.Api.DTOs.Admin;
 using Artify.Api.Mappings;
 using Artify.Api.Repositories.Interfaces;
 using Artify.Api.Services.Interfaces;
@@ -27,13 +26,13 @@ namespace Artify.Api.Services.Implementations
             return artworks.Select(AdminArtworkMappings.ToAdminArtworkDto);
         }
 
-        public async Task<object?> GetArtworkByIdAsync(int artworkId)
+        public async Task<object?> GetArtworkByIdAsync(Guid artworkId)
         {
             var artwork = await _repository.GetArtworkByIdAsync(artworkId);
             return artwork == null ? null : AdminArtworkMappings.ToAdminArtworkDto(artwork);
         }
 
-        public async Task<object> ApproveArtworkAsync(int artworkId)
+        public async Task<object> ApproveArtworkAsync(Guid artworkId)
         {
             var artwork = await _repository.GetArtworkByIdAsync(artworkId);
             if (artwork == null) throw new KeyNotFoundException("Artwork not found.");
@@ -43,7 +42,7 @@ namespace Artify.Api.Services.Implementations
             return AdminArtworkMappings.ToAdminArtworkDto(updated);
         }
 
-        public async Task<object> RejectArtworkAsync(int artworkId, ArtworkModerationDto dto)
+        public async Task<object> RejectArtworkAsync(Guid artworkId, ArtworkModerationDto dto)
         {
             var artwork = await _repository.GetArtworkByIdAsync(artworkId);
             if (artwork == null) throw new KeyNotFoundException("Artwork not found.");
@@ -52,7 +51,7 @@ namespace Artify.Api.Services.Implementations
             return AdminArtworkMappings.ToAdminArtworkDto(updated);
         }
 
-        public async Task<bool> RemoveArtworkAsync(int artworkId)
+        public async Task<bool> RemoveArtworkAsync(Guid artworkId)
         {
             return await _repository.RemoveArtworkAsync(artworkId);
         }

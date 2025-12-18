@@ -10,7 +10,7 @@ namespace Artify.Api.Repositories.Implementations
         public TransactionRepository(ApplicationDbContext context) : base(context) { }
 
         // 1. Get Transaction by ID
-        public async Task<TransactionLog?> GetTransactionByIdAsync(int transactionId)
+        public async Task<TransactionLog?> GetTransactionByIdAsync(Guid transactionId)
         {
             return await _context.TransactionLogs
                 .Include(t => t.Order)
@@ -33,14 +33,14 @@ namespace Artify.Api.Repositories.Implementations
         }
 
         // 4. Get Transaction by Order ID
-        public async Task<TransactionLog?> GetTransactionByOrderIdAsync(int orderId)
+        public async Task<TransactionLog?> GetTransactionByOrderIdAsync(Guid orderId)
         {
             return await _context.TransactionLogs
                 .FirstOrDefaultAsync(t => t.OrderId == orderId);
         }
 
         // 5. Link Payment to Order
-        public async Task<bool> LinkPaymentToOrderAsync(int orderId, string paymentIntentId, string status)
+        public async Task<bool> LinkPaymentToOrderAsync(Guid orderId, string paymentIntentId, string status)
         {
             var transaction = await GetTransactionByOrderIdAsync(orderId);
             if (transaction == null)
@@ -74,7 +74,7 @@ namespace Artify.Api.Repositories.Implementations
         }
 
         // 6. Get Order Payment Status
-        public async Task<string?> GetOrderPaymentStatusAsync(int orderId)
+        public async Task<string?> GetOrderPaymentStatusAsync(Guid orderId)
         {
             var transaction = await GetTransactionByOrderIdAsync(orderId);
             return transaction?.Status;

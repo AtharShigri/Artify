@@ -26,7 +26,7 @@ namespace Artify.Api.Services.Implementations
             return transactions.Select(AdminTransactionMappings.ToTransactionDto).ToList();
         }
 
-        public async Task<object?> GetTransactionByIdAsync(int transactionId)
+        public async Task<object?> GetTransactionByIdAsync(Guid transactionId)
         {
             TransactionLog? transaction = await _repository.GetTransactionByIdAsync(transactionId);
             if (transaction == null) return null;
@@ -40,7 +40,7 @@ namespace Artify.Api.Services.Implementations
             return orders.Select(AdminTransactionMappings.ToOrderDto).ToList();
         }
 
-        public async Task<object?> GetOrderByIdAsync(int orderId)
+        public async Task<object?> GetOrderByIdAsync(Guid orderId)
         {
             Order? order = await _repository.GetOrderByIdAsync(orderId);
             if (order == null) return null;

@@ -1,5 +1,4 @@
-﻿// ========================= TransactionFilterDto.cs =========================
-namespace Artify.Api.DTOs.Admin
+﻿namespace Artify.Api.DTOs.Admin
 {
     public class TransactionFilterDto
     {

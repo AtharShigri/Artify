@@ -5,54 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Artify.Api.Repositories.Implementations
 {
-    public class OrderRepository : IOrderRepository
-    {
-        private readonly ApplicationDbContext _context;
-
-        public OrderRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<IEnumerable<Order>> GetAllByArtistAsync(int artistId)
-        {
-            return await _context.Orders
-                .Include(o => o.Artwork)
-                .Where(o => o.ArtistProfileId == artistId)
-                .ToListAsync();
-        }
-
-        public async Task<Order> GetByIdAsync(int orderId)
-        {
-            return await _context.Orders
-                .Include(o => o.Artwork)
-                .FirstOrDefaultAsync(o => o.OrderId == orderId);
-        }
-
-        public async Task AddAsync(Order order)
-        {
-            await _context.Orders.AddAsync(order);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task UpdateAsync(Order order)
-        {
-            _context.Orders.Update(order);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteAsync(Order order)
-        {
-            _context.Orders.Remove(order);
-            await _context.SaveChangesAsync();
-        }
-    }
-}
     public class OrderRepository : BaseRepository, IOrderRepository
     {
         public OrderRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<Order?> GetOrderByIdAsync(int orderId)
+        public async Task<Order?> GetOrderByIdAsync(Guid orderId)
         {
             return await _context.Orders
                 .Include(o => o.Artwork)
@@ -74,6 +31,16 @@ namespace Artify.Api.Repositories.Implementations
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Order>> GetAllByArtistAsync(int artistProfileId)
+        {
+            return await _context.Orders
+                .Where(o => o.ArtistProfileId == artistProfileId)
+                .OrderByDescending(o => o.CreatedAt)
+                .Include(o => o.Artwork)
+                .ThenInclude(a => a.ArtistProfile)
+                .ToListAsync();
+        }
+
         public async Task<Order> CreateOrderAsync(Order order)
         {
             await _context.Orders.AddAsync(order);
@@ -87,7 +54,7 @@ namespace Artify.Api.Repositories.Implementations
             return await SaveAsync();
         }
 
-        public async Task<bool> CancelOrderAsync(int orderId)
+        public async Task<bool> CancelOrderAsync(Guid orderId)
         {
             var order = await GetOrderByIdAsync(orderId);
             if (order == null)
@@ -103,12 +70,12 @@ namespace Artify.Api.Repositories.Implementations
             return await SaveAsync();
         }
 
-        public async Task<bool> OrderExistsAsync(int orderId)
+        public async Task<bool> OrderExistsAsync(Guid orderId)
         {
             return await _context.Orders.AnyAsync(o => o.OrderId == orderId);
         }
 
-        public async Task<bool> IsOrderOwnerAsync(int orderId, string buyerId)
+        public async Task<bool> IsOrderOwnerAsync(Guid orderId, string buyerId)
         {
             return await _context.Orders
                 .AnyAsync(o => o.OrderId == orderId && o.BuyerId == buyerId);

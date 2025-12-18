@@ -7,9 +7,9 @@ namespace Artify.Api.Models
     public class TransactionLog
     {
         [Key]
-        public int TransactionId { get; set; }
+        public Guid TransactionId { get; set; }
 
-        public int OrderId { get; set; }
+        public Guid OrderId { get; set; }
         [ForeignKey("OrderId")]
         public Order Order { get; set; }
 

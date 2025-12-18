@@ -30,13 +30,13 @@ namespace Artify.Api.Services.Implementations
                 a.Title,
                 a.Description,
                 a.Price,
-                a.Category,
+                a.CategoryEntity,
                 a.ImageUrl,
                 a.IsForSale
             });
         }
 
-        public async Task<object> GetByIdAsync(ClaimsPrincipal user, int artworkId)
+        public async Task<object> GetByIdAsync(ClaimsPrincipal user, Guid artworkId)
         {
             var artistId = _artistRepo.GetArtistId(user);
             var artwork = await _artworkRepo.GetByIdAsync(artworkId);
@@ -50,7 +50,7 @@ namespace Artify.Api.Services.Implementations
                 artwork.Title,
                 artwork.Description,
                 artwork.Price,
-                artwork.Category,
+                artwork.CategoryEntity,
                 artwork.ImageUrl,
                 artwork.IsForSale
             };
@@ -74,7 +74,7 @@ namespace Artify.Api.Services.Implementations
                 Title = dto.Title,
                 Description = dto.Description,
                 Price = dto.Price,
-                Category = dto.Category,
+                CategoryEntity = dto.Category,
                 ImageUrl = $"/images/artworks/{fileName}",
                 IsForSale = true
             };
@@ -83,7 +83,7 @@ namespace Artify.Api.Services.Implementations
             return new { Success = true, ArtworkId = artwork.ArtworkId, ArtworkUrl = artwork.ImageUrl };
         }
 
-        public async Task<object> UpdateAsync(ClaimsPrincipal user, int artworkId, ArtworkUpdateDto dto)
+        public async Task<object> UpdateAsync(ClaimsPrincipal user, Guid artworkId, ArtworkUpdateDto dto)
         {
             var artistId = _artistRepo.GetArtistId(user);
             var artwork = await _artworkRepo.GetByIdAsync(artworkId);
@@ -94,14 +94,14 @@ namespace Artify.Api.Services.Implementations
             artwork.Title = dto.Title ?? artwork.Title;
             artwork.Description = dto.Description ?? artwork.Description;
             artwork.Price = dto.Price ?? artwork.Price;
-            artwork.Category = dto.Category ?? artwork.Category;
+            artwork.CategoryEntity = dto.Category ?? artwork.CategoryEntity;
             artwork.IsForSale = dto.IsAvailable ?? artwork.IsForSale;
 
             await _artworkRepo.UpdateAsync(artwork);
             return new { Success = true };
         }
 
-        public async Task<object> DeleteAsync(ClaimsPrincipal user, int artworkId)
+        public async Task<object> DeleteAsync(ClaimsPrincipal user, Guid artworkId)
         {
             var artistId = _artistRepo.GetArtistId(user);
             var artwork = await _artworkRepo.GetByIdAsync(artworkId);

@@ -33,7 +33,7 @@ namespace Artify.Api.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task<Artwork?> GetArtworkByIdAsync(int artworkId)
+        public async Task<Artwork?> GetArtworkByIdAsync(Guid artworkId)
         {
             return await _context.Artworks
                 .FirstOrDefaultAsync(a => a.ArtworkId == artworkId);
@@ -48,7 +48,7 @@ namespace Artify.Api.Repositories.Implementations
             return artwork;
         }
 
-        public async Task<bool> RemoveArtworkAsync(int artworkId)
+        public async Task<bool> RemoveArtworkAsync(Guid artworkId)
         {
             var artwork = await _context.Artworks
                 .FirstOrDefaultAsync(a => a.ArtworkId == artworkId);

@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Artify.Api.Extensions;
 using Artify.Api.DTOs.Shared;
 using Artify.Api.Repositories.Interfaces;
 using Artify.Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Artify.Api.Models;
 
 namespace Artify.Api.Services.Implementations
 {
@@ -24,11 +26,11 @@ namespace Artify.Api.Services.Implementations
 
         public async Task<IEnumerable<ArtworkResponseDto>> GetAllArtworksAsync(int page = 1, int pageSize = 20)
         {
-            var artworks = await _buyerRepository.GetArtworksByCategoryAsync("", page, pageSize);
+            var artworks = await _buyerRepository.GetArtworksByCategoryAsync(null, page, pageSize);
             return _mapper.Map<IEnumerable<ArtworkResponseDto>>(artworks);
         }
 
-        public async Task<ArtworkDetailDto?> GetArtworkDetailsAsync(int artworkId)
+        public async Task<ArtworkDetailDto?> GetArtworkDetailsAsync(Guid artworkId)
         {
             var artwork = await _buyerRepository.GetArtworkByIdAsync(artworkId);
             if (artwork == null) return null;
@@ -57,7 +59,7 @@ namespace Artify.Api.Services.Implementations
             return dto;
         }
 
-        public async Task<IEnumerable<ArtworkResponseDto>> GetArtworksByCategoryAsync(string category)
+        public async Task<IEnumerable<ArtworkResponseDto>> GetArtworksByCategoryAsync(Category category)
         {
             var artworks = await _buyerRepository.GetArtworksByCategoryAsync(category);
             return _mapper.Map<IEnumerable<ArtworkResponseDto>>(artworks);
@@ -67,7 +69,6 @@ namespace Artify.Api.Services.Implementations
         {
             var artworks = await _buyerRepository.SearchArtworksAsync(
                 searchDto.Query,
-                searchDto.Category,
                 searchDto.MinPrice,
                 searchDto.MaxPrice,
                 searchDto.SortBy ?? "newest");
@@ -127,13 +128,16 @@ namespace Artify.Api.Services.Implementations
 
         public async Task<IEnumerable<string>> GetArtworkCategoriesAsync()
         {
-            var artworks = await _buyerRepository.GetArtworksByCategoryAsync("", 1, 1000);
+            var artworks = await _buyerRepository.GetArtworksByCategoryAsync(null, 1, 1000);
+
             return artworks
-                .Select(a => a.Category)
+                .Select(a => a.CategoryEntity)
                 .Distinct()
-                .Where(c => !string.IsNullOrEmpty(c))
+                .Where(c => !c.IsNullOrEmpty())
+                .Select(c => c.Name)
                 .ToList();
         }
+
 
         public async Task<IEnumerable<ArtworkResponseDto>> GetTrendingArtworksAsync()
         {

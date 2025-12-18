@@ -133,5 +133,64 @@ namespace Artify.Api.Repositories.Implementations
 
             return new { TotalAmount = total, Count = count, Items = items };
         }
+
+        public async Task<object> GetMonthlyRegistrationsAsync()
+        {
+            return await _db.Users
+                .GroupBy(u => new { u.CreatedAt.Year, u.CreatedAt.Month })
+                .Select(g => new
+                {
+                    g.Key.Year,
+                    g.Key.Month,
+                    Count = g.Count()
+                })
+                .OrderBy(x => x.Year)
+                .ThenBy(x => x.Month)
+                .ToListAsync();
+        }
+
+        public async Task<object> GetTopArtistsAsync()
+        {
+            return await _db.ArtistProfiles
+                .OrderByDescending(a => a.Rating)
+                .Take(10)
+                .Select(a => new
+                {
+                    a.ArtistProfileId,
+                    a.Rating,
+                    a.User
+
+                })
+                .ToListAsync();
+        }
+
+        public async Task<object> GetTopArtworksAsync()
+        {
+            return await _db.Artworks
+                .Where(a => !a.IsDeleted)
+                .OrderByDescending(a => a.ViewsCount)
+                .Take(10)
+                .Select(a => new
+                {
+                    a.ArtworkId,
+                    a.Title,
+                    a.ViewsCount,
+                    a.Status
+                })
+                .ToListAsync();
+        }
+
+        public async Task<object> GetPlagiarismStatsAsync()
+        {
+            return await _db.PlagiarismLogs
+                .GroupBy(p => p.IsReviewed)
+                .Select(g => new
+                {
+                    IsReviewed = g.Key,
+                    Count = g.Count()
+                })
+                .ToListAsync();
+        }
+
     }
 }

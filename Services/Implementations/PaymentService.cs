@@ -25,7 +25,7 @@ namespace Artify.Api.Services.Implementations
             _orderRepository = orderRepository;
         }
 
-        public async Task<PaymentResponseDto> CreatePaymentIntentAsync(int orderId, string buyerId)
+        public async Task<PaymentResponseDto> CreatePaymentIntentAsync(Guid orderId, string buyerId)
         {
             var order = await _orderRepository.GetOrderByIdAsync(orderId);
             if (order == null || order.BuyerId != buyerId)
@@ -59,7 +59,7 @@ namespace Artify.Api.Services.Implementations
             };
         }
 
-        public async Task<PaymentResponseDto> ConfirmPaymentAsync(string paymentIntentId, int orderId)
+        public async Task<PaymentResponseDto> ConfirmPaymentAsync(string paymentIntentId, Guid orderId)
         {
             var order = await _orderRepository.GetOrderByIdAsync(orderId);
             if (order == null)
@@ -113,14 +113,14 @@ namespace Artify.Api.Services.Implementations
             return true;
         }
 
-        public async Task<string> GetPaymentStatusAsync(int orderId)
+        public async Task<string> GetPaymentStatusAsync(Guid orderId)
         {
             var transactions = await _paymentRepository.GetBuyerTransactionsAsync("", 1, 100);
             var transaction = transactions.FirstOrDefault(t => t.OrderId == orderId);
             return transaction?.Status ?? "unknown";
         }
 
-        public async Task<bool> UpdatePaymentStatusAsync(int orderId, string status)
+        public async Task<bool> UpdatePaymentStatusAsync(Guid orderId, string status)
         {
             var transactions = await _paymentRepository.GetBuyerTransactionsAsync("", 1, 100);
             var transaction = transactions.FirstOrDefault(t => t.OrderId == orderId);
@@ -153,7 +153,7 @@ namespace Artify.Api.Services.Implementations
             });
         }
 
-        public async Task<bool> ProcessRefundAsync(int orderId, decimal amount)
+        public async Task<bool> ProcessRefundAsync(Guid orderId, decimal amount)
         {
             var order = await _orderRepository.GetOrderByIdAsync(orderId);
             if (order == null || order.PaymentStatus != "Completed")

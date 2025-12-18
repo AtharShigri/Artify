@@ -1,4 +1,5 @@
 ﻿using Artify.Api.DTOs.Shared;
+using Artify.Api.Models;
 
 namespace Artify.Api.Services.Interfaces
 {
@@ -6,8 +7,8 @@ namespace Artify.Api.Services.Interfaces
     {
         // Marketplace Operations (Public endpoints - no authentication required)
         Task<IEnumerable<ArtworkResponseDto>> GetAllArtworksAsync(int page = 1, int pageSize = 20);
-        Task<ArtworkDetailDto?> GetArtworkDetailsAsync(int artworkId);
-        Task<IEnumerable<ArtworkResponseDto>> GetArtworksByCategoryAsync(string category);
+        Task<ArtworkDetailDto?> GetArtworkDetailsAsync(Guid artworkId);
+        Task<IEnumerable<ArtworkResponseDto>> GetArtworksByCategoryAsync(Category category);
         Task<IEnumerable<ArtworkResponseDto>> SearchArtworksAsync(SearchArtworksDto searchDto);
         Task<ArtistProfileDto?> GetArtistProfileAsync(int artistProfileId);
         Task<IEnumerable<ArtistProfileDto>> GetFeaturedArtistsAsync(int count = 10);

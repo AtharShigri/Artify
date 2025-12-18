@@ -1,5 +1,4 @@
-﻿// ========================= AdminReportsController.cs =========================
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Artify.Api.Services.Interfaces;
 using Artify.Api.DTOs.Admin;

@@ -66,7 +66,7 @@ namespace Artify.Api.Services.Implementations
             return await _reviewRepository.DeleteReviewAsync(reviewId);
         }
 
-        public async Task<IEnumerable<ReviewResponseDto>> GetArtworkReviewsAsync(int artworkId)
+        public async Task<IEnumerable<ReviewResponseDto>> GetArtworkReviewsAsync(Guid artworkId)
         {
             var reviews = await _reviewRepository.GetReviewsByArtworkIdAsync(artworkId);
             var reviewDtos = new List<ReviewResponseDto>();
@@ -100,7 +100,7 @@ namespace Artify.Api.Services.Implementations
             return await MapReviewToDto(review);
         }
 
-        public async Task<double> GetAverageRatingAsync(int? artworkId = null, int? artistProfileId = null)
+        public async Task<double> GetAverageRatingAsync(Guid? artworkId = null, int? artistProfileId = null)
         {
             IEnumerable<Review> reviews;
             if (artworkId.HasValue)
@@ -120,7 +120,7 @@ namespace Artify.Api.Services.Implementations
             return reviews.Average(r => r.Rating);
         }
 
-        public async Task<int> GetReviewCountAsync(int? artworkId = null, int? artistProfileId = null)
+        public async Task<int> GetReviewCountAsync(Guid? artworkId = null, int? artistProfileId = null)
         {
             IEnumerable<Review> reviews;
             if (artworkId.HasValue)
@@ -139,16 +139,28 @@ namespace Artify.Api.Services.Implementations
             return reviews.Count();
         }
 
-        public async Task<bool> CanUserReviewAsync(string buyerId, int? artworkId, int? artistProfileId)
+        public async Task<bool> CanUserReviewAsync(string buyerId, Guid? artworkId, int? artistProfileId)
         {
             return !await HasUserReviewedAsync(buyerId, artworkId, artistProfileId);
         }
 
-        private async Task<bool> HasUserReviewedAsync(string buyerId, int? artworkId, int? artistProfileId)
+        private async Task<bool> HasUserReviewedAsync(string buyerId, Guid? artworkId, int? artistProfileId)
         {
-            var reviews = await _reviewRepository.GetReviewsByArtworkIdAsync(artworkId ?? 0);
-            return reviews.Any(r => r.ReviewerId == buyerId);
+            if (artworkId.HasValue)
+            {
+                var reviews = await _reviewRepository.GetReviewsByArtworkIdAsync(artworkId.Value);
+                return reviews.Any(r => r.ReviewerId == buyerId);
+            }
+
+            if (artistProfileId.HasValue)
+            {
+                var reviews = await _reviewRepository.GetReviewsByArtistIdAsync(artistProfileId.Value);
+                return reviews.Any(r => r.ReviewerId == buyerId);
+            }
+
+            return false;
         }
+
 
         private async Task<ReviewResponseDto> MapReviewToDto(Review review)
         {

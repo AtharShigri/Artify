@@ -37,7 +37,7 @@ namespace Artify.Api.Repositories.Implementations
             return cart;
         }
 
-        public async Task<bool> AddToCartAsync(string buyerId, int artworkId)
+        public async Task<bool> AddToCartAsync(string buyerId, Guid artworkId)
         {
             var cart = await GetCartByBuyerIdAsync(buyerId);
             if (cart == null)
@@ -61,7 +61,7 @@ namespace Artify.Api.Repositories.Implementations
             return await SaveAsync();
         }
 
-        public async Task<bool> RemoveFromCartAsync(string buyerId, int artworkId)
+        public async Task<bool> RemoveFromCartAsync(string buyerId, Guid artworkId)
         {
             var cart = await GetCartByBuyerIdAsync(buyerId);
             if (cart == null || cart.ArtworkId != artworkId)

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Artify.Api.DTOs.Shared;
 using Artify.Api.Services.Interfaces;
+using Artify.Api.Models;
 
 namespace Artify.Api.Controllers.Shared
 {
@@ -48,7 +49,7 @@ namespace Artify.Api.Controllers.Shared
         [HttpGet("artworks/{id}")]
         [ProducesResponseType(typeof(ArtworkDetailDto), 200)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetArtworkById(int id)
+        public async Task<IActionResult> GetArtworkById(Guid id)
         {
             try
             {
@@ -70,7 +71,7 @@ namespace Artify.Api.Controllers.Shared
         /// </summary>
         [HttpGet("artworks/category/{category}")]
         [ProducesResponseType(typeof(IEnumerable<ArtworkResponseDto>), 200)]
-        public async Task<IActionResult> GetArtworksByCategory(string category)
+        public async Task<IActionResult> GetArtworksByCategory(Category category)
         {
             try
             {

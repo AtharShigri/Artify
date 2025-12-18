@@ -1,5 +1,4 @@
-﻿// ========================= AdminTransactionRepository.cs =========================
-using Artify.Api.Data;
+﻿using Artify.Api.Data;
 using Artify.Api.DTOs.Admin;
 using Artify.Api.Models;
 using Artify.Api.Repositories.Interfaces;
@@ -41,7 +40,7 @@ namespace Artify.Api.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task<TransactionLog?> GetTransactionByIdAsync(int transactionId)
+        public async Task<TransactionLog?> GetTransactionByIdAsync(Guid transactionId)
         {
             return await _context.TransactionLogs
                 .FirstOrDefaultAsync(t => t.TransactionId == transactionId);
@@ -54,7 +53,7 @@ namespace Artify.Api.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task<Order?> GetOrderByIdAsync(int orderId)
+        public async Task<Order?> GetOrderByIdAsync(Guid orderId)
         {
             return await _context.Orders
                 .FirstOrDefaultAsync(o => o.OrderId == orderId);

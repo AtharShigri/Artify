@@ -116,7 +116,7 @@ namespace Artify.Api.Controllers.Buyer
         [HttpGet("status/{orderId}")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> GetPaymentStatus(int orderId)
+        public async Task<IActionResult> GetPaymentStatus(Guid orderId)
         {
             try
             {
@@ -165,7 +165,7 @@ namespace Artify.Api.Controllers.Buyer
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> ProcessRefund(int orderId, [FromBody] decimal amount)
+        public async Task<IActionResult> ProcessRefund(Guid orderId, [FromBody] decimal amount)
         {
             try
             {

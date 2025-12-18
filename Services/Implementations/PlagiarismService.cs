@@ -1,5 +1,4 @@
-﻿// ========================= PlagiarismService.cs =========================
-using Artify.Api.Data;
+﻿using Artify.Api.Data;
 using Artify.Api.DTOs.Admin;
 using Artify.Api.Models;
 using Artify.Api.Repositories.Interfaces;

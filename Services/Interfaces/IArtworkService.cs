@@ -6,10 +6,10 @@ namespace Artify.Api.Services.Interfaces
     public interface IArtworkService
     {
         Task<object> GetAllAsync(ClaimsPrincipal user);
-        Task<object> GetByIdAsync(ClaimsPrincipal user, int artworkId);
+        Task<object> GetByIdAsync(ClaimsPrincipal user, Guid artworkId);
 
         Task<object> UploadAsync(ClaimsPrincipal user, ArtworkUploadDto dto);
-        Task<object> UpdateAsync(ClaimsPrincipal user, int artworkId, ArtworkUpdateDto dto);
-        Task<object> DeleteAsync(ClaimsPrincipal user, int artworkId);
+        Task<object> UpdateAsync(ClaimsPrincipal user, Guid artworkId, ArtworkUpdateDto dto);
+        Task<object> DeleteAsync(ClaimsPrincipal user, Guid artworkId);
     }
 }

@@ -24,7 +24,7 @@ namespace Artify.Api.Controllers.Artist
         }
 
         [HttpGet("{artworkId}")]
-        public async Task<IActionResult> GetById(int artworkId)
+        public async Task<IActionResult> GetById(Guid artworkId)
         {
             return Ok(await _artworkService.GetByIdAsync(User, artworkId));
         }
@@ -36,13 +36,13 @@ namespace Artify.Api.Controllers.Artist
         }
 
         [HttpPut("{artworkId}")]
-        public async Task<IActionResult> Update(int artworkId, [FromBody] ArtworkUpdateDto dto)
+        public async Task<IActionResult> Update(Guid artworkId, [FromBody] ArtworkUpdateDto dto)
         {
             return Ok(await _artworkService.UpdateAsync(User, artworkId, dto));
         }
 
         [HttpDelete("{artworkId}")]
-        public async Task<IActionResult> Delete(int artworkId)
+        public async Task<IActionResult> Delete(Guid artworkId)
         {
             return Ok(await _artworkService.DeleteAsync(User, artworkId));
         }

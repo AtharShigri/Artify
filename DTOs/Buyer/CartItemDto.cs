@@ -2,7 +2,7 @@
 {
     public class CartItemDto
     {
-        public int ArtworkId { get; set; }
+        public Guid ArtworkId { get; set; }
         public int Quantity { get; set; } = 1;
     }
 
@@ -21,8 +21,8 @@
 
     public class CartItemResponseDto
     {
-        public int CartItemId { get; set; }
-        public int ArtworkId { get; set; }
+        public Guid CartItemId { get; set; }
+        public Guid ArtworkId { get; set; }
         public string ArtworkTitle { get; set; } = string.Empty;
         public string ArtistName { get; set; } = string.Empty;
         public decimal Price { get; set; }

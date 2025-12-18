@@ -1,5 +1,4 @@
-﻿// ========================= Category.cs =========================
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Artify.Api.Models
 {
@@ -15,5 +14,9 @@ namespace Artify.Api.Models
 
         public ICollection<Artwork>? Artworks { get; set; }
         public ICollection<Service>? Services { get; set; }
+
     }
+
+   
+
 }

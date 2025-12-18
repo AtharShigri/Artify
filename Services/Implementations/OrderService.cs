@@ -92,7 +92,7 @@ namespace Artify.Api.Services.Implementations
             return await GetOrderByIdAsync(order.OrderId, buyerId);
         }
 
-        public async Task<OrderResponseDto> GetOrderByIdAsync(int orderId, string buyerId)
+        public async Task<OrderResponseDto> GetOrderByIdAsync(Guid orderId, string buyerId)
         {
             var order = await _orderRepository.GetOrderByIdAsync(orderId);
             if (order == null || order.BuyerId != buyerId)
@@ -114,7 +114,7 @@ namespace Artify.Api.Services.Implementations
             return orderDtos;
         }
 
-        public async Task<bool> CancelOrderAsync(int orderId, string buyerId)
+        public async Task<bool> CancelOrderAsync(Guid orderId, string buyerId)
         {
             if (!await _orderRepository.IsOrderOwnerAsync(orderId, buyerId))
                 return false;
@@ -122,7 +122,7 @@ namespace Artify.Api.Services.Implementations
             return await _orderRepository.CancelOrderAsync(orderId);
         }
 
-        public async Task<bool> UpdateOrderStatusAsync(int orderId, string status)
+        public async Task<bool> UpdateOrderStatusAsync(Guid orderId, string status)
         {
             var order = await _orderRepository.GetOrderByIdAsync(orderId);
             if (order == null) return false;
@@ -136,7 +136,7 @@ namespace Artify.Api.Services.Implementations
             return await _orderRepository.UpdateOrderAsync(order);
         }
 
-        public async Task<string> GetOrderStatusAsync(int orderId)
+        public async Task<string> GetOrderStatusAsync(Guid orderId)
         {
             var order = await _orderRepository.GetOrderByIdAsync(orderId);
             return order?.DeliveryStatus ?? "Not Found";

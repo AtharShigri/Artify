@@ -8,7 +8,7 @@ namespace Artify.Api.Models
     public class Artwork
     {
         [Key]
-        public int ArtworkId { get; set; }
+        public Guid ArtworkId { get; set; }
 
         [Required]
         public int ArtistProfileId { get; set; }
@@ -33,6 +33,7 @@ namespace Artify.Api.Models
         public string? Status { get; set; } // Draft, Published, Sold, etc.
 
         public bool IsDeleted { get; set; }
+        public bool IsApproved { get; set; }
         public int? CategoryId { get; set; }
         [ForeignKey("CategoryId")]
         public Category? CategoryEntity { get; set; }
