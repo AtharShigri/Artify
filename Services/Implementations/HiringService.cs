@@ -94,7 +94,7 @@ namespace Artify.Api.Services.Implementations
             return await MapHiringRequestToDto(request);
         }
 
-        public async Task<bool> IsArtistAvailableForHireAsync(int artistProfileId)
+        public async Task<bool> IsArtistAvailableForHireAsync(Guid artistProfileId)
         {
             var artist = await _buyerRepository.GetArtistProfileByIdAsync(artistProfileId);
             return artist != null;
@@ -112,7 +112,7 @@ namespace Artify.Api.Services.Implementations
                 string.IsNullOrWhiteSpace(hireDto.ProjectDescription))
                 return false;
 
-            if (hireDto.ArtistProfileId <= 0)
+            if (hireDto.ArtistProfileId <= Guid.Empty)
                 return false;
 
             return true;

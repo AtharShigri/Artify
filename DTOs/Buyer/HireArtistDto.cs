@@ -4,7 +4,7 @@ namespace Artify.Api.DTOs.Buyer
 {
     public class HireArtistDto
     {
-        [Required] public int ArtistProfileId { get; set; }
+        [Required] public Guid ArtistProfileId { get; set; }
         [Required][StringLength(200)] public string ProjectTitle { get; set; } = string.Empty;
         [Required][StringLength(1000)] public string ProjectDescription { get; set; } = string.Empty;
         public decimal Budget { get; set; }
@@ -17,7 +17,7 @@ namespace Artify.Api.DTOs.Buyer
         public Guid RequestId { get; set; }
         public string BuyerId { get; set; } = string.Empty;
         public string BuyerName { get; set; } = string.Empty;
-        public int ArtistProfileId { get; set; }
+        public Guid ArtistProfileId { get; set; }
         public string ArtistName { get; set; } = string.Empty;
         public string ProjectTitle { get; set; } = string.Empty;
         public string ProjectDescription { get; set; } = string.Empty;

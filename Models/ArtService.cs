@@ -10,7 +10,7 @@ namespace Artify.Api.Models
         public int Id { get; set; }
 
         [Required]
-        public int ArtistId { get; set; }
+        public Guid ArtistId { get; set; }
 
         [Required]
         [MaxLength(100)]

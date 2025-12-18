@@ -9,7 +9,7 @@
         public decimal Price { get; set; }
         public string ImageUrl { get; set; } = string.Empty;
         public string ArtistName { get; set; } = string.Empty;
-        public int ArtistProfileId { get; set; }
+        public Guid ArtistProfileId { get; set; }
         public double Rating { get; set; }
         public int LikesCount { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -28,7 +28,7 @@
 
     public class ArtistProfileDto
     {
-        public int ArtistProfileId { get; set; }
+        public Guid ArtistProfileId { get; set; }
         public string UserId { get; set; } = string.Empty;
         public string FullName { get; set; } = string.Empty;
         public string Bio { get; set; } = string.Empty;

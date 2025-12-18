@@ -76,7 +76,7 @@ namespace Artify.Api.Services.Implementations
             return _mapper.Map<IEnumerable<ArtworkResponseDto>>(artworks);
         }
 
-        public async Task<ArtistProfileDto?> GetArtistProfileAsync(int artistProfileId)
+        public async Task<ArtistProfileDto?> GetArtistProfileAsync(Guid artistProfileId)
         {
             var artistProfile = await _buyerRepository.GetArtistProfileByIdAsync(artistProfileId);
             if (artistProfile == null) return null;

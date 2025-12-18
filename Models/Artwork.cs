@@ -11,7 +11,7 @@ namespace Artify.Api.Models
         public Guid ArtworkId { get; set; }
 
         [Required]
-        public int ArtistProfileId { get; set; }
+        public Guid ArtistProfileId { get; set; }
 
         [ForeignKey("ArtistProfileId")]
         public ArtistProfile ArtistProfile { get; set; }

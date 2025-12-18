@@ -6,11 +6,23 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Artify.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialIdentityResetup_v3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "ArtworkTags",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ArtworkTags", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -26,17 +38,34 @@ namespace Artify.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUsers",
+                name: "Categories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RoleType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    ProfileImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -50,7 +79,7 @@ namespace Artify.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -91,9 +120,9 @@ namespace Artify.Api.Migrations
                 {
                     table.PrimaryKey("PK_AdminActivities", x => x.ActivityId);
                     table.ForeignKey(
-                        name: "FK_AdminActivities_AspNetUsers_AdminId",
+                        name: "FK_AdminActivities_Users_AdminId",
                         column: x => x.AdminId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -102,8 +131,7 @@ namespace Artify.Api.Migrations
                 name: "ArtistProfiles",
                 columns: table => new
                 {
-                    ArtistProfileId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ArtistProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Bio = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -111,17 +139,134 @@ namespace Artify.Api.Migrations
                     ProfileImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Rating = table.Column<float>(type: "real", nullable: false),
                     PortfolioUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SocialLinks = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Skills = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ArtistProfiles", x => x.ArtistProfileId);
                     table.ForeignKey(
-                        name: "FK_ArtistProfiles_AspNetUsers_UserId",
+                        name: "FK_ArtistProfiles_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Bio = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Category = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Phone = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    SocialLink = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    ProfileImageUrl = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    TotalSales = table.Column<int>(type: "int", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Services",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    ArtistId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Services", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Services_ArtistProfiles_ArtistId",
+                        column: x => x.ArtistId,
+                        principalTable: "ArtistProfiles",
+                        principalColumn: "ArtistProfileId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Services_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Artworks",
+                columns: table => new
+                {
+                    ArtworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ArtistProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HashValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Metadata = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsForSale = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LikesCount = table.Column<int>(type: "int", nullable: false),
+                    ViewsCount = table.Column<int>(type: "int", nullable: false),
+                    Stock = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsApproved = table.Column<bool>(type: "bit", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: true),
+                    ArtistId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Artworks", x => x.ArtworkId);
+                    table.ForeignKey(
+                        name: "FK_Artworks_ArtistProfiles_ArtistProfileId",
+                        column: x => x.ArtistProfileId,
+                        principalTable: "ArtistProfiles",
+                        principalColumn: "ArtistProfileId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Artworks_AspNetUsers_ArtistId",
+                        column: x => x.ArtistId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Artworks_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -210,40 +355,12 @@ namespace Artify.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Artworks",
-                columns: table => new
-                {
-                    ArtworkId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ArtistProfileId = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    HashValue = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Metadata = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsForSale = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Artworks", x => x.ArtworkId);
-                    table.ForeignKey(
-                        name: "FK_Artworks_ArtistProfiles_ArtistProfileId",
-                        column: x => x.ArtistProfileId,
-                        principalTable: "ArtistProfiles",
-                        principalColumn: "ArtistProfileId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AIHashRecords",
                 columns: table => new
                 {
                     HashId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ArtworkId = table.Column<int>(type: "int", nullable: false),
+                    ArtworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     HashValue = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PlagiarismScore = table.Column<float>(type: "real", nullable: false),
                     IsFlagged = table.Column<bool>(type: "bit", nullable: false),
@@ -261,17 +378,43 @@ namespace Artify.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ArtworkArtworkTag",
+                columns: table => new
+                {
+                    ArtworksArtworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TagsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ArtworkArtworkTag", x => new { x.ArtworksArtworkId, x.TagsId });
+                    table.ForeignKey(
+                        name: "FK_ArtworkArtworkTag_ArtworkTags_TagsId",
+                        column: x => x.TagsId,
+                        principalTable: "ArtworkTags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ArtworkArtworkTag_Artworks_ArtworksArtworkId",
+                        column: x => x.ArtworksArtworkId,
+                        principalTable: "Artworks",
+                        principalColumn: "ArtworkId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
-                    OrderId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     BuyerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ArtworkId = table.Column<int>(type: "int", nullable: true),
-                    ArtistProfileId = table.Column<int>(type: "int", nullable: false),
+                    ArtworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ArtistProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PaymentStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     OrderType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DeliveryStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CompletionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -282,17 +425,59 @@ namespace Artify.Api.Migrations
                         column: x => x.ArtistProfileId,
                         principalTable: "ArtistProfiles",
                         principalColumn: "ArtistProfileId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Orders_Artworks_ArtworkId",
                         column: x => x.ArtworkId,
                         principalTable: "Artworks",
                         principalColumn: "ArtworkId");
                     table.ForeignKey(
-                        name: "FK_Orders_AspNetUsers_BuyerId",
+                        name: "FK_Orders_Users_BuyerId",
                         column: x => x.BuyerId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PlagiarismLogs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ArtworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SuspectedArtworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SimilarityScore = table.Column<double>(type: "float", nullable: false),
+                    IsReviewed = table.Column<bool>(type: "bit", nullable: false),
+                    ActionTaken = table.Column<bool>(type: "bit", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ArtworkId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ArtworkId2 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlagiarismLogs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PlagiarismLogs_Artworks_ArtworkId",
+                        column: x => x.ArtworkId,
+                        principalTable: "Artworks",
+                        principalColumn: "ArtworkId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PlagiarismLogs_Artworks_ArtworkId1",
+                        column: x => x.ArtworkId1,
+                        principalTable: "Artworks",
+                        principalColumn: "ArtworkId");
+                    table.ForeignKey(
+                        name: "FK_PlagiarismLogs_Artworks_ArtworkId2",
+                        column: x => x.ArtworkId2,
+                        principalTable: "Artworks",
+                        principalColumn: "ArtworkId");
+                    table.ForeignKey(
+                        name: "FK_PlagiarismLogs_Artworks_SuspectedArtworkId",
+                        column: x => x.SuspectedArtworkId,
+                        principalTable: "Artworks",
+                        principalColumn: "ArtworkId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -303,8 +488,8 @@ namespace Artify.Api.Migrations
                     ReviewId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ReviewerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ArtistProfileId = table.Column<int>(type: "int", nullable: true),
-                    ArtworkId = table.Column<int>(type: "int", nullable: true),
+                    ArtistProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ArtworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Rating = table.Column<int>(type: "int", nullable: false),
                     Comment = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -323,9 +508,9 @@ namespace Artify.Api.Migrations
                         principalTable: "Artworks",
                         principalColumn: "ArtworkId");
                     table.ForeignKey(
-                        name: "FK_Reviews_AspNetUsers_ReviewerId",
+                        name: "FK_Reviews_Users_ReviewerId",
                         column: x => x.ReviewerId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -334,9 +519,8 @@ namespace Artify.Api.Migrations
                 name: "TransactionLogs",
                 columns: table => new
                 {
-                    TransactionId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    TransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PaymentMethod = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TransactionAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TransactionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -361,8 +545,7 @@ namespace Artify.Api.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_AIHashRecords_ArtworkId",
                 table: "AIHashRecords",
-                column: "ArtworkId",
-                unique: true);
+                column: "ArtworkId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ArtistProfiles_UserId",
@@ -370,9 +553,24 @@ namespace Artify.Api.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ArtworkArtworkTag_TagsId",
+                table: "ArtworkArtworkTag",
+                column: "TagsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Artworks_ArtistId",
+                table: "Artworks",
+                column: "ArtistId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Artworks_ArtistProfileId",
                 table: "Artworks",
                 column: "ArtistProfileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Artworks_CategoryId",
+                table: "Artworks",
+                column: "CategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -407,6 +605,11 @@ namespace Artify.Api.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_UserId",
+                table: "AspNetUsers",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
@@ -429,6 +632,26 @@ namespace Artify.Api.Migrations
                 column: "BuyerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PlagiarismLogs_ArtworkId",
+                table: "PlagiarismLogs",
+                column: "ArtworkId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlagiarismLogs_ArtworkId1",
+                table: "PlagiarismLogs",
+                column: "ArtworkId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlagiarismLogs_ArtworkId2",
+                table: "PlagiarismLogs",
+                column: "ArtworkId2");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlagiarismLogs_SuspectedArtworkId",
+                table: "PlagiarismLogs",
+                column: "SuspectedArtworkId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Reviews_ArtistProfileId",
                 table: "Reviews",
                 column: "ArtistProfileId");
@@ -444,10 +667,19 @@ namespace Artify.Api.Migrations
                 column: "ReviewerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Services_ArtistId",
+                table: "Services",
+                column: "ArtistId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Services_CategoryId",
+                table: "Services",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TransactionLogs_OrderId",
                 table: "TransactionLogs",
-                column: "OrderId",
-                unique: true);
+                column: "OrderId");
         }
 
         /// <inheritdoc />
@@ -458,6 +690,9 @@ namespace Artify.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "AIHashRecords");
+
+            migrationBuilder.DropTable(
+                name: "ArtworkArtworkTag");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -475,10 +710,19 @@ namespace Artify.Api.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "PlagiarismLogs");
+
+            migrationBuilder.DropTable(
                 name: "Reviews");
 
             migrationBuilder.DropTable(
+                name: "Services");
+
+            migrationBuilder.DropTable(
                 name: "TransactionLogs");
+
+            migrationBuilder.DropTable(
+                name: "ArtworkTags");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -494,6 +738,12 @@ namespace Artify.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

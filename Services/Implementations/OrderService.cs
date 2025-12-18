@@ -77,7 +77,7 @@ namespace Artify.Api.Services.Implementations
                     CreatedAt = DateTime.UtcNow,
                     OrderDate = DateTime.UtcNow,
                     ArtworkId = firstItem.ArtworkId,
-                    ArtistProfileId = artwork?.ArtistProfileId ?? 0
+                    ArtistProfileId = artwork?.ArtistProfileId ?? Guid.Empty
                 };
 
                 await _orderRepository.CreateOrderAsync(order);

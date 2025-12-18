@@ -138,7 +138,7 @@ namespace Artify.Api.Controllers.Buyer
         [HttpGet("artist/{artistProfileId}")]
         [ProducesResponseType(typeof(IEnumerable<ReviewResponseDto>), 200)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> GetArtistReviews(int artistProfileId)
+        public async Task<IActionResult> GetArtistReviews(Guid artistProfileId)
         {
             try
             {
@@ -159,7 +159,7 @@ namespace Artify.Api.Controllers.Buyer
         [ProducesResponseType(typeof(double), 200)]
         public async Task<IActionResult> GetAverageRating(
             [FromQuery] Guid? artworkId = null,
-            [FromQuery] int? artistProfileId = null)
+            [FromQuery] Guid? artistProfileId = null)
         {
             try
             {

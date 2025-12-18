@@ -12,7 +12,7 @@ namespace Artify.Api.Services.Interfaces
         Task<HiringResponseDto> UpdateHiringRequestStatusAsync(Guid requestId, string status);
 
         // Hiring Validation
-        Task<bool> IsArtistAvailableForHireAsync(int artistProfileId);
+        Task<bool> IsArtistAvailableForHireAsync(Guid artistProfileId);
         Task<bool> ValidateHiringRequestAsync(HireArtistDto hireDto);
 
         // Communication

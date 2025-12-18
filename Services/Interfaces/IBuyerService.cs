@@ -16,7 +16,7 @@ namespace Artify.Api.Services.Interfaces
         Task<IEnumerable<ArtworkResponseDto>> GetArtworksByCategoryAsync(Category category);
 /*        Task<IEnumerable<ArtworkResponseDto>> SearchArtworksAsync(string query, Category? category = null);
 */        Task<ArtworkDetailDto?> GetArtworkDetailAsync(Guid artworkId);
-        Task<ArtistProfileDto?> GetArtistProfileAsync(int artistProfileId);
+        Task<ArtistProfileDto?> GetArtistProfileAsync(Guid artistProfileId);
 
         // Statistics
         Task<int> GetTotalOrdersAsync(string buyerId);

@@ -31,7 +31,7 @@ namespace Artify.Api.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Order>> GetAllByArtistAsync(int artistProfileId)
+        public async Task<IEnumerable<Order>> GetAllByArtistAsync(Guid artistProfileId)
         {
             return await _context.Orders
                 .Where(o => o.ArtistProfileId == artistProfileId)

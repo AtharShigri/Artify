@@ -6,7 +6,7 @@ namespace Artify.Api.Repositories.Interfaces
     { 
         Task<Order?> GetOrderByIdAsync(Guid orderId);
         Task<IEnumerable<Order>> GetOrdersByBuyerIdAsync(string buyerId);
-        Task<IEnumerable<Order>> GetAllByArtistAsync(int artistProfileId);
+        Task<IEnumerable<Order>> GetAllByArtistAsync(Guid artistProfileId);
 
         Task<Order> CreateOrderAsync(Order order);
         Task<bool> UpdateOrderAsync(Order order);

@@ -21,7 +21,7 @@ namespace Artify.Api.Services.Implementations
 
         public async Task<object> GetAllAsync(ClaimsPrincipal user)
         {
-            var artistId = _artistRepo.GetArtistId(user);
+            Guid artistId = _artistRepo.GetArtistId(user);
             var artworks = await _artworkRepo.GetAllByArtistAsync(artistId);
 
             return artworks.Select(a => new

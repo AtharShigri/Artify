@@ -15,7 +15,7 @@ namespace Artify.Api.Repositories.Interfaces
         Task<Artwork?> GetArtworkByIdAsync(Guid artworkId);
         Task<IEnumerable<Artwork>> GetArtworksByCategoryAsync(Category? category, int page = 1, int pageSize = 20);
         Task<IEnumerable<Artwork>> SearchArtworksAsync(string query, decimal? minPrice = null, decimal? maxPrice = null, string sortBy = "newest");
-        Task<ArtistProfile?> GetArtistProfileByIdAsync(int artistProfileId);
+        Task<ArtistProfile?> GetArtistProfileByIdAsync(Guid artistProfileId);
         Task<IEnumerable<ArtistProfile>> GetFeaturedArtistsAsync(int count = 10);
 
         // Utility

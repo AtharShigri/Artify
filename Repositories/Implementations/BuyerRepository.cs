@@ -112,7 +112,7 @@ namespace Artify.Api.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task<ArtistProfile?> GetArtistProfileByIdAsync(int artistProfileId)
+        public async Task<ArtistProfile?> GetArtistProfileByIdAsync(Guid artistProfileId)
         {
             return await _context.ArtistProfiles
                 .Include(ap => ap.User)

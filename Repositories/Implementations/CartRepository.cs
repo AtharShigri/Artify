@@ -69,7 +69,7 @@ namespace Artify.Api.Repositories.Implementations
 
             cart.ArtworkId = null;
             cart.TotalAmount = 0;
-            cart.ArtistProfileId = 0;
+            cart.ArtistProfileId = Guid.Empty;
 
             _context.Orders.Update(cart);
             return await SaveAsync();
@@ -83,7 +83,7 @@ namespace Artify.Api.Repositories.Implementations
 
             cart.ArtworkId = null;
             cart.TotalAmount = 0;
-            cart.ArtistProfileId = 0;
+            cart.ArtistProfileId = Guid.Empty;
 
             _context.Orders.Update(cart);
             return await SaveAsync();

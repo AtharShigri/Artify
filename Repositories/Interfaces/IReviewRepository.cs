@@ -10,8 +10,8 @@ namespace Artify.Api.Repositories.Interfaces
         Task<bool> DeleteReviewAsync(int reviewId);
 
         Task<IEnumerable<Review>> GetReviewsByArtworkIdAsync(Guid artworkId);
-        Task<IEnumerable<Review>> GetReviewsByArtistIdAsync(int artistProfileId);
-        Task<IEnumerable<Review>> GetAllByArtistAsync(int artistProfileId);
+        Task<IEnumerable<Review>> GetReviewsByArtistIdAsync(Guid artistProfileId);
+        Task<IEnumerable<Review>> GetAllByArtistAsync(Guid artistProfileId);
 
         Task<bool> ReviewExistsAsync(int reviewId);
         Task<bool> IsReviewOwnerAsync(int reviewId, string userId);

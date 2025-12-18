@@ -79,7 +79,7 @@ namespace Artify.Api.Services.Implementations
             return reviewDtos;
         }
 
-        public async Task<IEnumerable<ReviewResponseDto>> GetArtistReviewsAsync(int artistProfileId)
+        public async Task<IEnumerable<ReviewResponseDto>> GetArtistReviewsAsync(Guid artistProfileId)
         {
             var reviews = await _reviewRepository.GetReviewsByArtistIdAsync(artistProfileId);
             var reviewDtos = new List<ReviewResponseDto>();
@@ -100,7 +100,7 @@ namespace Artify.Api.Services.Implementations
             return await MapReviewToDto(review);
         }
 
-        public async Task<double> GetAverageRatingAsync(Guid? artworkId = null, int? artistProfileId = null)
+        public async Task<double> GetAverageRatingAsync(Guid? artworkId = null, Guid? artistProfileId = null)
         {
             IEnumerable<Review> reviews;
             if (artworkId.HasValue)
@@ -120,7 +120,7 @@ namespace Artify.Api.Services.Implementations
             return reviews.Average(r => r.Rating);
         }
 
-        public async Task<int> GetReviewCountAsync(Guid? artworkId = null, int? artistProfileId = null)
+        public async Task<int> GetReviewCountAsync(Guid? artworkId = null, Guid? artistProfileId = null)
         {
             IEnumerable<Review> reviews;
             if (artworkId.HasValue)
@@ -139,12 +139,12 @@ namespace Artify.Api.Services.Implementations
             return reviews.Count();
         }
 
-        public async Task<bool> CanUserReviewAsync(string buyerId, Guid? artworkId, int? artistProfileId)
+        public async Task<bool> CanUserReviewAsync(string buyerId, Guid? artworkId, Guid? artistProfileId)
         {
             return !await HasUserReviewedAsync(buyerId, artworkId, artistProfileId);
         }
 
-        private async Task<bool> HasUserReviewedAsync(string buyerId, Guid? artworkId, int? artistProfileId)
+        private async Task<bool> HasUserReviewedAsync(string buyerId, Guid? artworkId, Guid? artistProfileId)
         {
             if (artworkId.HasValue)
             {

@@ -24,7 +24,7 @@ public class ReviewRepository : BaseRepository, IReviewRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Review>> GetReviewsByArtistIdAsync(int artistProfileId)
+    public async Task<IEnumerable<Review>> GetReviewsByArtistIdAsync(Guid artistProfileId)
     {
         return await _context.Reviews
             .Where(r => r.ArtistProfileId == artistProfileId)
@@ -33,7 +33,7 @@ public class ReviewRepository : BaseRepository, IReviewRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Review>> GetAllByArtistAsync(int artistProfileId)
+    public async Task<IEnumerable<Review>> GetAllByArtistAsync(Guid artistProfileId)
     {
         return await _context.Reviews
             .Where(r => r.ArtistProfileId == artistProfileId)

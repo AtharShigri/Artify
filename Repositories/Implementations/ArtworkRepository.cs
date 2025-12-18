@@ -7,9 +7,9 @@ namespace Artify.Api.Repositories.Implementations
     {
         public Task AddAsync(Artwork artwork) => Task.CompletedTask;
         public Task DeleteAsync(Artwork artwork) => Task.CompletedTask;
-        public Task<IEnumerable<Artwork>> GetAllByArtistAsync(int artistId) => Task.FromResult<IEnumerable<Artwork>>(null);
+        public Task<IEnumerable<Artwork>> GetAllByArtistAsync(Guid artistId) => Task.FromResult<IEnumerable<Artwork>>(null);
         public Task<Artwork> GetByIdAsync(Guid artworkId) => Task.FromResult<Artwork>(null);
         public Task UpdateAsync(Artwork artwork) => Task.CompletedTask;
-        public Task<bool> ArtworkExistsAsync(Guid artworkId, int artistId) => Task.FromResult(false);
+        public Task<bool> ArtworkExistsAsync(Guid artworkId, Guid artistId) => Task.FromResult(false);
     }
 }

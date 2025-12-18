@@ -110,7 +110,7 @@ namespace Artify.Api.Controllers.Shared
         [HttpGet("artists/{artistId}")]
         [ProducesResponseType(typeof(ArtistProfileDto), 200)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetArtistProfile(int artistId)
+        public async Task<IActionResult> GetArtistProfile(Guid artistId)
         {
             try
             {

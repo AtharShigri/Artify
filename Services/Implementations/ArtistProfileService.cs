@@ -36,6 +36,7 @@ namespace Artify.Api.Services.Implementations
             {
                 FullName = dto.FullName,
                 Email = dto.Email,
+                UserName = dto.Email,
                 Category = dto.Category
             };
 

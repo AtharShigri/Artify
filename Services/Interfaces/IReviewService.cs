@@ -9,12 +9,12 @@ namespace Artify.Api.Services.Interfaces
         Task<bool> DeleteReviewAsync(int reviewId, string buyerId);
 
         Task<IEnumerable<ReviewResponseDto>> GetArtworkReviewsAsync(Guid artworkId);
-        Task<IEnumerable<ReviewResponseDto>> GetArtistReviewsAsync(int artistProfileId);
+        Task<IEnumerable<ReviewResponseDto>> GetArtistReviewsAsync(Guid artistProfileId);
         Task<ReviewResponseDto?> GetReviewByIdAsync(int reviewId);
 
-        Task<double> GetAverageRatingAsync(Guid? artworkId = null, int? artistProfileId = null);
-        Task<int> GetReviewCountAsync(Guid? artworkId = null, int? artistProfileId = null);
+        Task<double> GetAverageRatingAsync(Guid? artworkId = null, Guid? artistProfileId = null);
+        Task<int> GetReviewCountAsync(Guid? artworkId = null, Guid? artistProfileId = null);
 
-        Task<bool> CanUserReviewAsync(string buyerId, Guid? artworkId, int? artistProfileId);
+        Task<bool> CanUserReviewAsync(string buyerId, Guid? artworkId, Guid? artistProfileId);
     }
 }

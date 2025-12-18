@@ -7,7 +7,7 @@ namespace Artify.Api.DTOs.Buyer
         [Required][Range(1, 5)] public int Rating { get; set; }
         [Required][StringLength(500)] public string Comment { get; set; } = string.Empty;
         public Guid? ArtworkId { get; set; }
-        public int? ArtistProfileId { get; set; }
+        public Guid? ArtistProfileId { get; set; }
     }
 
     public class ReviewResponseDto
@@ -20,6 +20,6 @@ namespace Artify.Api.DTOs.Buyer
         public string Comment { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public Guid? ArtworkId { get; set; }
-        public int? ArtistProfileId { get; set; }
+        public Guid? ArtistProfileId { get; set; }
     }
 }

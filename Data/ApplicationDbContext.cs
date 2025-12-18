@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Artify.Api.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<Artist>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -63,7 +63,13 @@ namespace Artify.Api.Data
                 .HasOne(p => p.SuspectedArtwork)
                 .WithMany()
                 .HasForeignKey(p => p.SuspectedArtworkId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Order>()
+        .HasOne(o => o.Buyer)
+        .WithMany()
+        .HasForeignKey(o => o.BuyerId)
+        .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -9,8 +9,8 @@ namespace Artify.Api.Repositories.Implementations
         public Task AddAsync(Artist artist) => Task.CompletedTask;
         public Task DeleteAsync(Artist artist) => Task.CompletedTask;
         public Task<Artist> GetByEmailAsync(string email) => Task.FromResult<Artist>(null);
-        public Task<Artist> GetByIdAsync(int artistId) => Task.FromResult<Artist>(null);
+        public Task<Artist> GetByIdAsync(Guid artistId) => Task.FromResult<Artist>(null);
         public Task UpdateAsync(Artist artist) => Task.CompletedTask;
-        public int GetArtistId(ClaimsPrincipal user) => 0;
+        public Guid GetArtistId(ClaimsPrincipal user) => Guid.Empty;
     }
 }
