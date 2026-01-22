@@ -5,7 +5,7 @@ namespace Artify.Api.Services.Interfaces
     public interface IPaymentService
     {
         // Payment Operations
-        Task<PaymentResponseDto> CreatePaymentIntentAsync(Guid orderId, string buyerId);
+        Task<PaymentResponseDto> CreatePaymentIntentAsync(Guid orderId, Guid buyerId);
         Task<PaymentResponseDto> ConfirmPaymentAsync(string paymentIntentId, Guid orderId);
         Task<bool> ProcessPaymentWebhookAsync(PaymentCallbackDto webhookDto);
 
@@ -14,7 +14,7 @@ namespace Artify.Api.Services.Interfaces
         Task<bool> UpdatePaymentStatusAsync(Guid orderId, string status);
 
         // Transaction History
-        Task<IEnumerable<TransactionLogDto>> GetBuyerTransactionsAsync(string buyerId);
+        Task<IEnumerable<TransactionLogDto>> GetBuyerTransactionsAsync(Guid buyerId);
 
         // Refunds
         Task<bool> ProcessRefundAsync(Guid orderId, decimal amount);

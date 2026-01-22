@@ -15,7 +15,7 @@ namespace Artify.Api.DTOs.Buyer
     public class HiringResponseDto
     {
         public Guid RequestId { get; set; }
-        public string BuyerId { get; set; } = string.Empty;
+        public Guid BuyerId { get; set; } = Guid.Empty;
         public string BuyerName { get; set; } = string.Empty;
         public Guid ArtistProfileId { get; set; }
         public string ArtistName { get; set; } = string.Empty;

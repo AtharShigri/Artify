@@ -26,10 +26,12 @@ namespace Artify.Api.Controllers.Buyer
         }
 
         // Helper method to get current user ID
-        private string GetCurrentUserId()
+        private Guid? GetCurrentUserId()
         {
-            return User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Guid.TryParse(userId, out var guid) ? guid : null;
         }
+
 
         /// <summary>
         /// Create a new order (from cart or direct purchase)
@@ -48,15 +50,15 @@ namespace Artify.Api.Controllers.Buyer
                     return BadRequest(ModelState);
 
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
                 // Check if cart is empty
-                var cartCount = await _cartService.GetCartItemCountAsync(buyerId);
+                var cartCount = await _cartService.GetCartItemCountAsync(buyerId.Value);
                 if (cartCount == 0 && (orderDto.Items == null || !orderDto.Items.Any()))
                     return BadRequest(new { message = "Cannot create empty order" });
 
-                var order = await _orderService.CreateOrderAsync(buyerId, orderDto);
+                var order = await _orderService.CreateOrderAsync(buyerId.Value, orderDto);
                 return Ok(order);
             }
             catch (Exception ex)
@@ -78,10 +80,10 @@ namespace Artify.Api.Controllers.Buyer
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var orders = await _orderService.GetBuyerOrdersAsync(buyerId);
+                var orders = await _orderService.GetBuyerOrdersAsync(buyerId.Value);
                 return Ok(orders);
             }
             catch (Exception ex)
@@ -105,10 +107,10 @@ namespace Artify.Api.Controllers.Buyer
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var order = await _orderService.GetOrderByIdAsync(orderId, buyerId);
+                var order = await _orderService.GetOrderByIdAsync(orderId, buyerId.Value);
                 if (order == null)
                     return NotFound(new { message = "Order not found" });
 
@@ -136,10 +138,10 @@ namespace Artify.Api.Controllers.Buyer
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var result = await _orderService.CancelOrderAsync(orderId, buyerId);
+                var result = await _orderService.CancelOrderAsync(orderId, buyerId.Value);
                 if (!result)
                     return BadRequest(new { message = "Cannot cancel this order" });
 
@@ -166,10 +168,10 @@ namespace Artify.Api.Controllers.Buyer
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var order = await _orderService.GetOrderByIdAsync(orderId, buyerId);
+                var order = await _orderService.GetOrderByIdAsync(orderId, buyerId.Value);
                 if (order == null)
                     return NotFound(new { message = "Order not found" });
 
@@ -201,10 +203,10 @@ namespace Artify.Api.Controllers.Buyer
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var allOrders = await _orderService.GetBuyerOrdersAsync(buyerId);
+                var allOrders = await _orderService.GetBuyerOrdersAsync(buyerId.Value);
 
                 // Apply filters
                 var filteredOrders = allOrders.AsQueryable();
@@ -232,5 +234,13 @@ namespace Artify.Api.Controllers.Buyer
                 return StatusCode(500, new { message = "An error occurred while fetching order history" });
             }
         }
+
+        [HttpGet("{orderId}/can-review")]
+        public async Task<IActionResult> CanReview(Guid orderId)
+        {
+            var canReview = await _orderService.CanReviewAsync(User, orderId);
+            return Ok(new { canReview });
+        }
+
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Artify.Api.Models
 {
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser<Guid>
     {
         // Additional fields
         public string FullName { get; set; }

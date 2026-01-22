@@ -13,7 +13,7 @@
 
     public class CartResponseDto
     {
-        public string BuyerId { get; set; } = string.Empty;
+        public Guid BuyerId { get; set; } = Guid.Empty;
         public List<CartItemResponseDto> Items { get; set; } = new();
         public decimal TotalAmount => Items.Sum(i => i.TotalPrice);
         public int TotalItems => Items.Sum(i => i.Quantity);

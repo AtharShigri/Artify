@@ -9,27 +9,27 @@ namespace Artify.Api.Controllers.Buyer
     [Route("api/buyer/hire")]
     [ApiController]
     [Authorize(Roles = "Buyer")]
-    public class HiringController : ControllerBase
+    public class BuyerHiringController : ControllerBase
     {
         private readonly IHiringService _hiringService;
-        private readonly ILogger<HiringController> _logger;
+        private readonly ILogger<BuyerHiringController> _logger;
 
-        public HiringController(
+        public BuyerHiringController(
             IHiringService hiringService,
-            ILogger<HiringController> logger)
+            ILogger<BuyerHiringController> logger)
         {
             _hiringService = hiringService;
             _logger = logger;
         }
 
-        private string GetCurrentUserId()
+        private Guid? GetCurrentUserId()
         {
-            return User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Guid.TryParse(userId, out var guid) ? guid : null;
         }
 
-        /// <summary>
-        /// Hire an artist
-        /// </summary>
+
+        
         [HttpPost]
         [ProducesResponseType(typeof(HiringResponseDto), 200)]
         [ProducesResponseType(400)]
@@ -42,10 +42,10 @@ namespace Artify.Api.Controllers.Buyer
                     return BadRequest(ModelState);
 
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var hiringRequest = await _hiringService.CreateHiringRequestAsync(buyerId, hireDto);
+                var hiringRequest = await _hiringService.CreateHiringRequestAsync(buyerId.Value, hireDto);
                 return Ok(hiringRequest);
             }
             catch (Exception ex)
@@ -55,9 +55,7 @@ namespace Artify.Api.Controllers.Buyer
             }
         }
 
-        /// <summary>
-        /// Get all hiring requests for current buyer
-        /// </summary>
+        
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<HiringResponseDto>), 200)]
         [ProducesResponseType(401)]
@@ -66,10 +64,10 @@ namespace Artify.Api.Controllers.Buyer
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var requests = await _hiringService.GetBuyerHiringRequestsAsync(buyerId);
+                var requests = await _hiringService.GetBuyerHiringRequestsAsync(buyerId.Value);
                 return Ok(requests);
             }
             catch (Exception ex)
@@ -79,9 +77,7 @@ namespace Artify.Api.Controllers.Buyer
             }
         }
 
-        /// <summary>
-        /// Get specific hiring request
-        /// </summary>
+        
         [HttpGet("{requestId}")]
         [ProducesResponseType(typeof(HiringResponseDto), 200)]
         [ProducesResponseType(401)]
@@ -91,10 +87,10 @@ namespace Artify.Api.Controllers.Buyer
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var request = await _hiringService.GetHiringRequestAsync(requestId, buyerId);
+                var request = await _hiringService.GetHiringRequestAsync(requestId, buyerId.Value);
                 if (request == null)
                     return NotFound(new { message = "Hiring request not found" });
 
@@ -107,9 +103,7 @@ namespace Artify.Api.Controllers.Buyer
             }
         }
 
-        /// <summary>
-        /// Delete hiring request
-        /// </summary>
+       
         [HttpDelete("{requestId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
@@ -120,10 +114,10 @@ namespace Artify.Api.Controllers.Buyer
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var result = await _hiringService.DeleteHiringRequestAsync(requestId, buyerId);
+                var result = await _hiringService.DeleteHiringRequestAsync(requestId, buyerId.Value);
                 if (!result)
                     return BadRequest(new { message = "Cannot delete this hiring request" });
 
@@ -136,9 +130,7 @@ namespace Artify.Api.Controllers.Buyer
             }
         }
 
-        /// <summary>
-        /// Initiate communication with artist for a hiring request
-        /// </summary>
+      
         [HttpPost("{requestId}/communicate")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(400)]
@@ -149,10 +141,12 @@ namespace Artify.Api.Controllers.Buyer
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var message = await _hiringService.InitiateArtistCommunicationAsync(requestId);
+                var message = await _hiringService
+                    .InitiateArtistCommunicationAsync(requestId, buyerId.Value);
+
                 return Ok(new { message });
             }
             catch (Exception ex)
@@ -161,5 +155,6 @@ namespace Artify.Api.Controllers.Buyer
                 return BadRequest(new { message = ex.Message });
             }
         }
+
     }
 }

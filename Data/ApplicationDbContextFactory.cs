@@ -10,7 +10,7 @@ namespace Artify.Api.Data
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
 
-            optionsBuilder.UseSqlServer("Server=.;Database=ArtifyDb;Trusted_Connection=True;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("Server=SHIGRI\\SQLEXPRESS01;Database=ArtifyDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
 
             return new ApplicationDbContext(optionsBuilder.Options);
         }

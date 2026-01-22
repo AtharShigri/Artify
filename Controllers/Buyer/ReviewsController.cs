@@ -22,10 +22,12 @@ namespace Artify.Api.Controllers.Buyer
             _logger = logger;
         }
 
-        private string GetCurrentUserId()
+        private Guid? GetCurrentUserId()
         {
-            return User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Guid.TryParse(userId, out var guid) ? guid : null;
         }
+
 
         /// <summary>
         /// Create a new review
@@ -42,10 +44,10 @@ namespace Artify.Api.Controllers.Buyer
                     return BadRequest(ModelState);
 
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var review = await _reviewService.CreateReviewAsync(buyerId, reviewDto);
+                var review = await _reviewService.CreateReviewAsync(buyerId.Value, reviewDto);
                 return Ok(review);
             }
             catch (Exception ex)
@@ -63,7 +65,7 @@ namespace Artify.Api.Controllers.Buyer
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateReview(int reviewId, [FromBody] ReviewDto reviewDto)
+        public async Task<IActionResult> UpdateReview(Guid reviewId, [FromBody] ReviewDto reviewDto)
         {
             try
             {
@@ -71,10 +73,10 @@ namespace Artify.Api.Controllers.Buyer
                     return BadRequest(ModelState);
 
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var updatedReview = await _reviewService.UpdateReviewAsync(reviewId, buyerId, reviewDto);
+                var updatedReview = await _reviewService.UpdateReviewAsync(reviewId, buyerId.Value, reviewDto);
                 return Ok(updatedReview);
             }
             catch (Exception ex)
@@ -91,15 +93,15 @@ namespace Artify.Api.Controllers.Buyer
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> DeleteReview(int reviewId)
+        public async Task<IActionResult> DeleteReview(Guid reviewId)
         {
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var result = await _reviewService.DeleteReviewAsync(reviewId, buyerId);
+                var result = await _reviewService.DeleteReviewAsync(reviewId, buyerId.Value);
                 if (!result)
                     return NotFound(new { message = "Review not found" });
 

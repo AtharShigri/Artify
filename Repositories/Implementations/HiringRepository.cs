@@ -18,10 +18,21 @@ namespace Artify.Api.Repositories.Implementations
                                         o.OrderType == "Hiring");
         }
 
-        public async Task<IEnumerable<Order>> GetHiringRequestsByBuyerIdAsync(string buyerId)
+        public async Task<IEnumerable<Order>> GetHiringRequestsByBuyerIdAsync(Guid buyerId)
         {
             return await _context.Orders
                 .Where(o => o.BuyerId == buyerId && o.OrderType == "Hiring")
+                .OrderByDescending(o => o.CreatedAt)
+                .Include(o => o.ArtistProfile)
+                .ThenInclude(ap => ap!.User)
+                .ToListAsync();
+        }
+
+        // ADDED: Fetch requests specifically for the Artist
+        public async Task<IEnumerable<Order>> GetHiringRequestsByArtistIdAsync(Guid artistId)
+        {
+            return await _context.Orders
+                .Where(o => o.ArtistProfileId == artistId && o.OrderType == "Hiring")
                 .OrderByDescending(o => o.CreatedAt)
                 .Include(o => o.ArtistProfile)
                 .ThenInclude(ap => ap!.User)
@@ -53,6 +64,7 @@ namespace Artify.Api.Repositories.Implementations
             if (request == null)
                 return false;
 
+            // Business logic: prevent deletion if already in progress or paid
             if (request.PaymentStatus == "Completed" ||
                 request.DeliveryStatus == "Accepted")
                 return false;
@@ -67,11 +79,20 @@ namespace Artify.Api.Repositories.Implementations
                 .AnyAsync(o => o.OrderId == requestId && o.OrderType == "Hiring");
         }
 
-        public async Task<bool> IsHiringRequestOwnerAsync(Guid requestId, string buyerId)
+        public async Task<bool> IsHiringRequestOwnerAsync(Guid requestId, Guid buyerId)
         {
             return await _context.Orders
                 .AnyAsync(o => o.OrderId == requestId &&
                              o.BuyerId == buyerId &&
+                             o.OrderType == "Hiring");
+        }
+
+        // ADDED: Validation for the Artist side
+        public async Task<bool> IsHiringRequestRecipientAsync(Guid requestId, Guid artistId)
+        {
+            return await _context.Orders
+                .AnyAsync(o => o.OrderId == requestId &&
+                             o.ArtistProfileId == artistId &&
                              o.OrderType == "Hiring");
         }
     }

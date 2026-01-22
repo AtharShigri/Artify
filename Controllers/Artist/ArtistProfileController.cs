@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Artify.Api.DTOs.Artist;
+using Artify.Api.DTOs.Auth;
 using Artify.Api.Services.Interfaces;
 using Artify.Api.Services.Implementations;
 

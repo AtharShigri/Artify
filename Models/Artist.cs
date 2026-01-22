@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Artify.Api.Models
 {
-    public class Artist : IdentityUser
+    public class Artist : IdentityUser<Guid>
     {
         [Required]
         [MaxLength(100)]

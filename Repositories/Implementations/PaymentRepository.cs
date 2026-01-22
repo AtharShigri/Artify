@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Artify.Api.Repositories.Implementations
 {
-    public class TransactionRepository : BaseRepository, IPaymentRepository
+    public class PaymentRepository : BaseRepository, IPaymentRepository
     {
-        public TransactionRepository(ApplicationDbContext context) : base(context) { }
+        public PaymentRepository(ApplicationDbContext context) : base(context) { }
 
         // 1. Get Transaction by ID
         public async Task<TransactionLog?> GetTransactionByIdAsync(Guid transactionId)
@@ -81,7 +81,7 @@ namespace Artify.Api.Repositories.Implementations
         }
 
         // 7. Get Buyer Transactions with Paging
-        public async Task<IEnumerable<TransactionLog>> GetBuyerTransactionsAsync(string buyerId, int page = 1, int pageSize = 20)
+        public async Task<IEnumerable<TransactionLog>> GetBuyerTransactionsAsync(Guid buyerId, int page = 1, int pageSize = 20)
         {
             return await _context.TransactionLogs
                 .Include(t => t.Order)

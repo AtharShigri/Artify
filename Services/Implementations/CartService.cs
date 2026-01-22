@@ -19,7 +19,7 @@ namespace Artify.Api.Services.Implementations
             _cartRepository = cartRepository;
         }
 
-        public async Task<CartResponseDto> GetCartAsync(string buyerId)
+        public async Task<CartResponseDto> GetCartAsync(Guid buyerId)
         {
             var cart = await _cartRepository.GetCartByBuyerIdAsync(buyerId);
             if (cart == null || cart.ArtworkId == null)
@@ -52,7 +52,7 @@ namespace Artify.Api.Services.Implementations
             return cartDto;
         }
 
-        public async Task<CartResponseDto> AddToCartAsync(string buyerId, CartItemDto cartItem)
+        public async Task<CartResponseDto> AddToCartAsync(Guid buyerId, CartItemDto cartItem)
         {
             // Check if artwork exists and is available
             var artwork = await _buyerRepository.GetArtworkByIdAsync(cartItem.ArtworkId);
@@ -84,7 +84,7 @@ namespace Artify.Api.Services.Implementations
             return await GetCartAsync(buyerId);
         }
 
-        public async Task<CartResponseDto> UpdateCartItemAsync(string buyerId, Guid artworkId, int quantity)
+        public async Task<CartResponseDto> UpdateCartItemAsync(Guid buyerId, Guid artworkId, int quantity)
         {
             if (quantity <= 0)
             {
@@ -101,29 +101,29 @@ namespace Artify.Api.Services.Implementations
             return await GetCartAsync(buyerId);
         }
 
-        public async Task<bool> RemoveFromCartAsync(string buyerId, Guid artworkId)
+        public async Task<bool> RemoveFromCartAsync(Guid buyerId, Guid artworkId)
         {
             return await _cartRepository.RemoveFromCartAsync(buyerId, artworkId);
         }
 
-        public async Task<bool> ClearCartAsync(string buyerId)
+        public async Task<bool> ClearCartAsync(Guid buyerId)
         {
             return await _cartRepository.ClearCartAsync(buyerId);
         }
 
-        public async Task<bool> IsArtworkInCartAsync(string buyerId, Guid artworkId)
+        public async Task<bool> IsArtworkInCartAsync(Guid buyerId, Guid artworkId)
         {
             var cart = await _cartRepository.GetCartByBuyerIdAsync(buyerId);
             return cart != null && cart.ArtworkId == artworkId;
         }
 
-        public async Task<int> GetCartItemCountAsync(string buyerId)
+        public async Task<int> GetCartItemCountAsync(Guid buyerId)
         {
             var cart = await _cartRepository.GetCartByBuyerIdAsync(buyerId);
             return cart?.ArtworkId != null ? 1 : 0;
         }
 
-        public async Task<decimal> GetCartTotalAsync(string buyerId)
+        public async Task<decimal> GetCartTotalAsync(Guid buyerId)
         {
             var cart = await _cartRepository.GetCartByBuyerIdAsync(buyerId);
             if (cart == null || cart.ArtworkId == null)
@@ -133,7 +133,7 @@ namespace Artify.Api.Services.Implementations
             return artwork?.Price ?? 0;
         }
 
-        public async Task<CreateOrderDto> PrepareCheckoutAsync(string buyerId)
+        public async Task<CreateOrderDto> PrepareCheckoutAsync(Guid buyerId)
         {
             var cart = await GetCartAsync(buyerId);
             if (cart.Items.Count == 0)

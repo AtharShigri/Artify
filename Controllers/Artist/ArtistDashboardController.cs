@@ -33,5 +33,20 @@ namespace Artify.Api.Controllers.Artist
         {
             return Ok(await _dashboardService.GetReviewsAsync(User));
         }
+
+        [HttpGet("earnings")]
+        public async Task<IActionResult> GetEarnings()
+        {
+            var result = await _dashboardService.GetEarningsAsync(User);
+            return Ok(result);
+        }
+
+        [HttpGet("artworks/stats")]
+        public async Task<IActionResult> GetArtworkStats()
+        {
+            var result = await _dashboardService.GetArtworkStatsAsync(User);
+            return Ok(result);
+        }
+
     }
 }

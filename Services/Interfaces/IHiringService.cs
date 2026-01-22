@@ -4,18 +4,21 @@ namespace Artify.Api.Services.Interfaces
 {
     public interface IHiringService
     {
-        // Hiring Operations (Using Orders table with OrderType = "Hiring")
-        Task<HiringResponseDto> CreateHiringRequestAsync(string buyerId, HireArtistDto hireDto);
-        Task<HiringResponseDto> GetHiringRequestAsync(Guid requestId, string buyerId);
-        Task<IEnumerable<HiringResponseDto>> GetBuyerHiringRequestsAsync(string buyerId);
-        Task<bool> DeleteHiringRequestAsync(Guid requestId, string buyerId);
-        Task<HiringResponseDto> UpdateHiringRequestStatusAsync(Guid requestId, string status);
+        // --- Buyer Actions ---
+        Task<HiringResponseDto> CreateHiringRequestAsync(Guid buyerId, HireArtistDto hireDto);
+        Task<HiringResponseDto?> GetHiringRequestAsync(Guid requestId, Guid buyerId);
+        Task<IEnumerable<HiringResponseDto>> GetBuyerHiringRequestsAsync(Guid buyerId);
+        Task<bool> DeleteHiringRequestAsync(Guid requestId, Guid buyerId);
+        Task<string> InitiateArtistCommunicationAsync(Guid requestId, Guid buyerId);
 
-        // Hiring Validation
+        // --- Artist Actions ---
+        Task<IEnumerable<HiringResponseDto>> GetArtistRequestsAsync(Guid artistId);
+        Task AcceptRequestAsync(Guid artistId, Guid requestId);
+        Task RejectRequestAsync(Guid artistId, Guid requestId);
+
+        // --- Shared / Internal Logic ---
+        Task<HiringResponseDto> UpdateHiringRequestStatusAsync(Guid requestId, string status);
         Task<bool> IsArtistAvailableForHireAsync(Guid artistProfileId);
         Task<bool> ValidateHiringRequestAsync(HireArtistDto hireDto);
-
-        // Communication
-        Task<string> InitiateArtistCommunicationAsync(Guid requestId);
     }
 }

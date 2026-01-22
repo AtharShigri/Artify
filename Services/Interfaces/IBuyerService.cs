@@ -7,9 +7,9 @@ namespace Artify.Api.Services.Interfaces
     public interface IBuyerService
     {
         // Buyer Profile
-        Task<BuyerProfileResponseDto?> GetBuyerProfileAsync(string buyerId);
-        Task<BuyerProfileResponseDto?> UpdateBuyerProfileAsync(string buyerId, BuyerUpdateDto updateDto);
-        Task<bool> DeleteBuyerAccountAsync(string buyerId);
+        Task<BuyerProfileResponseDto?> GetBuyerProfileAsync(Guid buyerId);
+        Task<BuyerProfileResponseDto?> UpdateBuyerProfileAsync(Guid buyerId, BuyerUpdateDto updateDto);
+        Task<bool> DeleteBuyerAccountAsync(Guid buyerId);
 
         // Marketplace Browsing
         Task<IEnumerable<ArtworkResponseDto>> GetFeaturedArtworksAsync();
@@ -19,7 +19,7 @@ namespace Artify.Api.Services.Interfaces
         Task<ArtistProfileDto?> GetArtistProfileAsync(Guid artistProfileId);
 
         // Statistics
-        Task<int> GetTotalOrdersAsync(string buyerId);
-        Task<int> GetTotalReviewsAsync(string buyerId);
+        Task<int> GetTotalOrdersAsync(Guid buyerId);
+        Task<int> GetTotalReviewsAsync(Guid buyerId);
     }
 }

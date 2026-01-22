@@ -7,7 +7,7 @@ namespace Artify.Api.Models
     public class ArtService
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         public Guid ArtistId { get; set; }

@@ -8,9 +8,12 @@ namespace Artify.Api.Models
     {
         [Key]
         public Guid TransactionId { get; set; }
-
+        public Guid BuyerId {  get; set; }
         public Guid OrderId { get; set; }
         [ForeignKey("OrderId")]
+
+        Guid? PaymentIntentId { get; set; }
+        [ForeignKey("PaymentIntentId")]
         public Order Order { get; set; }
 
         public string PaymentMethod { get; set; }

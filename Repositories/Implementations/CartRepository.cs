@@ -9,7 +9,7 @@ namespace Artify.Api.Repositories.Implementations
     {
         public CartRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<Order?> GetCartByBuyerIdAsync(string buyerId)
+        public async Task<Order?> GetCartByBuyerIdAsync(Guid buyerId)
         {
             return await _context.Orders
                 .Include(o => o.Artwork)
@@ -20,7 +20,7 @@ namespace Artify.Api.Repositories.Implementations
                                         o.PaymentStatus == "Pending");
         }
 
-        public async Task<Order> CreateCartAsync(string buyerId)
+        public async Task<Order> CreateCartAsync(Guid buyerId)
         {
             var cart = new Order
             {
@@ -37,7 +37,7 @@ namespace Artify.Api.Repositories.Implementations
             return cart;
         }
 
-        public async Task<bool> AddToCartAsync(string buyerId, Guid artworkId)
+        public async Task<bool> AddToCartAsync(Guid buyerId, Guid artworkId)
         {
             var cart = await GetCartByBuyerIdAsync(buyerId);
             if (cart == null)
@@ -61,7 +61,7 @@ namespace Artify.Api.Repositories.Implementations
             return await SaveAsync();
         }
 
-        public async Task<bool> RemoveFromCartAsync(string buyerId, Guid artworkId)
+        public async Task<bool> RemoveFromCartAsync(Guid buyerId, Guid artworkId)
         {
             var cart = await GetCartByBuyerIdAsync(buyerId);
             if (cart == null || cart.ArtworkId != artworkId)
@@ -75,7 +75,7 @@ namespace Artify.Api.Repositories.Implementations
             return await SaveAsync();
         }
 
-        public async Task<bool> ClearCartAsync(string buyerId)
+        public async Task<bool> ClearCartAsync(Guid buyerId)
         {
             var cart = await GetCartByBuyerIdAsync(buyerId);
             if (cart == null)
@@ -89,7 +89,7 @@ namespace Artify.Api.Repositories.Implementations
             return await SaveAsync();
         }
 
-        public async Task<bool> CartExistsAsync(string buyerId)
+        public async Task<bool> CartExistsAsync(Guid buyerId)
         {
             return await _context.Orders
                 .AnyAsync(o => o.BuyerId == buyerId &&

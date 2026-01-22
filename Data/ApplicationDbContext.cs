@@ -1,11 +1,12 @@
 ﻿// ========================= ApplicationDbContext.cs (Safe, Code-Only Version) =========================
 using Artify.Api.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Artify.Api.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<Artist>
+    public class ApplicationDbContext : IdentityDbContext<Artist, IdentityRole<Guid>, Guid>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -28,6 +29,8 @@ namespace Artify.Api.Data
         public DbSet<Service> Services { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<ArtworkTag> ArtworkTags { get; set; }
+        public DbSet<HiringRequest> HiringRequests { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

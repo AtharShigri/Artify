@@ -19,7 +19,7 @@ namespace Artify.Api.Services.Implementations
             _reviewRepository = reviewRepository;
         }
 
-        public async Task<ReviewResponseDto> CreateReviewAsync(string buyerId, ReviewDto reviewDto)
+        public async Task<ReviewResponseDto> CreateReviewAsync(Guid buyerId, ReviewDto reviewDto)
         {
             // Validate that at least one of ArtworkId or ArtistProfileId is provided
             if (!reviewDto.ArtworkId.HasValue && !reviewDto.ArtistProfileId.HasValue)
@@ -43,7 +43,7 @@ namespace Artify.Api.Services.Implementations
             return await MapReviewToDto(createdReview);
         }
 
-        public async Task<ReviewResponseDto> UpdateReviewAsync(int reviewId, string buyerId, ReviewDto reviewDto)
+        public async Task<ReviewResponseDto> UpdateReviewAsync(Guid reviewId, Guid buyerId, ReviewDto reviewDto)
         {
             var review = await _reviewRepository.GetReviewByIdAsync(reviewId);
             if (review == null || review.ReviewerId != buyerId)
@@ -57,7 +57,7 @@ namespace Artify.Api.Services.Implementations
             return await MapReviewToDto(review);
         }
 
-        public async Task<bool> DeleteReviewAsync(int reviewId, string buyerId)
+        public async Task<bool> DeleteReviewAsync(Guid reviewId, Guid buyerId)
         {
             var review = await _reviewRepository.GetReviewByIdAsync(reviewId);
             if (review == null || review.ReviewerId != buyerId)
@@ -92,7 +92,7 @@ namespace Artify.Api.Services.Implementations
             return reviewDtos;
         }
 
-        public async Task<ReviewResponseDto?> GetReviewByIdAsync(int reviewId)
+        public async Task<ReviewResponseDto?> GetReviewByIdAsync(Guid reviewId)
         {
             var review = await _reviewRepository.GetReviewByIdAsync(reviewId);
             if (review == null) return null;
@@ -139,12 +139,12 @@ namespace Artify.Api.Services.Implementations
             return reviews.Count();
         }
 
-        public async Task<bool> CanUserReviewAsync(string buyerId, Guid? artworkId, Guid? artistProfileId)
+        public async Task<bool> CanUserReviewAsync(Guid buyerId, Guid? artworkId, Guid? artistProfileId)
         {
             return !await HasUserReviewedAsync(buyerId, artworkId, artistProfileId);
         }
 
-        private async Task<bool> HasUserReviewedAsync(string buyerId, Guid? artworkId, Guid? artistProfileId)
+        private async Task<bool> HasUserReviewedAsync(Guid buyerId, Guid? artworkId, Guid? artistProfileId)
         {
             if (artworkId.HasValue)
             {

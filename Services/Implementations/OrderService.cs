@@ -4,6 +4,11 @@ using Artify.Api.Models;
 using Artify.Api.Repositories.Interfaces;
 using Artify.Api.Services.Interfaces;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using Artify.Api.Data;
+using Artify.Api.Enums;
+
 
 namespace Artify.Api.Services.Implementations
 {
@@ -13,20 +18,26 @@ namespace Artify.Api.Services.Implementations
         private readonly IBuyerRepository _buyerRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly ICartRepository _cartRepository;
+        private readonly ApplicationDbContext _context;
+
 
         public OrderService(
             IMapper mapper,
             IBuyerRepository buyerRepository,
             IOrderRepository orderRepository,
-            ICartRepository cartRepository)
+            ICartRepository cartRepository,
+            ApplicationDbContext context
+)
         {
             _mapper = mapper;
             _buyerRepository = buyerRepository;
             _orderRepository = orderRepository;
             _cartRepository = cartRepository;
+            _context = context;
+
         }
 
-        public async Task<OrderResponseDto> CreateOrderAsync(string buyerId, CreateOrderDto orderDto)
+        public async Task<OrderResponseDto> CreateOrderAsync(Guid buyerId, CreateOrderDto orderDto)
         {
             // Validate order items
             if (!await ValidateOrderItemsAsync(orderDto))
@@ -92,7 +103,7 @@ namespace Artify.Api.Services.Implementations
             return await GetOrderByIdAsync(order.OrderId, buyerId);
         }
 
-        public async Task<OrderResponseDto> GetOrderByIdAsync(Guid orderId, string buyerId)
+        public async Task<OrderResponseDto> GetOrderByIdAsync(Guid orderId, Guid buyerId)
         {
             var order = await _orderRepository.GetOrderByIdAsync(orderId);
             if (order == null || order.BuyerId != buyerId)
@@ -101,7 +112,7 @@ namespace Artify.Api.Services.Implementations
             return await MapOrderToDto(order);
         }
 
-        public async Task<IEnumerable<OrderResponseDto>> GetBuyerOrdersAsync(string buyerId)
+        public async Task<IEnumerable<OrderResponseDto>> GetBuyerOrdersAsync(Guid buyerId)
         {
             var orders = await _orderRepository.GetOrdersByBuyerIdAsync(buyerId);
             var orderDtos = new List<OrderResponseDto>();
@@ -114,7 +125,7 @@ namespace Artify.Api.Services.Implementations
             return orderDtos;
         }
 
-        public async Task<bool> CancelOrderAsync(Guid orderId, string buyerId)
+        public async Task<bool> CancelOrderAsync(Guid orderId, Guid buyerId)
         {
             if (!await _orderRepository.IsOrderOwnerAsync(orderId, buyerId))
                 return false;
@@ -165,6 +176,26 @@ namespace Artify.Api.Services.Implementations
                 }
             }
             return total;
+        }
+        public async Task<bool> CanReviewAsync(ClaimsPrincipal user, Guid orderId)
+        {
+            var buyerId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(o =>
+                    o.OrderId == orderId &&
+                    o.BuyerId == buyerId);
+
+            if (order == null)
+                return false;
+
+            if (order.PaymentStatus != "Paid")
+                return false;
+
+            var alreadyReviewed = await _context.Reviews
+                .AnyAsync(r => r.OrderId == orderId);
+
+            return !alreadyReviewed;
         }
 
         private async Task<OrderResponseDto> MapOrderToDto(Order order)

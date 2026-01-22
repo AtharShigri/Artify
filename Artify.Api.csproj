@@ -26,6 +26,11 @@
 
   <ItemGroup>
     <None Include="Controllers\Shared\MarketplaceController.cs" />
+    <None Include="E:\University\FYDP Materials\Project\Artify\Repositories\Implementations\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="E:\University\FYDP Materials\Project\Artify\Repositories\Implementations\.editorconfig" />
   </ItemGroup>
 
 </Project>

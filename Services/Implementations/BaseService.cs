@@ -22,7 +22,7 @@ namespace Artify.Api.Services.Implementations
             _reviewRepository = reviewRepository;
         }
 
-        protected async Task<bool> UserExistsAsync(string userId)
+        protected async Task<bool> UserExistsAsync(Guid userId)
         {
             var user = await _buyerRepository.GetBuyerByIdAsync(userId);
             return user != null;

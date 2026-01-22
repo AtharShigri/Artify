@@ -22,10 +22,12 @@ namespace Artify.Api.Controllers.Buyer
             _logger = logger;
         }
 
-        private string GetCurrentUserId()
+        private Guid? GetCurrentUserId()
         {
-            return User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Guid.TryParse(userId, out var guid) ? guid : null;
         }
+
 
         /// <summary>
         /// Create payment intent
@@ -42,10 +44,10 @@ namespace Artify.Api.Controllers.Buyer
                     return BadRequest(ModelState);
 
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var paymentIntent = await _paymentService.CreatePaymentIntentAsync(paymentIntentDto.OrderId, buyerId);
+                var paymentIntent = await _paymentService.CreatePaymentIntentAsync(paymentIntentDto.OrderId, buyerId.Value);
                 return Ok(paymentIntent);
             }
             catch (Exception ex)
@@ -70,7 +72,7 @@ namespace Artify.Api.Controllers.Buyer
                     return BadRequest(ModelState);
 
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
                 var payment = await _paymentService.ConfirmPaymentAsync(confirmDto.PaymentIntentId, confirmDto.OrderId);
@@ -121,7 +123,7 @@ namespace Artify.Api.Controllers.Buyer
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
                 var status = await _paymentService.GetPaymentStatusAsync(orderId);
@@ -145,10 +147,10 @@ namespace Artify.Api.Controllers.Buyer
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var transactions = await _paymentService.GetBuyerTransactionsAsync(buyerId);
+                var transactions = await _paymentService.GetBuyerTransactionsAsync(buyerId.Value);
                 return Ok(transactions);
             }
             catch (Exception ex)
@@ -170,7 +172,7 @@ namespace Artify.Api.Controllers.Buyer
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
                 var result = await _paymentService.ProcessRefundAsync(orderId, amount);

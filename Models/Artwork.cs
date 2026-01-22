@@ -34,7 +34,7 @@ namespace Artify.Api.Models
 
         public bool IsDeleted { get; set; }
         public bool IsApproved { get; set; }
-        public int? CategoryId { get; set; }
+        public Guid? CategoryId { get; set; }
         [ForeignKey("CategoryId")]
         public Category? CategoryEntity { get; set; }
 

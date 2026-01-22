@@ -9,7 +9,7 @@ namespace Artify.Api.Models
         [Key]
         public Guid OrderId { get; set; }
 
-        public string BuyerId { get; set; }
+        public Guid BuyerId { get; set; }
         [ForeignKey("BuyerId")]
         public ApplicationUser Buyer { get; set; }
 

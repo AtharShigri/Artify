@@ -26,7 +26,7 @@ namespace Artify.Api.Services.Implementations
             _reviewRepository = reviewRepository;
         }
 
-        public async Task<BuyerProfileResponseDto?> GetBuyerProfileAsync(string buyerId)
+        public async Task<BuyerProfileResponseDto?> GetBuyerProfileAsync(Guid buyerId)
         {
             var user = await _buyerRepository.GetBuyerByIdAsync(buyerId);
             if (user == null) return null;
@@ -43,7 +43,7 @@ namespace Artify.Api.Services.Implementations
             return profileDto;
         }
 
-        public async Task<BuyerProfileResponseDto?> UpdateBuyerProfileAsync(string buyerId, BuyerUpdateDto updateDto)
+        public async Task<BuyerProfileResponseDto?> UpdateBuyerProfileAsync(Guid buyerId, BuyerUpdateDto updateDto)
         {
             var user = await _buyerRepository.GetBuyerByIdAsync(buyerId);
             if (user == null) return null;
@@ -64,7 +64,7 @@ namespace Artify.Api.Services.Implementations
             return await GetBuyerProfileAsync(buyerId);
         }
 
-        public async Task<bool> DeleteBuyerAccountAsync(string buyerId)
+        public async Task<bool> DeleteBuyerAccountAsync(Guid buyerId)
         {
             return await _buyerRepository.DeleteBuyerAsync(buyerId);
         }
@@ -147,13 +147,13 @@ namespace Artify.Api.Services.Implementations
             return dto;
         }
 
-        public async Task<int> GetTotalOrdersAsync(string buyerId)
+        public async Task<int> GetTotalOrdersAsync(Guid buyerId)
         {
             var orders = await _orderRepository.GetOrdersByBuyerIdAsync(buyerId);
             return orders.Count();
         }
 
-        public async Task<int> GetTotalReviewsAsync(string buyerId)
+        public async Task<int> GetTotalReviewsAsync(Guid buyerId)
         {
             // Note: We don't have a method to get reviews by buyer in IReviewRepository
             // This would need to be added to the repository interface

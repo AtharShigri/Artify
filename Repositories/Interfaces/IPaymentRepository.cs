@@ -6,6 +6,7 @@ namespace Artify.Api.Repositories.Interfaces
     {
         // Payment Operations
         Task<TransactionLog?> GetTransactionByIdAsync(Guid transactionId);
+        Task<TransactionLog?> GetTransactionByOrderIdAsync(Guid orderId);
         Task<TransactionLog> CreateTransactionAsync(TransactionLog transaction);
         Task<bool> UpdateTransactionAsync(TransactionLog transaction);
 
@@ -14,6 +15,6 @@ namespace Artify.Api.Repositories.Interfaces
         Task<string?> GetOrderPaymentStatusAsync(Guid orderId);
 
         // Transaction History
-        Task<IEnumerable<TransactionLog>> GetBuyerTransactionsAsync(string buyerId, int page = 1, int pageSize = 20);
+        Task<IEnumerable<TransactionLog>> GetBuyerTransactionsAsync(Guid buyerId, int page = 1, int pageSize = 20);
     }
 }

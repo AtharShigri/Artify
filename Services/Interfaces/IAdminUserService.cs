@@ -7,8 +7,8 @@ namespace Artify.Api.Services.Interfaces
     public interface IAdminUserService
     {
         Task<IEnumerable<object>> GetAllUsersAsync();
-        Task<object?> GetUserByIdAsync(string userId);
-        Task<object> UpdateUserStatusAsync(string userId, UpdateUserStatusDto dto);
-        Task<bool> SoftDeleteUserAsync(string userId);
+        Task<object?> GetUserByIdAsync(Guid userId);
+        Task<object> UpdateUserStatusAsync(Guid userId, UpdateUserStatusDto dto);
+        Task<bool> SoftDeleteUserAsync(Guid userId);
     }
 }

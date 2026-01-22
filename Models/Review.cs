@@ -7,9 +7,10 @@ namespace Artify.Api.Models
     public class Review
     {
         [Key]
-        public int ReviewId { get; set; }
+        public Guid ReviewId { get; set; }
+        public Guid OrderId { get; set; }
 
-        public string ReviewerId { get; set; }
+        public Guid ReviewerId { get; set; }
         [ForeignKey("ReviewerId")]
         public ApplicationUser Reviewer { get; set; }
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Artify.Api.DTOs.Artist;
+using Artify.Api.DTOs.Auth;
 using Artify.Api.Models;
 using Artify.Api.Repositories.Interfaces;
 using Artify.Api.Services.Interfaces;

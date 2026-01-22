@@ -25,7 +25,7 @@ namespace Artify.Api.Services.Implementations
             _orderRepository = orderRepository;
         }
 
-        public async Task<PaymentResponseDto> CreatePaymentIntentAsync(Guid orderId, string buyerId)
+        public async Task<PaymentResponseDto> CreatePaymentIntentAsync(Guid orderId, Guid buyerId)
         {
             var order = await _orderRepository.GetOrderByIdAsync(orderId);
             if (order == null || order.BuyerId != buyerId)
@@ -93,16 +93,15 @@ namespace Artify.Api.Services.Implementations
 
         public async Task<bool> ProcessPaymentWebhookAsync(PaymentCallbackDto webhookDto)
         {
-            // Find transaction by order ID
-            var transactions = await _paymentRepository.GetBuyerTransactionsAsync("", 1, 100);
-            var transaction = transactions.FirstOrDefault(t => t.OrderId == webhookDto.OrderId);
+            var transaction = await _paymentRepository
+                .GetTransactionByOrderIdAsync(webhookDto.OrderId);
 
-            if (transaction == null) return false;
+            if (transaction == null)
+                return false;
 
             transaction.Status = webhookDto.Status;
             await _paymentRepository.UpdateTransactionAsync(transaction);
 
-            // Update order status
             var order = await _orderRepository.GetOrderByIdAsync(webhookDto.OrderId);
             if (order != null)
             {
@@ -115,16 +114,20 @@ namespace Artify.Api.Services.Implementations
 
         public async Task<string> GetPaymentStatusAsync(Guid orderId)
         {
-            var transactions = await _paymentRepository.GetBuyerTransactionsAsync("", 1, 100);
-            var transaction = transactions.FirstOrDefault(t => t.OrderId == orderId);
+            var transaction = await _paymentRepository
+                .GetTransactionByOrderIdAsync(orderId);
+
             return transaction?.Status ?? "unknown";
         }
 
+
         public async Task<bool> UpdatePaymentStatusAsync(Guid orderId, string status)
         {
-            var transactions = await _paymentRepository.GetBuyerTransactionsAsync("", 1, 100);
-            var transaction = transactions.FirstOrDefault(t => t.OrderId == orderId);
-            if (transaction == null) return false;
+            var transaction = await _paymentRepository
+                .GetTransactionByOrderIdAsync(orderId);
+
+            if (transaction == null)
+                return false;
 
             transaction.Status = status;
             await _paymentRepository.UpdateTransactionAsync(transaction);
@@ -139,7 +142,7 @@ namespace Artify.Api.Services.Implementations
             return true;
         }
 
-        public async Task<IEnumerable<TransactionLogDto>> GetBuyerTransactionsAsync(string buyerId)
+        public async Task<IEnumerable<TransactionLogDto>> GetBuyerTransactionsAsync(Guid buyerId)
         {
             var transactions = await _paymentRepository.GetBuyerTransactionsAsync(buyerId);
             return transactions.Select(t => new TransactionLogDto

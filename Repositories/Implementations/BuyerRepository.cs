@@ -10,10 +10,13 @@ namespace Artify.Api.Repositories.Implementations
         public BuyerRepository(ApplicationDbContext context) : base(context) { }
 
         // Buyer Profile
-        public async Task<ApplicationUser?> GetBuyerByIdAsync(string buyerId)
+        public async Task<ApplicationUser?> GetBuyerByIdAsync(Guid buyerId)
         {
+            //to fix type error. Guid to String
+            var buyerIdString = buyerId;
+
             return await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == buyerId);
+                .FirstOrDefaultAsync(u => u.Id == buyerIdString);
         }
 
         public async Task<ApplicationUser?> GetBuyerByEmailAsync(string email)
@@ -28,7 +31,7 @@ namespace Artify.Api.Repositories.Implementations
             return await SaveAsync();
         }
 
-        public async Task<bool> DeleteBuyerAsync(string buyerId)
+        public async Task<bool> DeleteBuyerAsync(Guid buyerId)
         {
             var user = await _context.Users.FindAsync(buyerId);
             if (user == null) return false;

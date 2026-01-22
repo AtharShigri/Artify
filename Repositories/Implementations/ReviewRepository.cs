@@ -8,7 +8,7 @@ public class ReviewRepository : BaseRepository, IReviewRepository
 {
     public ReviewRepository(ApplicationDbContext context) : base(context) { }
 
-    public async Task<Review?> GetReviewByIdAsync(int reviewId)
+    public async Task<Review?> GetReviewByIdAsync(Guid reviewId)
     {
         return await _context.Reviews
             .Include(r => r.Reviewer)
@@ -55,7 +55,7 @@ public class ReviewRepository : BaseRepository, IReviewRepository
         return await SaveAsync();
     }
 
-    public async Task<bool> DeleteReviewAsync(int reviewId)
+    public async Task<bool> DeleteReviewAsync(Guid reviewId)
     {
         var review = await GetReviewByIdAsync(reviewId);
         if (review == null) return false;
@@ -64,12 +64,12 @@ public class ReviewRepository : BaseRepository, IReviewRepository
         return await SaveAsync();
     }
 
-    public async Task<bool> ReviewExistsAsync(int reviewId)
+    public async Task<bool> ReviewExistsAsync(Guid reviewId)
     {
         return await _context.Reviews.AnyAsync(r => r.ReviewId == reviewId);
     }
 
-    public async Task<bool> IsReviewOwnerAsync(int reviewId, string userId)
+    public async Task<bool> IsReviewOwnerAsync(Guid reviewId, Guid userId)
     {
         return await _context.Reviews
             .AnyAsync(r => r.ReviewId == reviewId && r.ReviewerId == userId);

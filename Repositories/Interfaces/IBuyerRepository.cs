@@ -5,10 +5,10 @@ namespace Artify.Api.Repositories.Interfaces
     public interface IBuyerRepository
     {
         // Buyer Profile Operations
-        Task<ApplicationUser?> GetBuyerByIdAsync(string buyerId);
+        Task<ApplicationUser?> GetBuyerByIdAsync(Guid buyerId);
         Task<ApplicationUser?> GetBuyerByEmailAsync(string email);
         Task<bool> UpdateBuyerAsync(ApplicationUser buyer);
-        Task<bool> DeleteBuyerAsync(string buyerId);
+        Task<bool> DeleteBuyerAsync(Guid buyerId);
 
         // Marketplace Operations
         Task<IEnumerable<Artwork>> GetFeaturedArtworksAsync(int count = 10);

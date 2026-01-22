@@ -7,5 +7,8 @@ namespace Artify.Api.Services.Interfaces
         Task<object> GetSummaryAsync(ClaimsPrincipal user);
         Task<object> GetOrdersAsync(ClaimsPrincipal user);
         Task<object> GetReviewsAsync(ClaimsPrincipal user);
+        Task<object> GetEarningsAsync(ClaimsPrincipal user);
+        Task<object> GetArtworkStatsAsync(ClaimsPrincipal user);
+
     }
 }

@@ -26,21 +26,21 @@ namespace Artify.Api.Controllers.Admin
         }
 
         [HttpGet("{userId}")]
-        public async Task<IActionResult> GetUser(String userId)
+        public async Task<IActionResult> GetUser(Guid userId)
         {
             var result = await _service.GetUserByIdAsync(userId);
             return Ok(result);
         }
 
         [HttpPut("status/{userId}")]
-        public async Task<IActionResult> UpdateUserStatus(String userId, [FromBody] UpdateUserStatusDto dto)
+        public async Task<IActionResult> UpdateUserStatus(Guid userId, [FromBody] UpdateUserStatusDto dto)
         {
             var result = await _service.UpdateUserStatusAsync(userId, dto);
             return Ok(result);
         }
 
         [HttpDelete("{userId}")]
-        public async Task<IActionResult> SoftDelete(String userId)
+        public async Task<IActionResult> SoftDelete(Guid userId)
         {
             var result = await _service.SoftDeleteUserAsync(userId);
             return Ok(result);

@@ -27,10 +27,12 @@ namespace Artify.Api.Controllers.Buyer
         }
 
         // Helper method to get current user ID
-        private string GetCurrentUserId()
+        private Guid? GetCurrentUserId()
         {
-            return User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Guid.TryParse(userId, out var guid) ? guid : null;
         }
+
 
         /// <summary>
         /// Get current buyer's profile
@@ -45,10 +47,10 @@ namespace Artify.Api.Controllers.Buyer
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var profile = await _buyerService.GetBuyerProfileAsync(buyerId);
+                var profile = await _buyerService.GetBuyerProfileAsync(buyerId.Value);
                 if (profile == null)
                     return NotFound(new { message = "Buyer profile not found" });
 
@@ -79,10 +81,10 @@ namespace Artify.Api.Controllers.Buyer
                     return BadRequest(ModelState);
 
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var updatedProfile = await _buyerService.UpdateBuyerProfileAsync(buyerId, updateDto);
+                var updatedProfile = await _buyerService.UpdateBuyerProfileAsync(buyerId.Value, updateDto);
                 if (updatedProfile == null)
                     return NotFound(new { message = "Buyer not found" });
 
@@ -108,10 +110,10 @@ namespace Artify.Api.Controllers.Buyer
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var result = await _buyerService.DeleteBuyerAccountAsync(buyerId);
+                var result = await _buyerService.DeleteBuyerAccountAsync(buyerId.Value);
                 if (!result)
                     return NotFound(new { message = "Buyer not found" });
 
@@ -136,10 +138,10 @@ namespace Artify.Api.Controllers.Buyer
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var count = await _buyerService.GetTotalOrdersAsync(buyerId);
+                var count = await _buyerService.GetTotalOrdersAsync(buyerId.Value);
                 return Ok(count);
             }
             catch (Exception ex)
@@ -161,10 +163,10 @@ namespace Artify.Api.Controllers.Buyer
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var count = await _buyerService.GetTotalReviewsAsync(buyerId);
+                var count = await _buyerService.GetTotalReviewsAsync(buyerId.Value);
                 return Ok(count);
             }
             catch (Exception ex)

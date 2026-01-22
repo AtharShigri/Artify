@@ -20,46 +20,32 @@ namespace Artify.Api.Controllers.Buyer
             _logger = logger;
         }
 
-        // Helper method to get current user ID
-        private string GetCurrentUserId()
+        private Guid? GetCurrentUserId()
         {
-            return User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Guid.TryParse(userId, out var guid) ? guid : null;
         }
 
-        /// <summary>
-        /// Get current buyer's shopping cart
-        /// </summary>
-        /// <returns>Shopping cart with items</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(CartResponseDto), 200)]
-        [ProducesResponseType(401)]
         public async Task<IActionResult> GetCart()
         {
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var cart = await _cartService.GetCartAsync(buyerId);
+                var cart = await _cartService.GetCartAsync(buyerId.Value);
                 return Ok(cart);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting cart for user");
+                _logger.LogError(ex, "Error getting cart");
                 return StatusCode(500, new { message = "An error occurred while fetching cart" });
             }
         }
 
-        /// <summary>
-        /// Add item to cart
-        /// </summary>
-        /// <param name="cartItem">Cart item details</param>
-        /// <returns>Updated cart</returns>
         [HttpPost]
-        [ProducesResponseType(typeof(CartResponseDto), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
         public async Task<IActionResult> AddToCart([FromBody] CartItemDto cartItem)
         {
             try
@@ -68,13 +54,13 @@ namespace Artify.Api.Controllers.Buyer
                     return BadRequest(ModelState);
 
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
                 if (cartItem.Quantity <= 0)
                     return BadRequest(new { message = "Quantity must be greater than 0" });
 
-                var cart = await _cartService.AddToCartAsync(buyerId, cartItem);
+                var cart = await _cartService.AddToCartAsync(buyerId.Value, cartItem);
                 return Ok(cart);
             }
             catch (Exception ex)
@@ -84,17 +70,7 @@ namespace Artify.Api.Controllers.Buyer
             }
         }
 
-        /// <summary>
-        /// Update cart item quantity
-        /// </summary>
-        /// <param name="artworkId">Artwork ID</param>
-        /// <param name="quantity">New quantity</param>
-        /// <returns>Updated cart</returns>
         [HttpPut("{artworkId}")]
-        [ProducesResponseType(typeof(CartResponseDto), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateCartItem(Guid artworkId, [FromBody] int quantity)
         {
             try
@@ -103,10 +79,12 @@ namespace Artify.Api.Controllers.Buyer
                     return BadRequest(new { message = "Quantity must be greater than 0" });
 
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var cart = await _cartService.UpdateCartItemAsync(buyerId, artworkId, quantity);
+                var cart = await _cartService.UpdateCartItemAsync(
+                    buyerId.Value, artworkId, quantity);
+
                 return Ok(cart);
             }
             catch (Exception ex)
@@ -116,24 +94,18 @@ namespace Artify.Api.Controllers.Buyer
             }
         }
 
-        /// <summary>
-        /// Remove item from cart
-        /// </summary>
-        /// <param name="artworkId">Artwork ID to remove</param>
-        /// <returns>Success message</returns>
         [HttpDelete("{artworkId}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
         public async Task<IActionResult> RemoveFromCart(Guid artworkId)
         {
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var result = await _cartService.RemoveFromCartAsync(buyerId, artworkId);
+                var result = await _cartService.RemoveFromCartAsync(
+                    buyerId.Value, artworkId);
+
                 if (!result)
                     return NotFound(new { message = "Item not found in cart" });
 
@@ -146,22 +118,16 @@ namespace Artify.Api.Controllers.Buyer
             }
         }
 
-        /// <summary>
-        /// Clear entire cart
-        /// </summary>
-        /// <returns>Success message</returns>
         [HttpDelete]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
         public async Task<IActionResult> ClearCart()
         {
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var result = await _cartService.ClearCartAsync(buyerId);
+                var result = await _cartService.ClearCartAsync(buyerId.Value);
                 if (!result)
                     return BadRequest(new { message = "Failed to clear cart" });
 
@@ -174,22 +140,16 @@ namespace Artify.Api.Controllers.Buyer
             }
         }
 
-        /// <summary>
-        /// Get cart item count
-        /// </summary>
-        /// <returns>Number of items in cart</returns>
         [HttpGet("count")]
-        [ProducesResponseType(typeof(int), 200)]
-        [ProducesResponseType(401)]
         public async Task<IActionResult> GetCartItemCount()
         {
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var count = await _cartService.GetCartItemCountAsync(buyerId);
+                var count = await _cartService.GetCartItemCountAsync(buyerId.Value);
                 return Ok(count);
             }
             catch (Exception ex)
@@ -199,22 +159,16 @@ namespace Artify.Api.Controllers.Buyer
             }
         }
 
-        /// <summary>
-        /// Get cart total amount
-        /// </summary>
-        /// <returns>Total cart value</returns>
         [HttpGet("total")]
-        [ProducesResponseType(typeof(decimal), 200)]
-        [ProducesResponseType(401)]
         public async Task<IActionResult> GetCartTotal()
         {
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var total = await _cartService.GetCartTotalAsync(buyerId);
+                var total = await _cartService.GetCartTotalAsync(buyerId.Value);
                 return Ok(total);
             }
             catch (Exception ex)
@@ -224,23 +178,16 @@ namespace Artify.Api.Controllers.Buyer
             }
         }
 
-        /// <summary>
-        /// Prepare checkout (convert cart to order)
-        /// </summary>
-        /// <returns>Checkout details</returns>
         [HttpGet("checkout")]
-        [ProducesResponseType(typeof(CreateOrderDto), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
         public async Task<IActionResult> PrepareCheckout()
         {
             try
             {
                 var buyerId = GetCurrentUserId();
-                if (string.IsNullOrEmpty(buyerId))
+                if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var checkout = await _cartService.PrepareCheckoutAsync(buyerId);
+                var checkout = await _cartService.PrepareCheckoutAsync(buyerId.Value);
                 return Ok(checkout);
             }
             catch (Exception ex)

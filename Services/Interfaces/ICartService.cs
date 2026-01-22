@@ -5,18 +5,18 @@ namespace Artify.Api.Services.Interfaces
     public interface ICartService
     {
         // Cart Operations
-        Task<CartResponseDto> GetCartAsync(string buyerId);
-        Task<CartResponseDto> AddToCartAsync(string buyerId, CartItemDto cartItem);
-        Task<CartResponseDto> UpdateCartItemAsync(string buyerId, Guid artworkId, int quantity);
-        Task<bool> RemoveFromCartAsync(string buyerId, Guid artworkId);
-        Task<bool> ClearCartAsync(string buyerId);
+        Task<CartResponseDto> GetCartAsync(Guid buyerId);
+        Task<CartResponseDto> AddToCartAsync(Guid buyerId, CartItemDto cartItem);
+        Task<CartResponseDto> UpdateCartItemAsync(Guid buyerId, Guid artworkId, int quantity);
+        Task<bool> RemoveFromCartAsync(Guid buyerId, Guid artworkId);
+        Task<bool> ClearCartAsync(Guid buyerId);
 
         // Cart Validation
-        Task<bool> IsArtworkInCartAsync(string buyerId, Guid artworkId);
-        Task<int> GetCartItemCountAsync(string buyerId);
-        Task<decimal> GetCartTotalAsync(string buyerId);
+        Task<bool> IsArtworkInCartAsync(Guid buyerId, Guid artworkId);
+        Task<int> GetCartItemCountAsync(Guid buyerId);
+        Task<decimal> GetCartTotalAsync(Guid buyerId);
 
         // Checkout Preparation
-        Task<CreateOrderDto> PrepareCheckoutAsync(string buyerId);
+        Task<CreateOrderDto> PrepareCheckoutAsync(Guid buyerId);
     }
 }

@@ -12,8 +12,8 @@ namespace Artify.Api.DTOs.Buyer
 
     public class ReviewResponseDto
     {
-        public int ReviewId { get; set; }
-        public string ReviewerId { get; set; } = string.Empty;
+        public Guid ReviewId { get; set; }
+        public Guid ReviewerId { get; set; } = Guid.Empty;
         public string ReviewerName { get; set; } = string.Empty;
         public string ReviewerProfileImage { get; set; } = string.Empty;
         public int Rating { get; set; }

@@ -18,7 +18,7 @@ namespace Artify.Api.Repositories.Implementations
                 .FirstOrDefaultAsync(o => o.OrderId == orderId);
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersByBuyerIdAsync(string buyerId)
+        public async Task<IEnumerable<Order>> GetOrdersByBuyerIdAsync(Guid buyerId)
         {
             return await _context.Orders
                 .Where(o => o.BuyerId == buyerId &&
@@ -75,7 +75,7 @@ namespace Artify.Api.Repositories.Implementations
             return await _context.Orders.AnyAsync(o => o.OrderId == orderId);
         }
 
-        public async Task<bool> IsOrderOwnerAsync(Guid orderId, string buyerId)
+        public async Task<bool> IsOrderOwnerAsync(Guid orderId, Guid buyerId)
         {
             return await _context.Orders
                 .AnyAsync(o => o.OrderId == orderId && o.BuyerId == buyerId);

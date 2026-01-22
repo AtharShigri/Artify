@@ -22,13 +22,13 @@ namespace Artify.Api.Services.Implementations
             return users.Select(u => AdminUserMappings.ToAdminUserDto(u));
         }
 
-        public async Task<object?> GetUserByIdAsync(string userId)
+        public async Task<object?> GetUserByIdAsync(Guid userId)
         {
             var user = await _repository.GetUserByIdAsync(userId);
             return user == null ? null : AdminUserMappings.ToAdminUserDto(user);
         }
 
-        public async Task<object> UpdateUserStatusAsync(string userId, UpdateUserStatusDto dto)
+        public async Task<object> UpdateUserStatusAsync(Guid userId, UpdateUserStatusDto dto)
         {
             var user = await _repository.GetUserByIdAsync(userId);
             if (user == null) throw new KeyNotFoundException("User not found.");
@@ -38,7 +38,7 @@ namespace Artify.Api.Services.Implementations
             return AdminUserMappings.ToAdminUserDto(updated);
         }
 
-        public async Task<bool> SoftDeleteUserAsync(string userId)
+        public async Task<bool> SoftDeleteUserAsync(Guid userId)
         {
             return await _repository.SoftDeleteUserAsync(userId);
         }

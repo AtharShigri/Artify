@@ -16,7 +16,7 @@
     public class OrderResponseDto
     {
         public Guid OrderId { get; set; }
-        public string BuyerId { get; set; } = string.Empty;
+        public Guid BuyerId { get; set; } = Guid.Empty;
         public decimal TotalAmount { get; set; }
         public string PaymentStatus { get; set; } = string.Empty;
         public string OrderType { get; set; } = string.Empty;

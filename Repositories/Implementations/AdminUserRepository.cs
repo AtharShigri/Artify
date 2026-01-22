@@ -18,11 +18,11 @@ namespace Artify.Api.Repositories.Implementations
         public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync()
         {
             return await _context.Users
-                .OrderByDescending(u => u.CreatedAt) // Assuming you added CreatedAt to ApplicationUser
+                .OrderByDescending(u => u.CreatedAt)
                 .ToListAsync();
         }
 
-        public async Task<ApplicationUser?> GetUserByIdAsync(string userId)
+        public async Task<ApplicationUser?> GetUserByIdAsync(Guid userId)
         {
             return await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == userId);
@@ -35,7 +35,7 @@ namespace Artify.Api.Repositories.Implementations
             return user;
         }
 
-        public async Task<bool> SoftDeleteUserAsync(string userId)
+        public async Task<bool> SoftDeleteUserAsync(Guid userId)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) return false;

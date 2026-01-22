@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Artify.Api.DTOs.Artist;
+using Artify.Api.DTOs.Auth;
 
 namespace Artify.Api.Services.Interfaces
 {
