@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Artify.Api.DTOs.Artist;
 using Artify.Api.DTOs.Auth;
 using Artify.Api.Models;
@@ -31,6 +30,7 @@ namespace Artify.Api.Services.Implementations
             _config = config;
         }
 
+        // REGISTER
         public async Task<object> RegisterAsync(ArtistRegisterDto dto)
         {
             var artist = new Artist
@@ -48,42 +48,56 @@ namespace Artify.Api.Services.Implementations
             return new { Success = true, Message = "Artist registered successfully" };
         }
 
+        // LOGIN
         public async Task<object> LoginAsync(LoginDto dto)
         {
             var artist = await _userManager.FindByEmailAsync(dto.Email);
-            if (artist == null) return new { Success = false, Message = "Invalid credentials" };
+            if (artist == null)
+                return new { Success = false, Message = "Invalid credentials" };
 
             var result = await _signInManager.CheckPasswordSignInAsync(artist, dto.Password, false);
-            if (!result.Succeeded) return new { Success = false, Message = "Invalid credentials" };
+            if (!result.Succeeded)
+                return new { Success = false, Message = "Invalid credentials" };
 
-            // Generate JWT
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_config["Jwt:Key"]);
-            var tokenDescriptor = new SecurityTokenDescriptor
+            // CLAIMS
+            var claims = new List<Claim>
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, artist.Id.ToString()),
-                    new Claim(ClaimTypes.Email, artist.Email),
-                    new Claim(ClaimTypes.Role, "Artist")
-                }),
-                Expires = DateTime.UtcNow.AddHours(8),
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature)
+                new Claim(ClaimTypes.NameIdentifier, artist.Id.ToString()),
+                new Claim(ClaimTypes.Email, artist.Email!),
+                new Claim(ClaimTypes.Role, "Artist")
             };
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var jwt = tokenHandler.WriteToken(token);
+            // JWT KEY
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_config["Jwt:Key"]!)
+            );
 
-            return new { Success = true, Token = jwt, ArtistId = artist.Id, Email = artist.Email };
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(8),
+                signingCredentials: creds
+            );
+
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return new
+            {
+                Success = true,
+                Token = jwt,
+                ArtistId = artist.Id,
+                Email = artist.Email
+            };
         }
 
+        // GET PROFILE
         public async Task<object> GetProfileAsync(ClaimsPrincipal user)
         {
-            var artistId = _artistRepo.GetArtistId(user);
+            var artistId = _artistRepo.GetArtistId(user); // must return Guid
             var artist = await _artistRepo.GetByIdAsync(artistId);
-
             if (artist == null) return null;
 
             return new
@@ -100,6 +114,7 @@ namespace Artify.Api.Services.Implementations
             };
         }
 
+        // UPDATE PROFILE
         public async Task<object> UpdateProfileAsync(ClaimsPrincipal user, ArtistUpdateDto dto)
         {
             var artistId = _artistRepo.GetArtistId(user);
@@ -118,15 +133,16 @@ namespace Artify.Api.Services.Implementations
             return new { Success = true, Message = "Profile updated successfully" };
         }
 
+        // UPDATE PROFILE IMAGE
         public async Task<object> UpdateProfileImageAsync(ClaimsPrincipal user, IFormFile file)
         {
             var artistId = _artistRepo.GetArtistId(user);
             var artist = await _artistRepo.GetByIdAsync(artistId);
             if (artist == null) return null;
 
-            // Example: save file to wwwroot/images/artists/
             var fileName = $"{Guid.NewGuid()}_{file.FileName}";
             var path = Path.Combine("wwwroot/images/artists", fileName);
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!); // ensure folder exists
             using (var stream = new FileStream(path, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
@@ -138,6 +154,7 @@ namespace Artify.Api.Services.Implementations
             return new { Success = true, ProfileImageUrl = artist.ProfileImageUrl };
         }
 
+        // DELETE PROFILE
         public async Task<object> DeleteProfileAsync(ClaimsPrincipal user)
         {
             var artistId = _artistRepo.GetArtistId(user);

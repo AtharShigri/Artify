@@ -63,10 +63,12 @@ namespace Artify.Api.Services.Implementations
             // Save file
             var fileName = $"{Guid.NewGuid()}_{dto.File.FileName}";
             var path = Path.Combine("wwwroot/images/artworks", fileName);
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             using (var stream = new FileStream(path, FileMode.Create))
             {
                 await dto.File.CopyToAsync(stream);
             }
+
 
             var artwork = new Artwork
             {

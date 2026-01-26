@@ -8,11 +8,11 @@ namespace Artify.Api.Controllers.Artist
     [Route("api/artist/artworks")]
     [ApiController]
     [Authorize(Roles = "Artist")]
-    public class ArtworkController : ControllerBase
+    public class ArtworksController : ControllerBase
     {
         private readonly IArtworkService _artworkService;
 
-        public ArtworkController(IArtworkService artworkService)
+        public ArtworksController(IArtworkService artworkService)
         {
             _artworkService = artworkService;
         }
