@@ -106,6 +106,17 @@ namespace Artify.Api.Services.Implementations
         public async Task<IEnumerable<ArtistProfileDto>> GetFeaturedArtistsAsync(int count = 10)
         {
             var artists = await _buyerRepository.GetFeaturedArtistsAsync(count);
+            return await MapArtistsToDtos(artists);
+        }
+
+        public async Task<IEnumerable<ArtistProfileDto>> GetAllArtistsAsync(int page = 1, int pageSize = 20)
+        {
+            var artists = await _buyerRepository.GetAllArtistsAsync(page, pageSize);
+            return await MapArtistsToDtos(artists);
+        }
+
+        private async Task<IEnumerable<ArtistProfileDto>> MapArtistsToDtos(IEnumerable<ArtistProfile> artists)
+        {
             var artistDtos = new List<ArtistProfileDto>();
 
             foreach (var artist in artists)

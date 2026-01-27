@@ -23,7 +23,14 @@ const Login = () => {
 
         try {
             await login(email, password, role);
-            navigate('/');
+
+            if (role === 'artist') {
+                navigate('/dashboard/artist');
+            } else if (role === 'admin') {
+                navigate('/dashboard/admin');
+            } else {
+                navigate('/');
+            }
         } catch (err) {
             setError(err.message || 'Failed to login');
         } finally {

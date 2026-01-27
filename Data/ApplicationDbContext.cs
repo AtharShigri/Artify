@@ -22,7 +22,7 @@ namespace Artify.Api.Data
         public DbSet<AdminActivity> AdminActivities { get; set; }
         public DbSet<AIHashRecord> AIHashRecords { get; set; }
 
-        public DbSet<ApplicationUser> Users { get; set; }
+        public new DbSet<ApplicationUser> Users { get; set; }
 
         // ----------------- Safe code-only additions -----------------
         public DbSet<PlagiarismLog> PlagiarismLogs { get; set; }

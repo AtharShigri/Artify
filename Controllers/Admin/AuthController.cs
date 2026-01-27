@@ -19,8 +19,15 @@ namespace Artify.Api.Controllers.Admin
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] DTOs.Auth.LoginDto dto)
         {
-            var result = await _authService.LoginAdminAsync(dto);
-            return Ok(result);
+            try
+            {
+                var result = await _authService.LoginAdminAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
         }
     }
 }

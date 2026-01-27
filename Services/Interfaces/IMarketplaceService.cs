@@ -12,6 +12,7 @@ namespace Artify.Api.Services.Interfaces
         Task<IEnumerable<ArtworkResponseDto>> SearchArtworksAsync(SearchArtworksDto searchDto);
         Task<ArtistProfileDto?> GetArtistProfileAsync(Guid artistProfileId);
         Task<IEnumerable<ArtistProfileDto>> GetFeaturedArtistsAsync(int count = 10);
+        Task<IEnumerable<ArtistProfileDto>> GetAllArtistsAsync(int page = 1, int pageSize = 20);
 
         // Filters and Sorting
         Task<IEnumerable<string>> GetArtworkCategoriesAsync();

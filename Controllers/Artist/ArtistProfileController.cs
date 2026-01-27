@@ -23,14 +23,31 @@ namespace Artify.Api.Controllers.Artist
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] ArtistRegisterDto dto)
         {
-            return Ok(await _artistProfileService.RegisterAsync(dto));
+            var result = await _artistProfileService.RegisterAsync(dto);
+            // Since result is an object, we serialize it to check properties (or better, change service return type).
+            // For now, assuming result structure based on inspection:
+            // return new { Success = true/false, ... }
+            
+            // Using dynamic to access properties of anonymous object
+            dynamic dynamicResult = result;
+            if (dynamicResult.Success == false)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            return Ok(await _artistProfileService.LoginAsync(dto));
+            var result = await _artistProfileService.LoginAsync(dto);
+            dynamic dynamicResult = result;
+            if (dynamicResult.Success == false)
+            {
+                return Unauthorized(result);
+            }
+            return Ok(result);
         }
 
         [HttpGet("profile")]

@@ -35,7 +35,7 @@ namespace Artify.Api.Services.Implementations
             });
         }
 
-        public async Task<object> GetByIdAsync(ClaimsPrincipal user, int serviceId)
+        public async Task<object> GetByIdAsync(ClaimsPrincipal user, Guid serviceId)
         {
             var artistId = _artistRepo.GetArtistId(user);
             var service = await _serviceRepo.GetByIdAsync(serviceId);
@@ -58,7 +58,7 @@ namespace Artify.Api.Services.Implementations
         {
             var artistId = _artistRepo.GetArtistId(user);
 
-            var service = new ArtService
+            var service = new Service
             {
                 ArtistId = artistId,
                 Title = dto.Title,
@@ -72,7 +72,7 @@ namespace Artify.Api.Services.Implementations
             return new { Success = true, ServiceId = service.Id };
         }
 
-        public async Task<object> UpdateAsync(ClaimsPrincipal user, int serviceId, ArtServiceDto dto)
+        public async Task<object> UpdateAsync(ClaimsPrincipal user, Guid serviceId, ArtServiceDto dto)
         {
             var artistId = _artistRepo.GetArtistId(user);
             var service = await _serviceRepo.GetByIdAsync(serviceId);
@@ -90,7 +90,7 @@ namespace Artify.Api.Services.Implementations
             return new { Success = true };
         }
 
-        public async Task<object> DeleteAsync(ClaimsPrincipal user, int serviceId)
+        public async Task<object> DeleteAsync(ClaimsPrincipal user, Guid serviceId)
         {
             var artistId = _artistRepo.GetArtistId(user);
             var service = await _serviceRepo.GetByIdAsync(serviceId);

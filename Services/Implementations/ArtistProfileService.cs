@@ -45,6 +45,11 @@ namespace Artify.Api.Services.Implementations
             if (!result.Succeeded)
                 return new { Success = false, Errors = result.Errors.Select(e => e.Description) };
 
+            // Assign Role
+            var roleResult = await _userManager.AddToRoleAsync(artist, "Artist");
+            if (!roleResult.Succeeded)
+                return new { Success = false, Errors = roleResult.Errors.Select(e => e.Description) };
+
             return new { Success = true, Message = "Artist registered successfully" };
         }
 
@@ -58,6 +63,17 @@ namespace Artify.Api.Services.Implementations
             var result = await _signInManager.CheckPasswordSignInAsync(artist, dto.Password, false);
             if (!result.Succeeded)
                 return new { Success = false, Message = "Invalid credentials" };
+
+            // Verify Role (Security Check & Self-Healing for legacy users)
+            if (!await _userManager.IsInRoleAsync(artist, "Artist"))
+            {
+                // Attempt to auto-correct by assigning role if they are successfully authenticated as an Artist entity
+                var addRoleResult = await _userManager.AddToRoleAsync(artist, "Artist");
+                if (!addRoleResult.Succeeded)
+                {
+                     return new { Success = false, Message = "Unauthorized: User is not an Artist and role assignment failed." };
+                }
+            }
 
             // CLAIMS
             var claims = new List<Claim>
@@ -87,7 +103,8 @@ namespace Artify.Api.Services.Implementations
             return new
             {
                 Success = true,
-                Token = jwt,
+                token = jwt,
+                role = "artist",
                 ArtistId = artist.Id,
                 Email = artist.Email
             };

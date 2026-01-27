@@ -128,6 +128,27 @@ namespace Artify.Api.Controllers.Shared
         }
 
         /// <summary>
+        /// Get all artists
+        /// </summary>
+        [HttpGet("artists")]
+        [ProducesResponseType(typeof(IEnumerable<ArtistProfileDto>), 200)]
+        public async Task<IActionResult> GetAllArtists(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20)
+        {
+            try
+            {
+                var artists = await _marketplaceService.GetAllArtistsAsync(page, pageSize);
+                return Ok(artists);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting all artists");
+                return StatusCode(500, new { message = "An error occurred while fetching artists" });
+            }
+        }
+
+        /// <summary>
         /// Get featured artists
         /// </summary>
         [HttpGet("artists/featured")]

@@ -132,6 +132,17 @@ namespace Artify.Api.Repositories.Implementations
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<ArtistProfile>> GetAllArtistsAsync(int page = 1, int pageSize = 20)
+        {
+            return await _context.ArtistProfiles
+                .OrderBy(ap => ap.User.FullName)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Include(ap => ap.User)
+                .Include(ap => ap.Artworks)
+                .ToListAsync();
+        }
+
         public async Task<bool> SaveChangesAsync()
         {
             return await SaveAsync();

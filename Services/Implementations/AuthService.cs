@@ -16,7 +16,7 @@ namespace Artify.Api.Services.Implementations
         private readonly IConfiguration _config;
 
         public AuthService(
-            UserManager<Artist> userManager,
+                    UserManager<Artist> userManager,
             IConfiguration config)
         {
             _userManager = userManager;
@@ -25,68 +25,66 @@ namespace Artify.Api.Services.Implementations
 
         // ---------------- REGISTER ----------------
 
-        public async Task<AuthResponseDto> RegisterArtistAsync(RegisterDto dto)
-            => await RegisterAsync(dto, "Artist");
+        public Task<AuthResponseDto> RegisterArtistAsync(RegisterDto dto)
+            => RegisterAsync(dto, "Artist");
 
-        public async Task<AuthResponseDto> RegisterBuyerAsync(RegisterDto dto)
-            => await RegisterAsync(dto, "Buyer");
+        public Task<AuthResponseDto> RegisterBuyerAsync(RegisterDto dto)
+            => RegisterAsync(dto, "Buyer");
 
         private async Task<AuthResponseDto> RegisterAsync(RegisterDto dto, string role)
         {
-            // Create Artist instance instead of IdentityUser
             var user = new Artist
             {
                 UserName = dto.Email,
-                Email = dto.Email
+                Email = dto.Email,
+                FullName = dto.FullName
             };
 
-            var result = await _userManager.CreateAsync(user, dto.Password);
+            var result = await _userManager.CreateAsync(user, dto.Password).ConfigureAwait(false);
             if (!result.Succeeded)
                 throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
 
-            await _userManager.AddToRoleAsync(user, role);
-            return await GenerateTokenAsync(user, role);
+            await _userManager.AddToRoleAsync(user, role).ConfigureAwait(false);
+            return await GenerateTokenAsync(user, role).ConfigureAwait(false);
         }
 
         // ---------------- LOGIN ----------------
 
-        public async Task<AuthResponseDto> LoginArtistAsync(LoginDto dto)
-            => await LoginAsync(dto, "Artist");
+        public Task<AuthResponseDto> LoginArtistAsync(LoginDto dto)
+            => LoginAsync(dto, "Artist");
 
-        public async Task<AuthResponseDto> LoginBuyerAsync(LoginDto dto)
-            => await LoginAsync(dto, "Buyer");
+        public Task<AuthResponseDto> LoginBuyerAsync(LoginDto dto)
+            => LoginAsync(dto, "Buyer");
 
-        public async Task<AuthResponseDto> LoginAdminAsync(LoginDto dto)
-            => await LoginAsync(dto, "Admin");
+        public Task<AuthResponseDto> LoginAdminAsync(LoginDto dto)
+            => LoginAsync(dto, "Admin");
 
         private async Task<AuthResponseDto> LoginAsync(LoginDto dto, string role)
         {
-            var user = await _userManager.FindByEmailAsync(dto.Email);
-            if (user == null)
+            var user = await _userManager.FindByEmailAsync(dto.Email).ConfigureAwait(false);
+            if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password).ConfigureAwait(false))
                 throw new Exception("Invalid credentials");
 
-            if (!await _userManager.CheckPasswordAsync(user, dto.Password))
-                throw new Exception("Invalid credentials");
-
-            if (!await _userManager.IsInRoleAsync(user, role))
+            if (!await _userManager.IsInRoleAsync(user, role).ConfigureAwait(false))
                 throw new Exception("Unauthorized role");
 
-            return await GenerateTokenAsync(user, role);
+            return await GenerateTokenAsync(user, role).ConfigureAwait(false);
         }
 
         // ---------------- JWT ----------------
 
-        private async Task<AuthResponseDto> GenerateTokenAsync(Artist user, string role)
+        private Task<AuthResponseDto> GenerateTokenAsync(Artist user, string role)
         {
-            var claims = new List<Claim>
+            var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email!),
-                new Claim(ClaimTypes.Role, role)
-            };
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Email, user.Email!),
+                    new Claim(ClaimTypes.Role, role)
+                };
 
             var jwtKey = _config["Jwt:Key"];
-            if (string.IsNullOrEmpty(jwtKey)) throw new Exception("JWT Key is missing in configuration.");
+            if (string.IsNullOrEmpty(jwtKey))
+                throw new Exception("JWT Key is missing in configuration.");
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
 
@@ -98,33 +96,35 @@ namespace Artify.Api.Services.Implementations
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
 
-            return new AuthResponseDto
+            var response = new AuthResponseDto
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
                 Role = role
             };
+            return Task.FromResult(response);
         }
 
         // ---------------- PASSWORD ----------------
 
         public async Task ForgotPasswordAsync(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
             if (user == null) return;
 
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            // Token generation is async but not used further here
+            await _userManager.GeneratePasswordResetTokenAsync(user).ConfigureAwait(false);
             // Email sending intentionally omitted
         }
 
         public async Task ResetPasswordAsync(ResetPasswordDto dto)
         {
-            var user = await _userManager.FindByEmailAsync(dto.Email);
+            var user = await _userManager.FindByEmailAsync(dto.Email).ConfigureAwait(false);
             if (user == null)
                 throw new Exception("Invalid user");
 
             var result = await _userManager.ResetPasswordAsync(
-                user, dto.Token, dto.NewPassword);
+                user, dto.Token, dto.NewPassword).ConfigureAwait(false);
 
             if (!result.Succeeded)
                 throw new Exception("Password reset failed");

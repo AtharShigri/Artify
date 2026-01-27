@@ -16,6 +16,10 @@ namespace Artify.Api.Models
 
         [Required]
         public decimal Price { get; set; }
+
+        public string? Duration { get; set; } // Compatibility
+        public string? Category { get; set; } // Compatibility
+
         public Guid? CategoryId { get; set; }
         [ForeignKey("CategoryId")]
         public Category? CategoryEntity { get; set; }

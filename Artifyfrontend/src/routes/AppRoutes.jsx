@@ -7,6 +7,7 @@ import DashboardLayout from '../components/layout/DashboardLayout';
 // Lazy load pages
 const Home = lazy(() => import('../pages/Home'));
 const Marketplace = lazy(() => import('../pages/marketplace/Marketplace'));
+const Artists = lazy(() => import('../pages/Artists'));
 const ArtistProfile = lazy(() => import('../pages/marketplace/ArtistProfile'));
 const ArtworkDetails = lazy(() => import('../pages/marketplace/ArtworkDetails'));
 const Cart = lazy(() => import('../pages/cart/Cart'));
@@ -20,6 +21,7 @@ const ForgotPassword = lazy(() => import('../pages/auth/ForgotPassword'));
 const ArtistDashboard = lazy(() => import('../pages/artist/ArtistDashboard'));
 const UploadArtwork = lazy(() => import('../pages/artist/UploadArtwork'));
 const MyArtworks = lazy(() => import('../pages/artist/MyArtworks'));
+const ArtistSettings = lazy(() => import('../pages/artist/Settings'));
 const BuyerDashboard = lazy(() => import('../pages/buyer/BuyerDashboard'));
 const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
 
@@ -37,6 +39,10 @@ const AppRoutes = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
+
+                {/* Missing Menu Routes */}
+                <Route path="/artists" element={<Artists />} />
+                <Route path="/about" element={<div className="p-20 text-center text-xl">About Artify - Coming Soon</div>} />
 
                 {/* Protected Routes - Checkout */}
                 <Route path="/checkout" element={
@@ -58,6 +64,7 @@ const AppRoutes = () => {
                     <Route path="artist" element={<ArtistDashboard />} />
                     <Route path="artist/upload" element={<UploadArtwork />} />
                     <Route path="artist/artworks" element={<MyArtworks />} />
+                    <Route path="artist/settings" element={<ArtistSettings />} />
                     <Route path="artist/*" element={<div className="p-8">Page under construction</div>} />
 
                     {/* Buyer Routes */}
