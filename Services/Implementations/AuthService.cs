@@ -1,6 +1,6 @@
 ﻿using Artify.Api.DTOs.Auth;
 using Artify.Api.Services.Interfaces;
-using Artify.Api.Models; // Ensure this points to where your Artist model is
+using Artify.Api.Models; 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -12,7 +12,6 @@ namespace Artify.Api.Services.Implementations
 {
     public class AuthService : IAuthService
     {
-        // Changed IdentityUser to Artist
         private readonly UserManager<Artist> _userManager;
         private readonly IConfiguration _config;
 

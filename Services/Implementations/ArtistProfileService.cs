@@ -96,8 +96,8 @@ namespace Artify.Api.Services.Implementations
         // GET PROFILE
         public async Task<object> GetProfileAsync(ClaimsPrincipal user)
         {
-            var artistId = _artistRepo.GetArtistId(user); // must return Guid
-            var artist = await _artistRepo.GetByIdAsync(artistId);
+            var artistId = _userManager.GetUserId(user);
+            var artist = await _userManager.GetUserAsync(user);
             if (artist == null) return null;
 
             return new
@@ -117,8 +117,8 @@ namespace Artify.Api.Services.Implementations
         // UPDATE PROFILE
         public async Task<object> UpdateProfileAsync(ClaimsPrincipal user, ArtistUpdateDto dto)
         {
-            var artistId = _artistRepo.GetArtistId(user);
-            var artist = await _artistRepo.GetByIdAsync(artistId);
+            var artistId = _userManager.GetUserId(user);
+            var artist = await _userManager.GetUserAsync(user);
             if (artist == null) return null;
 
             artist.FullName = dto.FullName ?? artist.FullName;
@@ -128,7 +128,7 @@ namespace Artify.Api.Services.Implementations
             artist.City = dto.City ?? artist.City;
             artist.SocialLink = dto.SocialLink ?? artist.SocialLink;
 
-            await _artistRepo.UpdateAsync(artist);
+            await _userManager.UpdateAsync(artist);
 
             return new { Success = true, Message = "Profile updated successfully" };
         }
@@ -136,13 +136,13 @@ namespace Artify.Api.Services.Implementations
         // UPDATE PROFILE IMAGE
         public async Task<object> UpdateProfileImageAsync(ClaimsPrincipal user, IFormFile file)
         {
-            var artistId = _artistRepo.GetArtistId(user);
-            var artist = await _artistRepo.GetByIdAsync(artistId);
+            var artistId = _userManager.GetUserId(user);
+            var artist = await _userManager.GetUserAsync(user);
             if (artist == null) return null;
 
             var fileName = $"{Guid.NewGuid()}_{file.FileName}";
             var path = Path.Combine("wwwroot/images/artists", fileName);
-            Directory.CreateDirectory(Path.GetDirectoryName(path)!); // ensure folder exists
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!); 
             using (var stream = new FileStream(path, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
@@ -157,11 +157,11 @@ namespace Artify.Api.Services.Implementations
         // DELETE PROFILE
         public async Task<object> DeleteProfileAsync(ClaimsPrincipal user)
         {
-            var artistId = _artistRepo.GetArtistId(user);
-            var artist = await _artistRepo.GetByIdAsync(artistId);
+            var artistId = _userManager.GetUserId(user);
+            var artist = await _userManager.GetUserAsync(user);
             if (artist == null) return null;
 
-            await _artistRepo.DeleteAsync(artist);
+            await _userManager.DeleteAsync(artist);
 
             return new { Success = true, Message = "Profile deleted successfully" };
         }
