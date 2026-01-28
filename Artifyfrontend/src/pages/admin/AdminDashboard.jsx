@@ -5,8 +5,8 @@ const AdminDashboard = () => {
     // Mock Data
     const users = [
         { id: 1, name: 'Sara Khan', role: 'Artist', status: 'Active', joined: 'Jan 2025' },
-        { id: 2, name: 'John Doe', role: 'Buyer', status: 'Active', joined: 'Dec 2024' },
-        { id: 3, name: 'Spammer X', role: 'Buyer', status: 'Banned', joined: 'Feb 2025' },
+        { id: 2, name: 'Yahya Khan', role: 'Buyer', status: 'Active', joined: 'Dec 2024' },
+        { id: 3, name: 'Ali Khan', role: 'Buyer', status: 'Active', joined: 'Feb 2025' },
     ];
 
     const reports = [
@@ -28,36 +28,28 @@ const AdminDashboard = () => {
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-border">
                     <div className="flex justify-between items-start mb-4">
                         <div className="p-3 bg-blue-100 rounded-lg text-blue-600"><Users className="w-6 h-6" /></div>
-                        <span className="text-green-500 text-xs font-bold">+12%</span>
+                        <span className="text-green-500 text-xs font-bold">+0%</span>
                     </div>
-                    <div className="text-2xl font-bold text-primary">2,450</div>
+                    <div className="text-2xl font-bold text-primary">4</div>
                     <div className="text-sm text-textSecondary">Total Users</div>
                 </div>
 
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-border">
                     <div className="flex justify-between items-start mb-4">
                         <div className="p-3 bg-green-100 rounded-lg text-green-600"><DollarSign className="w-6 h-6" /></div>
-                        <span className="text-green-500 text-xs font-bold">+8%</span>
+                        <span className="text-green-500 text-xs font-bold">+0%</span>
                     </div>
-                    <div className="text-2xl font-bold text-primary">$45,200</div>
+                    <div className="text-2xl font-bold text-primary">$0</div>
                     <div className="text-sm text-textSecondary">Total Revenue</div>
                 </div>
 
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-border">
                     <div className="flex justify-between items-start mb-4">
                         <div className="p-3 bg-red-100 rounded-lg text-red-600"><AlertTriangle className="w-6 h-6" /></div>
-                        <span className="text-red-500 text-xs font-bold">5 Pending</span>
+                        <span className="text-red-500 text-xs font-bold">0 Pending</span>
                     </div>
-                    <div className="text-2xl font-bold text-primary">12</div>
+                    <div className="text-2xl font-bold text-primary">0</div>
                     <div className="text-sm text-textSecondary">Active Reports</div>
-                </div>
-
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-border">
-                    <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-purple-100 rounded-lg text-purple-600"><Activity className="w-6 h-6" /></div>
-                    </div>
-                    <div className="text-2xl font-bold text-primary">98.5%</div>
-                    <div className="text-sm text-textSecondary">System Uptime</div>
                 </div>
             </div>
 

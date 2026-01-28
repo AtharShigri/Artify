@@ -120,7 +120,6 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-
     string[] roles = { "Admin", "Artist", "Buyer" };
 
     foreach (var role in roles)
@@ -128,6 +127,9 @@ using (var scope = app.Services.CreateScope())
         if (!await roleManager.RoleExistsAsync(role))
             await roleManager.CreateAsync(new IdentityRole<Guid>(role));
     }
+
+    // Seed Admin User
+    await DbSeeder.SeedAdminUser(scope.ServiceProvider);
 }
 
 if (app.Environment.IsDevelopment())

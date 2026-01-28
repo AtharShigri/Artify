@@ -14,6 +14,7 @@ const Cart = lazy(() => import('../pages/cart/Cart'));
 const Checkout = lazy(() => import('../pages/cart/Checkout'));
 
 const Login = lazy(() => import('../pages/auth/Login'));
+const AdminLogin = lazy(() => import('../pages/auth/AdminLogin'));
 const Register = lazy(() => import('../pages/auth/Register'));
 const ForgotPassword = lazy(() => import('../pages/auth/ForgotPassword'));
 
@@ -75,6 +76,9 @@ const AppRoutes = () => {
                     <Route path="admin" element={<AdminDashboard />} />
                     <Route path="admin/*" element={<div className="p-8">Page under construction</div>} />
                 </Route>
+
+                {/* Admin Routes */}
+                <Route path="/admin" element={<AdminLogin />} />
 
                 <Route path="*" element={<div className="p-10 text-center">404 - Not Found</div>} />
             </Routes>
