@@ -9,7 +9,7 @@ namespace Artify.Api.Models
         [Key]
         public int HashId { get; set; }
 
-        public int ArtworkId { get; set; }
+        public Guid ArtworkId { get; set; }
         [ForeignKey("ArtworkId")]
         public Artwork Artwork { get; set; }
 

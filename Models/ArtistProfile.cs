@@ -8,10 +8,10 @@ namespace Artify.Api.Models
     public class ArtistProfile
     {
         [Key]
-        public int ArtistProfileId { get; set; }
+        public Guid ArtistProfileId { get; set; }
 
         [Required]
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
 
         [ForeignKey("UserId")]
         public ApplicationUser User { get; set; }

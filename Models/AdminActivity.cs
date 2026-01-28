@@ -9,7 +9,7 @@ namespace Artify.Api.Models
         [Key]
         public int ActivityId { get; set; }
 
-        public string AdminId { get; set; }
+        public Guid AdminId { get; set; }
         [ForeignKey("AdminId")]
         public ApplicationUser Admin { get; set; }
 

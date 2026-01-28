@@ -7,17 +7,17 @@ namespace Artify.Api.Models
     public class Order
     {
         [Key]
-        public int OrderId { get; set; }
+        public Guid OrderId { get; set; }
 
-        public string BuyerId { get; set; }
+        public Guid BuyerId { get; set; }
         [ForeignKey("BuyerId")]
         public ApplicationUser Buyer { get; set; }
 
-        public int? ArtworkId { get; set; }
+        public Guid? ArtworkId { get; set; }
         [ForeignKey("ArtworkId")]
         public Artwork Artwork { get; set; }
 
-        public int ArtistProfileId { get; set; }
+        public Guid ArtistProfileId { get; set; }
         [ForeignKey("ArtistProfileId")]
         public ArtistProfile ArtistProfile { get; set; }
 
