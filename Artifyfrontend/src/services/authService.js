@@ -15,7 +15,20 @@ export const authService = {
                 return userData;
             }
         } catch (error) {
-            throw error.response?.data?.message || error.message || 'Login failed';
+            let message = 'Login failed';
+            if (error.response && error.response.data) {
+                if (typeof error.response.data === 'string') {
+                    message = error.response.data;
+                } else if (error.response.data.message) {
+                    message = error.response.data.message;
+                } else if (error.response.data.errors) {
+                    // Handle ASP.NET Core validation errors
+                    message = Object.values(error.response.data.errors).flat().join(', ');
+                }
+            } else if (error.message) {
+                message = error.message;
+            }
+            throw new Error(message);
         }
     },
 
@@ -28,7 +41,20 @@ export const authService = {
             const response = await api.post(endpoint, data);
             return response.data;
         } catch (error) {
-            throw error.response?.data?.message || error.message || 'Registration failed';
+            let message = 'Registration failed';
+            if (error.response && error.response.data) {
+                if (typeof error.response.data === 'string') {
+                    message = error.response.data;
+                } else if (error.response.data.message) {
+                    message = error.response.data.message;
+                } else if (error.response.data.errors) {
+                    // Handle ASP.NET Core validation errors
+                    message = Object.values(error.response.data.errors).flat().join(', ');
+                }
+            } else if (error.message) {
+                message = error.message;
+            }
+            throw new Error(message);
         }
     },
 

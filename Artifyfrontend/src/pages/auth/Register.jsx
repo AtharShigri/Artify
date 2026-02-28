@@ -4,13 +4,15 @@ import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import SEO from '../../components/common/SEO';
+import { ART_CATEGORIES } from '../../constants/categories';
 
 const Register = () => {
     const [formData, setFormData] = useState({
-        name: '',
+        fullName: '',
         email: '',
         password: '',
         confirmPassword: '',
+        category: '',
         role: 'buyer' // or 'artist'
     });
     const [error, setError] = useState('');
@@ -86,8 +88,8 @@ const Register = () => {
 
                     <Input
                         label="Full Name"
-                        name="name"
-                        value={formData.name}
+                        name="fullName"
+                        value={formData.fullName}
                         onChange={handleChange}
                         required
                     />
@@ -100,6 +102,26 @@ const Register = () => {
                         onChange={handleChange}
                         required
                     />
+
+                    {formData.role === 'artist' && (
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-textSecondary mb-1.5">Art Category</label>
+                            <select
+                                name="category"
+                                value={formData.category}
+                                onChange={handleChange}
+                                required
+                                className="w-full px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all bg-white"
+                            >
+                                <option value="">Select a Category</option>
+                                {ART_CATEGORIES.map((category) => (
+                                    <option key={category} value={category}>
+                                        {category}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
 
                     <Input
                         label="Password"

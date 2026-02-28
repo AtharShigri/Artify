@@ -5,6 +5,7 @@ import Input from '../../components/common/Input';
 import artistService from '../../services/artistService';
 import Loader from '../../components/common/Loader';
 import { useAuth } from '../../context/AuthContext';
+import { ART_CATEGORIES } from '../../constants/categories';
 
 const Settings = () => {
     const { user } = useAuth();
@@ -126,12 +127,22 @@ const Settings = () => {
                             onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                             required
                         />
-                        <Input
-                            label="Art Category"
-                            value={formData.category}
-                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                            placeholder="e.g. Painter, Sculptor"
-                        />
+                        <div>
+                            <label className="block text-sm font-medium text-textSecondary mb-1.5">Art Category</label>
+                            <select
+                                name="category"
+                                value={formData.category}
+                                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                className="w-full px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all bg-white"
+                            >
+                                <option value="">Select a Category</option>
+                                {ART_CATEGORIES.map((category) => (
+                                    <option key={category} value={category}>
+                                        {category}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
                     <div>
