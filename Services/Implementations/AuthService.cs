@@ -12,11 +12,11 @@ namespace Artify.Api.Services.Implementations
 {
     public class AuthService : IAuthService
     {
-        private readonly UserManager<Artist> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _config;
 
         public AuthService(
-                    UserManager<Artist> userManager,
+                    UserManager<ApplicationUser> userManager,
             IConfiguration config)
         {
             _userManager = userManager;
@@ -33,7 +33,7 @@ namespace Artify.Api.Services.Implementations
 
         private async Task<AuthResponseDto> RegisterAsync(RegisterDto dto, string role)
         {
-            var user = new Artist
+            var user = new ApplicationUser
             {
                 UserName = dto.Email,
                 Email = dto.Email,
@@ -73,7 +73,7 @@ namespace Artify.Api.Services.Implementations
 
         // ---------------- JWT ----------------
 
-        private Task<AuthResponseDto> GenerateTokenAsync(Artist user, string role)
+        private Task<AuthResponseDto> GenerateTokenAsync(ApplicationUser user, string role)
         {
             var claims = new[]
             {

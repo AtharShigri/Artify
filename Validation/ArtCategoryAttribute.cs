@@ -17,7 +17,9 @@ namespace Artify.Api.Validation
             "Film & Theatre",
             "Performing Arts (Dance, Mime, etc.)",
             "Digital Art & Graphic Design",
-            "Decorative Arts & Jewelry"
+            "Decorative Arts & Jewelry",
+            "Print Making",
+            "Calligraphy"
         };
 
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)

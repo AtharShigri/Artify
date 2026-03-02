@@ -14,14 +14,14 @@ namespace Artify.Api.Services.Implementations
     public class ArtistProfileService : IArtistProfileService
     {
         private readonly IArtistRepository _artistRepo;
-        private readonly UserManager<Artist> _userManager;
-        private readonly SignInManager<Artist> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _config;
 
         public ArtistProfileService(
             IArtistRepository artistRepo,
-            UserManager<Artist> userManager,
-            SignInManager<Artist> signInManager,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
             IConfiguration config)
         {
             _artistRepo = artistRepo;
@@ -33,12 +33,15 @@ namespace Artify.Api.Services.Implementations
         // REGISTER
         public async Task<object> RegisterAsync(ArtistRegisterDto dto)
         {
-            var artist = new Artist
+            var artist = new ApplicationUser
             {
                 FullName = dto.FullName,
                 Email = dto.Email,
                 UserName = dto.Email,
-                Category = dto.Category
+                ArtistProfile = new ArtistProfile
+                {
+                    Category = dto.Category
+                }
             };
 
             var result = await _userManager.CreateAsync(artist, dto.Password);
@@ -114,7 +117,8 @@ namespace Artify.Api.Services.Implementations
         public async Task<object> GetProfileAsync(ClaimsPrincipal user)
         {
             var artistId = _userManager.GetUserId(user);
-            var artist = await _userManager.GetUserAsync(user);
+            var guidId = Guid.Parse(artistId);
+            var artist = await _artistRepo.GetByIdAsync(guidId);
             if (artist == null) return null;
 
             return new
@@ -122,12 +126,12 @@ namespace Artify.Api.Services.Implementations
                 artist.Id,
                 artist.FullName,
                 artist.Email,
-                artist.Bio,
-                artist.Category,
-                artist.Phone,
-                artist.City,
-                artist.SocialLink,
-                artist.ProfileImageUrl
+                Bio = artist.ArtistProfile?.Bio,
+                Category = artist.ArtistProfile?.Category,
+                Phone = artist.PhoneNumber,
+                City = artist.ArtistProfile?.Location,
+                SocialLink = artist.ArtistProfile?.SocialLinks,
+                ProfileImageUrl = artist.ArtistProfile?.ProfileImageUrl
             };
         }
 
@@ -135,17 +139,24 @@ namespace Artify.Api.Services.Implementations
         public async Task<object> UpdateProfileAsync(ClaimsPrincipal user, ArtistUpdateDto dto)
         {
             var artistId = _userManager.GetUserId(user);
-            var artist = await _userManager.GetUserAsync(user);
+            var guidId = Guid.Parse(artistId);
+            var artist = await _artistRepo.GetByIdAsync(guidId);
             if (artist == null) return null;
 
             artist.FullName = dto.FullName ?? artist.FullName;
-            artist.Bio = dto.Bio ?? artist.Bio;
-            artist.Category = dto.Category ?? artist.Category;
-            artist.Phone = dto.Phone ?? artist.Phone;
-            artist.City = dto.City ?? artist.City;
-            artist.SocialLink = dto.SocialLink ?? artist.SocialLink;
+            if (dto.Phone != null) artist.PhoneNumber = dto.Phone;
+            
+            if (artist.ArtistProfile == null)
+            {
+                artist.ArtistProfile = new ArtistProfile();
+            }
 
-            await _userManager.UpdateAsync(artist);
+            artist.ArtistProfile.Bio = dto.Bio ?? artist.ArtistProfile.Bio;
+            artist.ArtistProfile.Category = dto.Category ?? artist.ArtistProfile.Category;
+            artist.ArtistProfile.Location = dto.City ?? artist.ArtistProfile.Location;
+            artist.ArtistProfile.SocialLinks = dto.SocialLink ?? artist.ArtistProfile.SocialLinks;
+
+            await _artistRepo.UpdateAsync(artist);
 
             return new { Success = true, Message = "Profile updated successfully" };
         }
@@ -154,7 +165,8 @@ namespace Artify.Api.Services.Implementations
         public async Task<object> UpdateProfileImageAsync(ClaimsPrincipal user, IFormFile file)
         {
             var artistId = _userManager.GetUserId(user);
-            var artist = await _userManager.GetUserAsync(user);
+            var guidId = Guid.Parse(artistId);
+            var artist = await _artistRepo.GetByIdAsync(guidId);
             if (artist == null) return null;
 
             var fileName = $"{Guid.NewGuid()}_{file.FileName}";
@@ -165,10 +177,15 @@ namespace Artify.Api.Services.Implementations
                 await file.CopyToAsync(stream);
             }
 
-            artist.ProfileImageUrl = $"/images/artists/{fileName}";
+            if (artist.ArtistProfile == null)
+            {
+                artist.ArtistProfile = new ArtistProfile();
+            }
+
+            artist.ArtistProfile.ProfileImageUrl = $"/images/artists/{fileName}";
             await _artistRepo.UpdateAsync(artist);
 
-            return new { Success = true, ProfileImageUrl = artist.ProfileImageUrl };
+            return new { Success = true, ProfileImageUrl = artist.ArtistProfile.ProfileImageUrl };
         }
 
         // DELETE PROFILE

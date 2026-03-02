@@ -7,7 +7,7 @@ namespace Artify.Api.Data
     {
         public static async Task SeedAdminUser(IServiceProvider serviceProvider)
         {
-            var userManager = serviceProvider.GetRequiredService<UserManager<Artist>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
 
             // Ensure Admin role exists
@@ -22,7 +22,7 @@ namespace Artify.Api.Data
 
             if (adminUser == null)
             {
-                var newAdmin = new Artist
+                var newAdmin = new ApplicationUser
                 {
                     UserName = adminEmail,
                     Email = adminEmail,

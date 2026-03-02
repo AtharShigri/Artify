@@ -6,12 +6,12 @@ namespace Artify.Api.Repositories.Interfaces
 {
     public interface IArtistRepository
     {
-        Task<Artist> GetByIdAsync(Guid artistId);
-        Task<Artist> GetByEmailAsync(string email);
+        Task<ApplicationUser> GetByIdAsync(Guid artistId);
+        Task<ApplicationUser> GetByEmailAsync(string email);
 
-        Task AddAsync(Artist artist);
-        Task UpdateAsync(Artist artist);
-        Task DeleteAsync(Artist artist);
+        Task AddAsync(ApplicationUser artist);
+        Task UpdateAsync(ApplicationUser artist);
+        Task DeleteAsync(ApplicationUser artist);
 
         Guid GetArtistId(ClaimsPrincipal user);
     }

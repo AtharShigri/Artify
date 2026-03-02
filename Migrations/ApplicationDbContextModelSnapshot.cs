@@ -17,7 +17,7 @@ namespace Artify.Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.22")
+                .HasAnnotation("ProductVersion", "8.0.23")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -118,9 +118,6 @@ namespace Artify.Api.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -143,11 +140,9 @@ namespace Artify.Api.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("ProfileImageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RoleType")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
@@ -269,37 +264,30 @@ namespace Artify.Api.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Bio")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Category")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Location")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PortfolioUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProfileImageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("Rating")
                         .HasColumnType("real");
 
                     b.Property<string>("Skills")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SocialLinks")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")
@@ -307,7 +295,8 @@ namespace Artify.Api.Migrations
 
                     b.HasKey("ArtistProfileId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("ArtistProfiles");
                 });
@@ -448,6 +437,9 @@ namespace Artify.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ApplicationUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("ArtistProfileId")
                         .HasColumnType("uniqueidentifier");
 
@@ -478,16 +470,23 @@ namespace Artify.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("ServiceId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("OrderId");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("ArtistProfileId");
 
                     b.HasIndex("ArtworkId");
 
                     b.HasIndex("BuyerId");
+
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("Orders");
                 });
@@ -502,12 +501,6 @@ namespace Artify.Api.Migrations
                         .HasColumnType("bit");
 
                     b.Property<Guid>("ArtworkId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ArtworkId1")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ArtworkId2")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -529,10 +522,6 @@ namespace Artify.Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ArtworkId");
-
-                    b.HasIndex("ArtworkId1");
-
-                    b.HasIndex("ArtworkId2");
 
                     b.HasIndex("SuspectedArtworkId");
 
@@ -587,6 +576,9 @@ namespace Artify.Api.Migrations
                     b.Property<Guid>("ArtistId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("CategoryId")
                         .HasColumnType("uniqueidentifier");
 
@@ -594,6 +586,9 @@ namespace Artify.Api.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Duration")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -822,8 +817,8 @@ namespace Artify.Api.Migrations
             modelBuilder.Entity("Artify.Api.Models.ArtistProfile", b =>
                 {
                     b.HasOne("Artify.Api.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .WithOne("ArtistProfile")
+                        .HasForeignKey("Artify.Api.Models.ArtistProfile", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -854,6 +849,10 @@ namespace Artify.Api.Migrations
 
             modelBuilder.Entity("Artify.Api.Models.Order", b =>
                 {
+                    b.HasOne("Artify.Api.Models.ApplicationUser", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("Artify.Api.Models.ArtistProfile", "ArtistProfile")
                         .WithMany("Orders")
                         .HasForeignKey("ArtistProfileId")
@@ -870,36 +869,34 @@ namespace Artify.Api.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Artify.Api.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId");
+
                     b.Navigation("ArtistProfile");
 
                     b.Navigation("Artwork");
 
                     b.Navigation("Buyer");
+
+                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("Artify.Api.Models.PlagiarismLog", b =>
                 {
-                    b.HasOne("Artify.Api.Models.Artwork", "Artwork")
-                        .WithMany()
+                    b.HasOne("Artify.Api.Models.Artwork", "OriginalArtwork")
+                        .WithMany("PlagiarismLogsAsOriginal")
                         .HasForeignKey("ArtworkId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Artify.Api.Models.Artwork", null)
-                        .WithMany("PlagiarismLogsAsOriginal")
-                        .HasForeignKey("ArtworkId1");
-
-                    b.HasOne("Artify.Api.Models.Artwork", null)
-                        .WithMany("PlagiarismLogsAsSuspect")
-                        .HasForeignKey("ArtworkId2");
-
                     b.HasOne("Artify.Api.Models.Artwork", "SuspectedArtwork")
-                        .WithMany()
+                        .WithMany("PlagiarismLogsAsSuspect")
                         .HasForeignKey("SuspectedArtworkId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Artwork");
+                    b.Navigation("OriginalArtwork");
 
                     b.Navigation("SuspectedArtwork");
                 });
@@ -930,7 +927,7 @@ namespace Artify.Api.Migrations
             modelBuilder.Entity("Artify.Api.Models.Service", b =>
                 {
                     b.HasOne("Artify.Api.Models.ArtistProfile", "ArtistProfile")
-                        .WithMany()
+                        .WithMany("Services")
                         .HasForeignKey("ArtistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1020,6 +1017,13 @@ namespace Artify.Api.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Artify.Api.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("ArtistProfile");
+
+                    b.Navigation("Orders");
+                });
+
             modelBuilder.Entity("Artify.Api.Models.Artist", b =>
                 {
                     b.Navigation("Artworks");
@@ -1030,6 +1034,8 @@ namespace Artify.Api.Migrations
                     b.Navigation("Artworks");
 
                     b.Navigation("Orders");
+
+                    b.Navigation("Services");
                 });
 
             modelBuilder.Entity("Artify.Api.Models.Artwork", b =>

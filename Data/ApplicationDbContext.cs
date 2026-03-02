@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Artify.Api.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<Artist, IdentityRole<Guid>, Guid>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -22,8 +22,6 @@ namespace Artify.Api.Data
         public DbSet<TransactionLog> TransactionLogs { get; set; }
         public DbSet<AdminActivity> AdminActivities { get; set; }
         public DbSet<AIHashRecord> AIHashRecords { get; set; }
-
-        public new DbSet<ApplicationUser> Users { get; set; }
 
         // ----------------- Safe code-only additions -----------------
         public DbSet<PlagiarismLog> PlagiarismLogs { get; set; }
@@ -59,14 +57,14 @@ namespace Artify.Api.Data
 
             // PlagiarismLog relationships
             builder.Entity<PlagiarismLog>()
-                .HasOne(p => p.Artwork)
-                .WithMany()
+                .HasOne(p => p.OriginalArtwork)
+                .WithMany(a => a.PlagiarismLogsAsOriginal)
                 .HasForeignKey(p => p.ArtworkId)
                 .OnDelete(DeleteBehavior.Restrict); 
 
             builder.Entity<PlagiarismLog>()
                 .HasOne(p => p.SuspectedArtwork)
-                .WithMany()
+                .WithMany(a => a.PlagiarismLogsAsSuspect)
                 .HasForeignKey(p => p.SuspectedArtworkId)
                 .OnDelete(DeleteBehavior.Restrict);
 
