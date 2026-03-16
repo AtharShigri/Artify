@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingBag, User } from 'lucide-react';
+import { Menu, X, ShoppingBag, User, LayoutDashboard } from 'lucide-react';
 import Button from '../common/Button';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../utils/cn';
+import { getImageUrl } from '../../utils/imageUtils';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -59,10 +60,15 @@ const Navbar = () => {
                             <div className="flex items-center gap-3">
                                 <Link to={user.role === 'artist' ? '/dashboard/artist' : user.role === 'admin' ? '/dashboard/admin' : '/dashboard/buyer/orders'}>
                                     <div className="flex items-center gap-2 text-sm font-medium text-primary hover:text-secondary transition-colors">
-                                        <div className="w-8 h-8 bg-secondary/10 rounded-full flex items-center justify-center">
-                                            <User className="w-4 h-4 text-secondary" />
+                                        <div className="w-8 h-8 bg-secondary/10 rounded-full flex items-center justify-center overflow-hidden">
+                                            {user.profileImageUrl ? (
+                                                <img src={getImageUrl(user.profileImageUrl)} alt={user.fullName || user.name || 'Dashboard'} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <User className="w-4 h-4 text-secondary" />
+                                            )}
                                         </div>
-                                        <span>{user.name || 'Dashboard'}</span>
+                                        <span>{user.fullName || user.name || 'Dashboard'}</span>
+                                        <LayoutDashboard className="w-4 h-4 text-textSecondary" />
                                     </div>
                                 </Link>
                                 <Button variant="ghost" size="sm" onClick={logout}>Sign Out</Button>

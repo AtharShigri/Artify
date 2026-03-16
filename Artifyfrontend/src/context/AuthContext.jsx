@@ -22,6 +22,13 @@ export const AuthProvider = ({ children }) => {
         return data;
     };
 
+    const updateUser = (updateData) => {
+        if (!user) return;
+        const updatedUser = { ...user, ...updateData };
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+    };
+
     const register = async (userData) => {
         return await authService.register(userData);
     };
@@ -37,7 +44,8 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         register,
-        logout
+        logout,
+        updateUser
     };
 
     return (

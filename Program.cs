@@ -132,6 +132,8 @@ using (var scope = app.Services.CreateScope())
     await DbSeeder.SeedAdminUser(scope.ServiceProvider);
 }
 
+app.UseStaticFiles();
+app.UseRouting();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

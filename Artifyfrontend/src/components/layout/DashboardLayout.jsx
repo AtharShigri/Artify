@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../common/Button';
+import { getImageUrl } from '../../utils/imageUtils';
 
 const DashboardLayout = () => {
     const { user, logout } = useAuth();
@@ -70,11 +71,15 @@ const DashboardLayout = () => {
                     {/* User Info */}
                     <div className="p-6 border-b border-border">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                <User className="w-6 h-6 text-gray-400" />
+                            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden shrink-0">
+                                {user?.profileImageUrl ? (
+                                    <img src={getImageUrl(user.profileImageUrl)} alt={user?.fullName || user?.name || 'User'} className="w-full h-full object-cover" />
+                                ) : (
+                                    <User className="w-6 h-6 text-gray-400" />
+                                )}
                             </div>
                             <div className="overflow-hidden">
-                                <p className="font-bold text-primary truncate">{user?.name || 'User'}</p>
+                                <p className="font-bold text-primary truncate">{user?.fullName || user?.name || 'User'}</p>
                                 <p className="text-xs text-textSecondary capitalize">{user?.role || 'Member'}</p>
                             </div>
                         </div>

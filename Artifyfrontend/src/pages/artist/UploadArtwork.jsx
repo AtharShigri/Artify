@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import artworkService from '../../services/artworkService';
+import { ART_CATEGORIES } from '../../constants/categories';
 
 const UploadArtwork = () => {
     const navigate = useNavigate();
@@ -16,7 +17,7 @@ const UploadArtwork = () => {
         title: '',
         price: '',
         description: '',
-        category: 'Visual Arts',
+        category: '',
         width: '',
         height: '',
         year: ''
@@ -57,31 +58,40 @@ const UploadArtwork = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!file) return;
+        if (!file) {
+            alert("Please select a file first.");
+            return;
+        }
 
         setIsLoading(true);
         try {
             const data = new FormData();
+
             data.append('Title', formData.title);
             data.append('Description', formData.description);
             data.append('Price', formData.price);
             data.append('Category', formData.category);
             data.append('File', file);
 
-            // Metadata as JSON string if needed, or separate fields
-            const metadata = {
+            const metadataObj = {
                 width: formData.width,
                 height: formData.height,
                 year: formData.year
             };
-            data.append('Metadata', JSON.stringify(metadata));
+            data.append('Metadata', JSON.stringify(metadataObj));
 
             await artworkService.create(data);
+
             alert('Artwork uploaded successfully!');
             navigate('/dashboard/artist/artworks');
         } catch (error) {
-            console.error("Upload failed", error);
-            alert("Failed to upload artwork. Please try again.");
+            console.error("Upload failed server response:", error.response?.data);
+
+            const errorMessage = error.response?.data?.errors
+                ? "Validation failed. Please check your inputs."
+                : "Failed to upload artwork. Please try again.";
+
+            alert(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -178,10 +188,10 @@ const UploadArtwork = () => {
                             value={formData.category}
                             onChange={handleInputChange}
                         >
-                            <option>Visual Arts</option>
-                            <option>Calligraphy</option>
-                            <option>Digital Art</option>
-                            <option>Sculpture</option>
+                            <option value="">Select a Category</option>
+                            {ART_CATEGORIES.map((cat) => (
+                                <option key={cat} value={cat}>{cat}</option>
+                            ))}
                         </select>
                     </div>
                     <Input

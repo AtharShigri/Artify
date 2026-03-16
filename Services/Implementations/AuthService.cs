@@ -1,6 +1,7 @@
-﻿using Artify.Api.DTOs.Auth;
+using Artify.Api.DTOs.Auth;
 using Artify.Api.Services.Interfaces;
 using Artify.Api.Models; 
+using Artify.Api.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -14,13 +15,16 @@ namespace Artify.Api.Services.Implementations
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _config;
+        private readonly IArtistRepository _artistRepo;
 
         public AuthService(
                     UserManager<ApplicationUser> userManager,
-            IConfiguration config)
+            IConfiguration config,
+            IArtistRepository artistRepo)
         {
             _userManager = userManager;
             _config = config;
+            _artistRepo = artistRepo;
         }
 
         // ---------------- REGISTER ----------------
@@ -32,21 +36,22 @@ namespace Artify.Api.Services.Implementations
             => RegisterAsync(dto, "Buyer");
 
         private async Task<AuthResponseDto> RegisterAsync(RegisterDto dto, string role)
-        {
-            var user = new ApplicationUser
-            {
-                UserName = dto.Email,
-                Email = dto.Email,
-                FullName = dto.FullName
-            };
+{
+    var user = new ApplicationUser
+    {
+        UserName = dto.Email,
+        Email = dto.Email,
+        FullName = dto.FullName,
+        ArtistProfile = role == "Artist" ? new ArtistProfile { Category = dto.Category } : null
+    };
 
-            var result = await _userManager.CreateAsync(user, dto.Password).ConfigureAwait(false);
-            if (!result.Succeeded)
-                throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+    var result = await _userManager.CreateAsync(user, dto.Password);
+    if (!result.Succeeded)
+        throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
 
-            await _userManager.AddToRoleAsync(user, role).ConfigureAwait(false);
-            return await GenerateTokenAsync(user, role).ConfigureAwait(false);
-        }
+    await _userManager.AddToRoleAsync(user, role);
+    return await GenerateTokenAsync(user, role);
+}
 
         // ---------------- LOGIN ----------------
 
@@ -61,7 +66,8 @@ namespace Artify.Api.Services.Implementations
 
         private async Task<AuthResponseDto> LoginAsync(LoginDto dto, string role)
         {
-            var user = await _userManager.FindByEmailAsync(dto.Email).ConfigureAwait(false);
+            // Use repository to load user WITH ArtistProfile (for profileImageUrl)
+            var user = await _artistRepo.GetByEmailAsync(dto.Email).ConfigureAwait(false);
             if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password).ConfigureAwait(false))
                 throw new Exception("Invalid credentials");
 
@@ -100,7 +106,10 @@ namespace Artify.Api.Services.Implementations
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
-                Role = role
+                Role = role,
+                FullName = user.FullName,
+                Email = user.Email!,
+                ProfileImageUrl = user.ArtistProfile?.ProfileImageUrl
             };
             return Task.FromResult(response);
         }

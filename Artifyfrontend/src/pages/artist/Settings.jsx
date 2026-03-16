@@ -6,9 +6,12 @@ import artistService from '../../services/artistService';
 import Loader from '../../components/common/Loader';
 import { useAuth } from '../../context/AuthContext';
 import { ART_CATEGORIES } from '../../constants/categories';
+import { getImageUrl } from '../../utils/imageUtils'; // Ensure this matches your filename imageUtils or imageHelper
+import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
-    const { user } = useAuth();
+    const { user, updateUser, logout } = useAuth();
+    const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [formData, setFormData] = useState({
@@ -27,6 +30,15 @@ const Settings = () => {
         fetchProfile();
     }, []);
 
+    // Memory Cleanup for Blob URLs
+    useEffect(() => {
+        return () => {
+            if (previewImage && previewImage.startsWith('blob:')) {
+                URL.revokeObjectURL(previewImage);
+            }
+        };
+    }, [previewImage]);
+
     const fetchProfile = async () => {
         try {
             const data = await artistService.getProfile();
@@ -39,7 +51,7 @@ const Settings = () => {
                 socialLink: data.socialLink || ''
             });
             if (data.profileImageUrl) {
-                setPreviewImage(data.profileImageUrl);
+                setPreviewImage(getImageUrl(data.profileImageUrl));
             }
         } catch (error) {
             setMessage({ type: 'error', text: 'Failed to load profile data' });
@@ -53,19 +65,30 @@ const Settings = () => {
         const file = e.target.files[0];
         if (!file) return;
 
-        setProfileImage(file);
-        setPreviewImage(URL.createObjectURL(file));
+        // Revoke the old URL before creating a new one to save RAM
+        if (previewImage && previewImage.startsWith('blob:')) {
+            URL.revokeObjectURL(previewImage);
+        }
 
-        // Auto upload image on selection (or can be done on save)
+        const objectUrl = URL.createObjectURL(file);
+        setProfileImage(file);
+        setPreviewImage(objectUrl);
+
         const imageData = new FormData();
-        imageData.append('image', file);
+        // Match this key with your C# parameter name
+        imageData.append('Image', file);
 
         try {
-            await artistService.updateProfileImage(imageData);
-            setMessage({ type: 'success', text: 'Profile image updated!' });
+            const response = await artistService.updateProfileImage(imageData);
+            if (response && response.profileImageUrl) {
+                updateUser({ profileImageUrl: response.profileImageUrl });
+                // Use backend URL once saved
+                setPreviewImage(getImageUrl(response.profileImageUrl));
+                setMessage({ type: 'success', text: 'Photo updated!' });
+            }
         } catch (error) {
-            setMessage({ type: 'error', text: 'Failed to upload image' });
-            console.error(error);
+            setMessage({ type: 'error', text: 'Failed to upload photo' });
+            console.error("Upload failed", error);
         }
     };
 
@@ -77,6 +100,11 @@ const Settings = () => {
         try {
             await artistService.updateProfile(formData);
             setMessage({ type: 'success', text: 'Profile updated successfully!' });
+
+            updateUser({
+                fullName: formData.fullName,
+                name: formData.fullName
+            });
         } catch (error) {
             setMessage({ type: 'error', text: 'Failed to update profile' });
             console.error(error);
@@ -176,7 +204,6 @@ const Settings = () => {
                     />
 
                     <div className="pt-4 flex justify-end gap-3">
-                        {/* Optional Cancel button */}
                         <Button type="submit" variant="primary" disabled={isSaving} className="min-w-[120px]">
                             {isSaving ? (
                                 <><LoaderIcon className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
@@ -186,6 +213,34 @@ const Settings = () => {
                         </Button>
                     </div>
                 </form>
+            </div>
+
+            {/* Danger Zone */}
+            <div className="mt-8 bg-red-50 border border-red-200 rounded-2xl shadow-sm p-8">
+                <h3 className="text-lg font-bold text-red-700 mb-2">Danger Zone</h3>
+                <p className="text-red-600/80 mb-6 text-sm">
+                    Once you delete your profile, there is no going back. Please be certain.
+                </p>
+                <div className="flex gap-4 items-center">
+                    <Button
+                        variant="danger"
+                        onClick={async () => {
+                            if (window.confirm("Are you sure? This action is irreversible.")) {
+                                try {
+                                    setIsSaving(true);
+                                    await artistService.deleteProfile();
+                                    logout();
+                                    navigate('/login');
+                                } catch (error) {
+                                    setMessage({ type: 'error', text: 'Failed to delete profile' });
+                                    setIsSaving(false);
+                                }
+                            }
+                        }}
+                    >
+                        Delete Profile
+                    </Button>
+                </div>
             </div>
         </div>
     );

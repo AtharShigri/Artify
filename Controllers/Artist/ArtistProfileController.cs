@@ -12,43 +12,43 @@ namespace Artify.Api.Controllers.Artist
     [Authorize(Roles = "Artist")]
     public class ArtistProfileController : ControllerBase
     {
+        private readonly IAuthService _authService;
         private readonly IArtistProfileService _artistProfileService;
-
-        public ArtistProfileController(IArtistProfileService artistProfileService)
+        public ArtistProfileController(IAuthService authService, IArtistProfileService artistProfileService)
         {
+            _authService = authService;
             _artistProfileService = artistProfileService;
         }
 
         [AllowAnonymous]
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] ArtistRegisterDto dto)
-        {
-            var result = await _artistProfileService.RegisterAsync(dto);
-            // Since result is an object, we serialize it to check properties (or better, change service return type).
-            // For now, assuming result structure based on inspection:
-            // return new { Success = true/false, ... }
-            
-            // Using dynamic to access properties of anonymous object
-            dynamic dynamicResult = result;
-            if (dynamicResult.Success == false)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
-        }
+[HttpPost("register")]
+public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+{
+    try 
+    {
+        var result = await _authService.RegisterArtistAsync(dto);
+        return Ok(result); 
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new { message = ex.Message });
+    }
+}
 
         [AllowAnonymous]
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto dto)
-        {
-            var result = await _artistProfileService.LoginAsync(dto);
-            dynamic dynamicResult = result;
-            if (dynamicResult.Success == false)
-            {
-                return Unauthorized(result);
-            }
-            return Ok(result);
-        }
+[HttpPost("login")]
+public async Task<IActionResult> Login([FromBody] LoginDto dto)
+{
+    try 
+    {
+        var result = await _authService.LoginArtistAsync(dto);
+        return Ok(result); 
+    }
+    catch (Exception ex)
+    {
+        return Unauthorized(new { message = ex.Message });
+    }
+}
 
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfile()
