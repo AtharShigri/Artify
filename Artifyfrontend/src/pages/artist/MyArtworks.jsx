@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Edit2, Trash2, MoreVertical } from 'lucide-react';
+import { Edit2, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../components/common/Button';
 import artworkService from '../../services/artworkService';
 import Loader from '../../components/common/Loader';
+
+const BACKEND_URL = import.meta.env.VITE_API_URL
+    ? new URL(import.meta.env.VITE_API_URL).origin
+    : 'http://localhost:5181';
 
 const MyArtworks = () => {
     const navigate = useNavigate();
@@ -68,23 +72,36 @@ const MyArtworks = () => {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden">
-                                                    {item.imageUrl && (
-                                                        <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                                                    {item.imageUrl ? (
+                                                        <img
+                                                            src={item.imageUrl.startsWith('http') ? item.imageUrl : `${BACKEND_URL}${item.imageUrl}`}
+                                                            alt={item.title}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">No img</div>
                                                     )}
                                                 </div>
                                                 <span className="font-medium text-primary">{item.title}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-textSecondary">${item.price}</td>
+                                        <td className="px-6 py-4 text-textSecondary">PKR {item.price}</td>
                                         <td className="px-6 py-4">
                                             <span className={`inline-block px-2 py-1 rounded-md text-xs font-medium ${item.isForSale ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                                                 {item.isForSale ? 'For Sale' : 'Private'}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-textSecondary">{new Date(item.createdAt).toLocaleDateString()}</td>
+                                        <td className="px-6 py-4 text-textSecondary">
+                                            {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : '—'}
+                                        </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
-                                                <button className="p-2 text-gray-400 hover:text-primary transition-colors"><Edit2 className="w-4 h-4" /></button>
+                                                <button
+                                                    className="p-2 text-gray-400 hover:text-primary transition-colors"
+                                                    onClick={() => navigate(`/dashboard/artist/artworks/${item.artworkId}/edit`)}
+                                                >
+                                                    <Edit2 className="w-4 h-4" />
+                                                </button>
                                                 <button
                                                     className="p-2 text-gray-400 hover:text-error transition-colors"
                                                     onClick={() => handleDelete(item.artworkId)}

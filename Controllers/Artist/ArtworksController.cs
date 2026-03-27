@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Artify.Api.DTOs.Artist;
 using Artify.Api.Services.Interfaces;
@@ -36,7 +36,7 @@ namespace Artify.Api.Controllers.Artist
         }
 
         [HttpPut("{artworkId}")]
-        public async Task<IActionResult> Update(Guid artworkId, [FromBody] ArtworkUpdateDto dto)
+        public async Task<IActionResult> Update(Guid artworkId, [FromForm] ArtworkUpdateDto dto)
         {
             return Ok(await _artworkService.UpdateAsync(User, artworkId, dto));
         }

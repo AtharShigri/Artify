@@ -35,7 +35,8 @@ namespace Artify.Api.Services.Implementations
                 a.Price,
                 a.CategoryEntity,
                 a.ImageUrl,
-                a.IsForSale
+                a.IsForSale,
+                a.CreatedAt
             });
         }
 
@@ -55,7 +56,8 @@ namespace Artify.Api.Services.Implementations
                 artwork.Price,
                 artwork.CategoryEntity,
                 artwork.ImageUrl,
-                artwork.IsForSale
+                artwork.IsForSale,
+                artwork.CreatedAt
             };
         }
 
@@ -115,8 +117,24 @@ namespace Artify.Api.Services.Implementations
             artwork.Title = dto.Title ?? artwork.Title;
             artwork.Description = dto.Description ?? artwork.Description;
             artwork.Price = dto.Price ?? artwork.Price;
-            artwork.CategoryEntity = dto.Category ?? artwork.CategoryEntity;
+            artwork.CategoryId = dto.CategoryId ?? artwork.CategoryId;
             artwork.IsForSale = dto.IsAvailable ?? artwork.IsForSale;
+            artwork.Metadata = dto.Metadata ?? artwork.Metadata;
+
+            // Optional image replacement
+            if (dto.File != null && dto.File.Length > 0)
+            {
+                var fileName = $"{Guid.NewGuid()}_{dto.File.FileName}";
+                var folderPath = Path.Combine(_environment.ContentRootPath, "wwwroot", "images", "artworks");
+                var filePath = Path.Combine(folderPath, fileName);
+
+                Directory.CreateDirectory(folderPath);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await dto.File.CopyToAsync(stream);
+                }
+                artwork.ImageUrl = $"/images/artworks/{fileName}";
+            }
 
             await _artworkRepo.UpdateAsync(artwork);
             return new { Success = true };

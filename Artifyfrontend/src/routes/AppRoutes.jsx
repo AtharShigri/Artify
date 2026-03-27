@@ -65,6 +65,7 @@ const AppRoutes = () => {
                     <Route path="artist" element={<ArtistDashboard />} />
                     <Route path="artist/upload" element={<UploadArtwork />} />
                     <Route path="artist/artworks" element={<MyArtworks />} />
+                    <Route path="artist/artworks/:id/edit" element={<UploadArtwork />} />
                     <Route path="artist/settings" element={<ArtistSettings />} />
                     <Route path="artist/*" element={<div className="p-8">Page under construction</div>} />
 

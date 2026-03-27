@@ -10,16 +10,13 @@ const artworkService = {
         return response.data;
     },
     create: async (formData) => {
-        // formData should be an instance of FormData for file upload
-        const response = await axios.post('/artist/artworks/upload', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+        // Let axios set Content-Type automatically (includes multipart boundary)
+        const response = await axios.post('/artist/artworks/upload', formData);
         return response.data;
     },
-    update: async (id, data) => {
-        const response = await axios.put(`/artist/artworks/${id}`, data);
+    update: async (id, formData) => {
+        // Let axios set Content-Type automatically (includes multipart boundary)
+        const response = await axios.put(`/artist/artworks/${id}`, formData);
         return response.data;
     },
     delete: async (id) => {
