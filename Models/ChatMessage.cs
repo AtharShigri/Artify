@@ -7,10 +7,10 @@ namespace Artify.Api.Models
     public class ChatMessage
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
-        public int ConversationId { get; set; }
+        public Guid ConversationId { get; set; }
         [ForeignKey("ConversationId")]
         public virtual Conversation Conversation { get; set; }
 

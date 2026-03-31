@@ -7,7 +7,7 @@ namespace Artify.Api.Models
     public class EscrowTransaction
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         // FK to Order — uses Guid to match Order.OrderId
         [Required]

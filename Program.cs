@@ -1,6 +1,7 @@
 using AutoMapper;
 using Artify.Api.Data;
 using Artify.Api.Models;
+using Artify.Api.Hubs;
 using Artify.Api.Repositories.Interfaces;
 using Artify.Api.Repositories.Implementations;
 using Artify.Api.Services.Interfaces;
@@ -100,6 +101,8 @@ builder.Services.AddScoped<IBuyerRepository, BuyerRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IHiringRepository, HiringRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
+builder.Services.AddScoped<IEscrowRepository, EscrowRepository>();
 
 builder.Services.AddScoped<IArtistDashboardService, ArtistDashboardService>();
 builder.Services.AddScoped<IArtistProfileService, ArtistProfileService>();
@@ -114,6 +117,9 @@ builder.Services.AddScoped<IHiringService, HiringService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IMarketplaceService, MarketplaceService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IChatService, ChatService>();
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -150,6 +156,7 @@ app.UseCors(builder => builder
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapHub<ChatHub>("/chathub");
 
 app.MapControllers();
 

@@ -1,32 +1,21 @@
-﻿using Artify.Api.DTOs.Buyer;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Artify.Api.Models;
 
 namespace Artify.Api.Services.Interfaces
 {
     public interface IPaymentService
     {
-        // Payment Operations
-        Task<PaymentResponseDto> CreatePaymentIntentAsync(Guid orderId, Guid buyerId);
-        Task<PaymentResponseDto> ConfirmPaymentAsync(string paymentIntentId, Guid orderId);
-        Task<bool> ProcessPaymentWebhookAsync(PaymentCallbackDto webhookDto);
-
-        // Payment Status
+        // Core Escrow Operations
+        Task<EscrowTransaction> CreateEscrowRecordAsync(Guid orderId, decimal totalAmount);
+        Task<bool> ReleasePaymentToArtistAsync(Guid orderId);
+        Task<bool> RefundPaymentToBuyerAsync(Guid orderId);
+        
+        // Math Logic
+        decimal CalculateCommission(decimal totalAmount);
+        
+        // Status & History
         Task<string> GetPaymentStatusAsync(Guid orderId);
-        Task<bool> UpdatePaymentStatusAsync(Guid orderId, string status);
-
-        // Transaction History
-        Task<IEnumerable<TransactionLogDto>> GetBuyerTransactionsAsync(Guid buyerId);
-
-        // Refunds
-        Task<bool> ProcessRefundAsync(Guid orderId, decimal amount);
-    }
-
-    public class TransactionLogDto
-    {
-        public Guid TransactionId { get; set; }
-        public Guid OrderId { get; set; }
-        public string PaymentMethod { get; set; } = string.Empty;
-        public decimal TransactionAmount { get; set; }
-        public string Status { get; set; } = string.Empty;
-        public DateTime TransactionDate { get; set; }
     }
 }
