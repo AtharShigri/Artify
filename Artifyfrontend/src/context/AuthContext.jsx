@@ -8,7 +8,6 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Check for saved user on load
         const savedUser = authService.getCurrentUser();
         if (savedUser) {
             setUser(savedUser);
@@ -16,8 +15,9 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     }, []);
 
-    const login = async (email, password, role) => {
-        const data = await authService.login(email, password, role);
+    // Unified login — no role param needed; backend determines role
+    const login = async (email, password) => {
+        const data = await authService.login(email, password);
         setUser(data);
         return data;
     };
@@ -40,7 +40,13 @@ export const AuthProvider = ({ children }) => {
 
     const value = {
         user,
+        // user.role  : 'Artist' | 'Buyer' | 'Admin'
+        // user.userType : 0 (Individual) | 1 (Agency)
         isAuthenticated: !!user,
+        isArtist: user?.role === 'Artist',
+        isBuyer: user?.role === 'Buyer',
+        isAdmin: user?.role === 'Admin',
+        isAgency: user?.userType === 1,
         loading,
         login,
         register,

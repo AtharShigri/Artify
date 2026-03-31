@@ -20,36 +20,6 @@ namespace Artify.Api.Controllers.Artist
             _artistProfileService = artistProfileService;
         }
 
-        [AllowAnonymous]
-[HttpPost("register")]
-public async Task<IActionResult> Register([FromBody] RegisterDto dto)
-{
-    try 
-    {
-        var result = await _authService.RegisterArtistAsync(dto);
-        return Ok(result); 
-    }
-    catch (Exception ex)
-    {
-        return BadRequest(new { message = ex.Message });
-    }
-}
-
-        [AllowAnonymous]
-[HttpPost("login")]
-public async Task<IActionResult> Login([FromBody] LoginDto dto)
-{
-    try 
-    {
-        var result = await _authService.LoginArtistAsync(dto);
-        return Ok(result); 
-    }
-    catch (Exception ex)
-    {
-        return Unauthorized(new { message = ex.Message });
-    }
-}
-
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfile()
         {

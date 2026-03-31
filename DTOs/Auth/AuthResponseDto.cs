@@ -8,5 +8,6 @@ namespace Artify.Api.DTOs.Auth
         public string FullName { get; set; }
         public string Email { get; set; }
         public string ProfileImageUrl { get; set; }
+        public int UserType { get; set; } // 0 = Individual, 1 = Agency
     }
 }

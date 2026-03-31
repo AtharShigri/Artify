@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Artify.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialFinalFix : Migration
+    public partial class InitialHybridFixed : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -47,6 +47,7 @@ namespace Artify.Api.Migrations
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     RoleType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserType = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -136,6 +137,26 @@ namespace Artify.Api.Migrations
                     table.ForeignKey(
                         name: "FK_AdminActivities_AspNetUsers_AdminId",
                         column: x => x.AdminId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Agencies",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Agencies", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Agencies_AspNetUsers_OwnerId",
+                        column: x => x.OwnerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -254,6 +275,52 @@ namespace Artify.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "JobPosts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Budget = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PosterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JobPosts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_JobPosts_AspNetUsers_PosterId",
+                        column: x => x.PosterId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AgencyMembers",
+                columns: table => new
+                {
+                    AgencyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoleInAgency = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AgencyMembers", x => new { x.AgencyId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_AgencyMembers_Agencies_AgencyId",
+                        column: x => x.AgencyId,
+                        principalTable: "Agencies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AgencyMembers_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Artworks",
                 columns: table => new
                 {
@@ -322,6 +389,34 @@ namespace Artify.Api.Migrations
                         principalTable: "Categories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "JobProposals",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    JobPostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ApplicantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CoverLetter = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BidAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JobProposals", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_JobProposals_AspNetUsers_ApplicantId",
+                        column: x => x.ApplicantId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_JobProposals_JobPosts_JobPostId",
+                        column: x => x.JobPostId,
+                        principalTable: "JobPosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -514,6 +609,17 @@ namespace Artify.Api.Migrations
                 column: "AdminId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Agencies_OwnerId",
+                table: "Agencies",
+                column: "OwnerId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AgencyMembers_UserId",
+                table: "AgencyMembers",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AIHashRecords_ArtworkId",
                 table: "AIHashRecords",
                 column: "ArtworkId");
@@ -577,6 +683,21 @@ namespace Artify.Api.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobPosts_PosterId",
+                table: "JobPosts",
+                column: "PosterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobProposals_ApplicantId",
+                table: "JobProposals",
+                column: "ApplicantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobProposals_JobPostId",
+                table: "JobProposals",
+                column: "JobPostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_ApplicationUserId",
@@ -651,6 +772,9 @@ namespace Artify.Api.Migrations
                 name: "AdminActivities");
 
             migrationBuilder.DropTable(
+                name: "AgencyMembers");
+
+            migrationBuilder.DropTable(
                 name: "AIHashRecords");
 
             migrationBuilder.DropTable(
@@ -675,6 +799,9 @@ namespace Artify.Api.Migrations
                 name: "HiringRequests");
 
             migrationBuilder.DropTable(
+                name: "JobProposals");
+
+            migrationBuilder.DropTable(
                 name: "PlagiarismLogs");
 
             migrationBuilder.DropTable(
@@ -684,10 +811,16 @@ namespace Artify.Api.Migrations
                 name: "TransactionLogs");
 
             migrationBuilder.DropTable(
+                name: "Agencies");
+
+            migrationBuilder.DropTable(
                 name: "ArtworkTags");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "JobPosts");
 
             migrationBuilder.DropTable(
                 name: "Orders");

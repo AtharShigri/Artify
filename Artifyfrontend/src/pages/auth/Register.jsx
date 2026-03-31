@@ -5,6 +5,7 @@ import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import SEO from '../../components/common/SEO';
 import { ART_CATEGORIES } from '../../constants/categories';
+import { Building2, User } from 'lucide-react';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -13,7 +14,8 @@ const Register = () => {
         password: '',
         confirmPassword: '',
         category: '',
-        role: 'buyer' // or 'artist'
+        role: 'buyer',      // 'buyer' | 'artist'
+        userType: 0         // 0 = Individual, 1 = Agency
     });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -22,10 +24,7 @@ const Register = () => {
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
@@ -40,7 +39,8 @@ const Register = () => {
         setIsLoading(true);
 
         try {
-            await register(formData);
+            const { confirmPassword, ...payload } = formData;
+            await register(payload);
             navigate('/login');
         } catch (err) {
             setError(err.message || 'Failed to register');
@@ -48,6 +48,13 @@ const Register = () => {
             setIsLoading(false);
         }
     };
+
+    const toggleClass = (active) =>
+        `flex items-center justify-center gap-2 p-3 text-center rounded-lg border transition-all cursor-pointer ${
+            active
+                ? 'bg-secondary/10 border-secondary text-secondary font-bold'
+                : 'border-gray-200 text-textSecondary hover:border-gray-300'
+        }`;
 
     return (
         <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
@@ -68,22 +75,55 @@ const Register = () => {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* Role Selection */}
-                    <div className="grid grid-cols-2 gap-4 mb-2">
-                        <button
-                            type="button"
-                            onClick={() => setFormData({ ...formData, role: 'buyer' })}
-                            className={`p-3 text-center rounded-lg border transition-all ${formData.role === 'buyer' ? 'bg-secondary/10 border-secondary text-secondary font-bold' : 'border-gray-200 text-textSecondary hover:border-gray-300'}`}
-                        >
-                            Art Enthusiast
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setFormData({ ...formData, role: 'artist' })}
-                            className={`p-3 text-center rounded-lg border transition-all ${formData.role === 'artist' ? 'bg-secondary/10 border-secondary text-secondary font-bold' : 'border-gray-200 text-textSecondary hover:border-gray-300'}`}
-                        >
-                            Artist
-                        </button>
+                    {/* Role Selection — determines which endpoint is used */}
+                    <div>
+                        <p className="text-xs font-semibold text-textSecondary uppercase tracking-wide mb-2">I am a...</p>
+                        <div className="grid grid-cols-2 gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, role: 'buyer', category: '' })}
+                                className={toggleClass(formData.role === 'buyer')}
+                            >
+                                Art Enthusiast
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, role: 'artist' })}
+                                className={toggleClass(formData.role === 'artist')}
+                            >
+                                Artist
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* UserType Selection — Individual or Agency (applies to both roles) */}
+                    <div>
+                        <p className="text-xs font-semibold text-textSecondary uppercase tracking-wide mb-2">Account Type</p>
+                        <div className="grid grid-cols-2 gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, userType: 0 })}
+                                className={toggleClass(formData.userType === 0)}
+                            >
+                                <User className="w-4 h-4" />
+                                Individual
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, userType: 1 })}
+                                className={toggleClass(formData.userType === 1)}
+                            >
+                                <Building2 className="w-4 h-4" />
+                                Agency
+                            </button>
+                        </div>
+                        {formData.userType === 1 && (
+                            <p className="mt-1.5 text-xs text-textSecondary">
+                                {formData.role === 'artist'
+                                    ? 'Register as an artist studio or creative collective.'
+                                    : 'Register as a business or creative agency to post projects.'}
+                            </p>
+                        )}
                     </div>
 
                     <Input
@@ -103,8 +143,9 @@ const Register = () => {
                         required
                     />
 
+                    {/* Artist-only: Art Category */}
                     {formData.role === 'artist' && (
-                        <div className="mb-4">
+                        <div>
                             <label className="block text-sm font-medium text-textSecondary mb-1.5">Art Category</label>
                             <select
                                 name="category"
@@ -114,10 +155,8 @@ const Register = () => {
                                 className="w-full px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all bg-white"
                             >
                                 <option value="">Select a Category</option>
-                                {ART_CATEGORIES.map((category) => (
-                                    <option key={category} value={category}>
-                                        {category}
-                                    </option>
+                                {ART_CATEGORIES.map((cat) => (
+                                    <option key={cat} value={cat}>{cat}</option>
                                 ))}
                             </select>
                         </div>
@@ -154,7 +193,9 @@ const Register = () => {
                 </p>
 
                 <p className="mt-4 text-center text-xs text-textSecondary">
-                    By registering, you agree to our <Link to="/terms" className="underline">Terms of Service</Link> and <Link to="/privacy" className="underline">Privacy Policy</Link>.
+                    By registering, you agree to our{' '}
+                    <Link to="/terms" className="underline">Terms of Service</Link> and{' '}
+                    <Link to="/privacy" className="underline">Privacy Policy</Link>.
                 </p>
             </div>
         </div>

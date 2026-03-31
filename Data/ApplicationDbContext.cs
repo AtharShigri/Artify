@@ -1,4 +1,3 @@
-﻿// ========================= ApplicationDbContext.cs (Safe, Code-Only Version) =========================
 using Artify.Api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -13,7 +12,6 @@ namespace Artify.Api.Data
         {
         }
 
-        // Existing models (already in DB)
         public DbSet<Artwork> Artworks { get; set; }
         public DbSet<ArtistProfile> ArtistProfiles { get; set; }
         public DbSet<Order> Orders { get; set; }
@@ -23,12 +21,21 @@ namespace Artify.Api.Data
         public DbSet<AdminActivity> AdminActivities { get; set; }
         public DbSet<AIHashRecord> AIHashRecords { get; set; }
 
-        // ----------------- Safe code-only additions -----------------
         public DbSet<PlagiarismLog> PlagiarismLogs { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<ArtworkTag> ArtworkTags { get; set; }
         public DbSet<HiringRequest> HiringRequests { get; set; }
+        public DbSet<Agency> Agencies { get; set; }
+        public DbSet<AgencyMember> AgencyMembers { get; set; }
+        public DbSet<JobPost> JobPosts { get; set; }
+        public DbSet<JobProposal> JobProposals { get; set; }
+
+        // New models
+        public DbSet<Conversation> Conversations { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<EscrowTransaction> EscrowTransactions { get; set; }
+        public DbSet<PayoutMethod> PayoutMethods { get; set; }
 
 
 
@@ -69,10 +76,65 @@ namespace Artify.Api.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Order>()
-        .HasOne(o => o.Buyer)
-        .WithMany()
-        .HasForeignKey(o => o.BuyerId)
-        .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(o => o.Buyer)
+                .WithMany()
+                .HasForeignKey(o => o.BuyerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<AgencyMember>()
+                .HasKey(am => new { am.AgencyId, am.UserId });
+
+            builder.Entity<AgencyMember>()
+                .HasOne(am => am.User)
+                .WithMany()
+                .HasForeignKey(am => am.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<AgencyMember>()
+                .HasOne(am => am.Agency)
+                .WithMany(a => a.Members)
+                .HasForeignKey(am => am.AgencyId)
+                .OnDelete(DeleteBehavior.Cascade); 
+        
+            builder.Entity<JobPost>()
+                .HasOne(j => j.Poster)
+                .WithMany()
+                .HasForeignKey(j => j.PosterId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Conversation: two separate FK navigation props to ApplicationUser
+            builder.Entity<Conversation>()
+                .HasOne(c => c.ParticipantA)
+                .WithMany()
+                .HasForeignKey(c => c.ParticipantA_Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Conversation>()
+                .HasOne(c => c.ParticipantB)
+                .WithMany()
+                .HasForeignKey(c => c.ParticipantB_Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ChatMessage -> Sender
+            builder.Entity<ChatMessage>()
+                .HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // EscrowTransaction -> Order (one-to-one)
+            builder.Entity<EscrowTransaction>()
+                .HasOne(e => e.Order)
+                .WithMany()
+                .HasForeignKey(e => e.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // PayoutMethod -> Artist
+            builder.Entity<PayoutMethod>()
+                .HasOne(p => p.Artist)
+                .WithMany()
+                .HasForeignKey(p => p.ArtistId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

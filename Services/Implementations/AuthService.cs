@@ -1,7 +1,8 @@
 using Artify.Api.DTOs.Auth;
-using Artify.Api.Services.Interfaces;
-using Artify.Api.Models; 
+using Artify.Api.Enums;
+using Artify.Api.Models;
 using Artify.Api.Repositories.Interfaces;
+using Artify.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -18,7 +19,7 @@ namespace Artify.Api.Services.Implementations
         private readonly IArtistRepository _artistRepo;
 
         public AuthService(
-                    UserManager<ApplicationUser> userManager,
+            UserManager<ApplicationUser> userManager,
             IConfiguration config,
             IArtistRepository artistRepo)
         {
@@ -29,64 +30,75 @@ namespace Artify.Api.Services.Implementations
 
         // ---------------- REGISTER ----------------
 
-        public Task<AuthResponseDto> RegisterArtistAsync(RegisterDto dto)
-            => RegisterAsync(dto, "Artist");
+        public async Task<AuthResponseDto> RegisterUserAsync(RegisterDto dto, string role)
+        {
+            var user = new ApplicationUser
+            {
+                UserName = dto.Email,
+                Email = dto.Email,
+                FullName = dto.FullName,
+                UserType = (UserType)dto.UserType, // 0 = Individual, 1 = Agency
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true
+            };
 
-        public Task<AuthResponseDto> RegisterBuyerAsync(RegisterDto dto)
-            => RegisterAsync(dto, "Buyer");
+            // Handle Artist Profile Initialization
+            if (role == "Artist")
+            {
+                user.ArtistProfile = new ArtistProfile 
+                { 
+                    Category = dto.Category,
+                    CreatedAt = DateTime.UtcNow,
+                    Rating = 0
+                };
+            }
 
-        private async Task<AuthResponseDto> RegisterAsync(RegisterDto dto, string role)
-{
-    var user = new ApplicationUser
-    {
-        UserName = dto.Email,
-        Email = dto.Email,
-        FullName = dto.FullName,
-        ArtistProfile = role == "Artist" ? new ArtistProfile { Category = dto.Category } : null
-    };
+            // Handle Agency Initialization
+            if ((UserType)dto.UserType == UserType.Agency)
+            {
+                user.OwnedAgency = new Agency
+                {
+                    Name = $"{dto.FullName}'s Agency",
+                    Description = "New Agency Account"
+                };
+            }
 
-    var result = await _userManager.CreateAsync(user, dto.Password);
-    if (!result.Succeeded)
-        throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+            var result = await _userManager.CreateAsync(user, dto.Password);
+            if (!result.Succeeded)
+                throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
 
-    await _userManager.AddToRoleAsync(user, role);
-    return await GenerateTokenAsync(user, role);
-}
+            await _userManager.AddToRoleAsync(user, role);
+            
+            return await GenerateTokenAsync(user, role);
+        }
 
         // ---------------- LOGIN ----------------
 
-        public Task<AuthResponseDto> LoginArtistAsync(LoginDto dto)
-            => LoginAsync(dto, "Artist");
-
-        public Task<AuthResponseDto> LoginBuyerAsync(LoginDto dto)
-            => LoginAsync(dto, "Buyer");
-
-        public Task<AuthResponseDto> LoginAdminAsync(LoginDto dto)
-            => LoginAsync(dto, "Admin");
-
-        private async Task<AuthResponseDto> LoginAsync(LoginDto dto, string role)
+        public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
         {
-            // Use repository to load user WITH ArtistProfile (for profileImageUrl)
-            var user = await _artistRepo.GetByEmailAsync(dto.Email).ConfigureAwait(false);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password).ConfigureAwait(false))
+            // Load user with Profile and Agency data included
+            var user = await _artistRepo.GetByEmailAsync(dto.Email);
+            
+            if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
                 throw new Exception("Invalid credentials");
 
-            if (!await _userManager.IsInRoleAsync(user, role).ConfigureAwait(false))
-                throw new Exception("Unauthorized role");
+            var roles = await _userManager.GetRolesAsync(user);
+            var primaryRole = roles.FirstOrDefault() ?? "Buyer";
 
-            return await GenerateTokenAsync(user, role).ConfigureAwait(false);
+            return await GenerateTokenAsync(user, primaryRole);
         }
 
-        // ---------------- JWT ----------------
+        // ---------------- JWT GENERATION ----------------
 
-        private Task<AuthResponseDto> GenerateTokenAsync(ApplicationUser user, string role)
+        private async Task<AuthResponseDto> GenerateTokenAsync(ApplicationUser user, string role)
         {
-            var claims = new[]
+            var claims = new List<Claim>
             {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Email, user.Email!),
-                    new Claim(ClaimTypes.Role, role)
-                };
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email!),
+                new Claim(ClaimTypes.Role, role),
+                new Claim("UserType", ((int)user.UserType).ToString()) // Helpful for Frontend logic
+            };
 
             var jwtKey = _config["Jwt:Key"];
             if (string.IsNullOrEmpty(jwtKey))
@@ -102,41 +114,34 @@ namespace Artify.Api.Services.Implementations
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
 
-            var response = new AuthResponseDto
+            return new AuthResponseDto
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
                 Role = role,
                 FullName = user.FullName,
                 Email = user.Email!,
-                ProfileImageUrl = user.ArtistProfile?.ProfileImageUrl
+                ProfileImageUrl = user.ArtistProfile?.ProfileImageUrl,
+                UserType = (int)user.UserType
             };
-            return Task.FromResult(response);
         }
 
-        // ---------------- PASSWORD ----------------
+        // ---------------- PASSWORD MANAGEMENT ----------------
 
         public async Task ForgotPasswordAsync(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
+            var user = await _userManager.FindByEmailAsync(email);
             if (user == null) return;
-
-            // Token generation is async but not used further here
-            await _userManager.GeneratePasswordResetTokenAsync(user).ConfigureAwait(false);
-            // Email sending intentionally omitted
+            await _userManager.GeneratePasswordResetTokenAsync(user);
         }
 
         public async Task ResetPasswordAsync(ResetPasswordDto dto)
         {
-            var user = await _userManager.FindByEmailAsync(dto.Email).ConfigureAwait(false);
-            if (user == null)
-                throw new Exception("Invalid user");
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+            if (user == null) throw new Exception("Invalid user");
 
-            var result = await _userManager.ResetPasswordAsync(
-                user, dto.Token, dto.NewPassword).ConfigureAwait(false);
-
-            if (!result.Succeeded)
-                throw new Exception("Password reset failed");
+            var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
+            if (!result.Succeeded) throw new Exception("Password reset failed");
         }
     }
 }

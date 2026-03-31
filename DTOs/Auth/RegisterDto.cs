@@ -16,6 +16,9 @@ namespace Artify.Api.DTOs.Auth
         public string Password { get; set; }
         
         [ArtCategory]
-        public string Category { get; set; }   
+        public string Category { get; set; }
+
+        [Required]
+        public int UserType { get; set; }   
     }
 }
