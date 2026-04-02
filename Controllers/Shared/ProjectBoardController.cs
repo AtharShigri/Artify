@@ -51,7 +51,23 @@ namespace Artify.Api.Controllers.Shared
             
             var jobs = await _context.JobPosts
                 .Where(j => j.PosterId == userId)
-                .Include(j => j.Proposals)
+                .Select(j => new {
+                    j.Id,
+                    j.Title,
+                    j.Description,
+                    j.Budget,
+                    j.PosterId,
+                    PosterName = j.Poster.FullName,
+                    Proposals = j.Proposals.Select(p => new {
+                        p.Id,
+                        p.JobPostId,
+                        p.ApplicantId,
+                        ApplicantName = p.Applicant.FullName,
+                        p.CoverLetter,
+                        p.BidAmount,
+                        p.Status
+                    })
+                })
                 .ToListAsync();
 
             return Ok(jobs);
@@ -81,6 +97,13 @@ namespace Artify.Api.Controllers.Shared
         public async Task<IActionResult> SubmitProposal([FromBody] ProposalDto dto)
         {
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            // Check if artist already applied
+            var existingProposal = await _context.JobProposals
+                .FirstOrDefaultAsync(p => p.JobPostId == dto.JobPostId && p.ApplicantId == userId);
+            
+            if (existingProposal != null)
+                return BadRequest(new { message = "You have already applied for this job." });
 
             // Check if user is an artist/agency member
             var proposal = new JobProposal

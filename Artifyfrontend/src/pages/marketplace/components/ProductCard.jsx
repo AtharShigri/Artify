@@ -17,9 +17,9 @@ const ProductCard = ({ artwork }) => {
             className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-border group"
         >
             <div className="aspect-[4/5] relative overflow-hidden bg-gray-100">
-                <Link to={`/artwork/${artwork.id}`}>
+                <Link to={`/artwork/${artwork.artworkId || artwork.id}`}>
                     <img
-                        src={artwork.image}
+                        src={artwork.imageUrl || artwork.image}
                         alt={artwork.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -40,12 +40,14 @@ const ProductCard = ({ artwork }) => {
             </div>
             <div className="p-4">
                 <div className="flex justify-between items-start mb-2">
-                    <Link to={`/artwork/${artwork.id}`} className="font-bold text-lg text-primary truncate pr-2 hover:text-secondary block flex-1">
+                    <Link to={`/artwork/${artwork.artworkId || artwork.id}`} className="font-bold text-lg text-primary truncate pr-2 hover:text-secondary block flex-1">
                         {artwork.title}
                     </Link>
-                    <span className="font-heading font-bold text-secondary">{artwork.price}</span>
+                    <span className="font-heading font-bold text-secondary">
+                        {typeof artwork.price === 'number' ? `$${artwork.price.toLocaleString()}` : artwork.price}
+                    </span>
                 </div>
-                <p className="text-sm text-textSecondary mb-3">by {artwork.artist}</p>
+                <p className="text-sm text-textSecondary mb-3">by {artwork.artistName || artwork.artist}</p>
                 <div className="flex gap-2">
                     <span className="px-2 py-1 bg-gray-100 text-xs rounded-md text-gray-600">{artwork.category}</span>
                 </div>

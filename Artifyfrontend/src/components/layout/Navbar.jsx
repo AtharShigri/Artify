@@ -23,7 +23,6 @@ const Navbar = () => {
     const artistLinks = [
         { name: 'Job Feed', path: '/project-board', icon: Briefcase },
         { name: 'Marketplace', path: '/marketplace' },
-        { name: 'Artists', path: '/artists' },
     ];
 
     const buyerLinks = [

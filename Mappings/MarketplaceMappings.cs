@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Artify.Api.DTOs.Shared;
 using Artify.Api.Models;
 
@@ -58,6 +58,10 @@ namespace Artify.Api.Mappings
                         ? src.Skills.Split(',', StringSplitOptions.RemoveEmptyEntries)
                             .Select(s => s.Trim()).ToList()
                         : new List<string>()))
+                .ForMember(dest => dest.SocialLinks, opt => opt.MapFrom(src =>
+                    !string.IsNullOrEmpty(src.SocialLinks)
+                        ? System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(src.SocialLinks, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+                        : new Dictionary<string, string>()))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
         }
     }

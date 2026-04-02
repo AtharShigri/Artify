@@ -1,6 +1,11 @@
 import axios from '../api/axios';
 
 const marketplaceService = {
+    getAllArtworks: async (page = 1, pageSize = 20) => {
+        const response = await axios.get(`/marketplace/artworks?page=${page}&pageSize=${pageSize}`);
+        return response.data;
+    },
+
     getAllArtists: async (page = 1, pageSize = 20) => {
         const response = await axios.get(`/marketplace/artists?page=${page}&pageSize=${pageSize}`);
         return response.data;

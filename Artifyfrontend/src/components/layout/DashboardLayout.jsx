@@ -14,7 +14,8 @@ import {
     AlertTriangle,
     Briefcase,
     PlusCircle,
-    Building2
+    Building2,
+    MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../common/Button';
@@ -36,6 +37,7 @@ const DashboardLayout = () => {
         { name: 'My Artworks', path: '/dashboard/artist/artworks', icon: ImageIcon },
         { name: 'Orders', path: '/dashboard/artist/orders', icon: ShoppingBag },
         { name: 'Job Feed', path: '/project-board', icon: Briefcase },
+        { name: 'Messages', path: '/dashboard/chat', icon: MessageSquare },
         { name: 'Settings', path: '/dashboard/artist/settings', icon: Settings },
         ...(isAgency ? [{ name: 'Agency Settings', path: '/dashboard/agency', icon: Building2 }] : []),
     ];
@@ -44,6 +46,7 @@ const DashboardLayout = () => {
         { name: 'My Orders', path: '/dashboard/buyer/orders', icon: ShoppingBag },
         { name: 'My Projects', path: '/dashboard/buyer/orders', icon: Briefcase, tab: 'projects' },
         { name: 'Post a Project', path: '/dashboard/buyer/post-project', icon: PlusCircle },
+        { name: 'Messages', path: '/dashboard/chat', icon: MessageSquare },
         { name: 'Settings', path: '/dashboard/buyer/settings', icon: Settings },
         ...(isAgency ? [{ name: 'Agency Settings', path: '/dashboard/agency', icon: Building2 }] : []),
     ];

@@ -33,6 +33,9 @@ const AgencySettings = lazy(() => import('../pages/buyer/AgencySettings'));
 // Dashboard Pages — Admin
 const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
 
+// Chat Page
+const ChatPage = lazy(() => import('../pages/chat/ChatPage'));
+
 const AppRoutes = () => {
     return (
         <Suspense fallback={<Loader fullScreen />}>
@@ -66,6 +69,10 @@ const AppRoutes = () => {
                 }>
                     {/* Default redirect — determined by role at login, but fallback here */}
                     <Route index element={<Navigate to="buyer/orders" replace />} />
+
+                    {/* Shared Routes */}
+                    <Route path="chat" element={<ChatPage />} />
+
 
                     {/* Artist Routes */}
                     <Route path="artist" element={<ArtistDashboard />} />

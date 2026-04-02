@@ -26,10 +26,11 @@ const Artists = () => {
         }
     };
 
-    const filteredArtists = artists.filter(artist =>
-        artist.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        artist.category?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredArtists = (Array.isArray(artists) ? artists : []).filter(artist => {
+        const nameMatch = (artist.fullName || '').toLowerCase().includes((searchTerm || '').toLowerCase());
+        const catMatch = (artist.category || '').toLowerCase().includes((searchTerm || '').toLowerCase());
+        return nameMatch || catMatch;
+    });
 
     if (loading) return <Loader />;
 
