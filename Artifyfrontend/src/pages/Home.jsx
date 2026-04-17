@@ -1,41 +1,17 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Palette, Music, PenTool, Mic, Star } from 'lucide-react';
+import { ArrowRight, Palette, Music, PenTool, Mic, Star, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Button from '../components/common/Button';
 import SEO from '../components/common/SEO';
+import marketplaceService from '../services/marketplaceService';
 
-// Mock Data for Categories
+// Mock Data for Categories (Categories remain static or can be moved to API later)
 const categories = [
     { id: 1, name: 'Visual Arts', icon: Palette, color: 'bg-purple-100 text-purple-600', desc: 'Paintings, Sketches, Digital Art' },
     { id: 2, name: 'Calligraphy', icon: PenTool, color: 'bg-blue-100 text-blue-600', desc: 'Traditional & Modern Scripts' },
     { id: 3, name: 'Music & Audio', icon: Music, color: 'bg-pink-100 text-pink-600', desc: 'Original Compositions & Scores' },
     { id: 4, name: 'Performance', icon: Mic, color: 'bg-orange-100 text-orange-600', desc: 'Live Acts, spoken word' },
-];
-
-// Mock Data for Featured Artworks
-const featuredArtworks = [
-    {
-        id: 1,
-        title: 'Ethereal Dreams',
-        artist: 'Sara Khan',
-        price: '$450',
-        image: 'https://images.unsplash.com/photo-1579783902614-a3fb392796a5?auto=format&fit=crop&q=80&w=800'
-    },
-    {
-        id: 2,
-        title: 'Midnight Symphony',
-        artist: 'Ali Raza',
-        price: '$320',
-        image: 'https://images.unsplash.com/photo-1517524285303-d7543f547574?auto=format&fit=crop&q=80&w=800'
-    },
-    {
-        id: 3,
-        title: 'Golden Hour',
-        artist: 'Maria Ahmed',
-        price: '$800',
-        image: 'https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&q=80&w=800'
-    },
 ];
 
 const Home = () => {
@@ -47,6 +23,43 @@ const Home = () => {
 
     const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
     const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
+
+    const [featuredArtists, setFeaturedArtists] = useState([]);
+    const [trendingArtworks, setTrendingArtworks] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchHomeData = async () => {
+            try {
+                setLoading(true);
+                const [artistsRes, artworksRes] = await Promise.all([
+                    marketplaceService.getFeaturedArtists(),
+                    marketplaceService.getTrendingArtworks()
+                ]);
+                setFeaturedArtists(artistsRes || []);
+                // By default take top 6 to show if the API sends more
+                setTrendingArtworks(artworksRes ? artworksRes.slice(0, 6) : []);
+            } catch (error) {
+                console.error("Failed to load home data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchHomeData();
+    }, []);
+
+    // Placeholder skeleton for artworks while loading
+    const SkeletonArtwork = () => (
+        <div className="group relative rounded-xl overflow-hidden bg-gray-200 animate-pulse w-full">
+            <div className="aspect-[4/5] bg-gray-300"></div>
+            <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col justify-end bg-gradient-to-t from-black/50 to-transparent h-1/2">
+                <div className="h-4 bg-gray-400 rounded w-16 mb-2"></div>
+                <div className="h-6 bg-gray-400 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-gray-400 rounded w-1/2"></div>
+            </div>
+        </div>
+    );
 
     return (
         <div className="flex flex-col">
@@ -104,6 +117,53 @@ const Home = () => {
                 </motion.div>
             </section>
 
+            {/* Featured Artists Badges Row */}
+            <section className="py-12 bg-white border-b border-gray-100">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h3 className="text-center text-sm font-bold text-gray-400 uppercase tracking-wider mb-8">
+                        Recognized Artists
+                    </h3>
+                    
+                    {loading ? (
+                        <div className="flex flex-wrap justify-center gap-8 md:gap-12">
+                            {[1,2,3,4,5].map(i => (
+                                <div key={i} className="flex flex-col items-center animate-pulse">
+                                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gray-200 mb-3"></div>
+                                    <div className="w-16 h-4 bg-gray-200 rounded"></div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex flex-wrap justify-center gap-8 md:gap-12">
+                            {featuredArtists.length > 0 ? featuredArtists.map((artist, index) => (
+                                <Link key={artist.artistProfileId || index} to={`/artists/${artist.artistProfileId}`} className="group flex flex-col items-center">
+                                    <motion.div 
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        whileInView={{ opacity: 1, scale: 1 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: index * 0.1 }}
+                                        className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden mb-3 border-4 border-transparent group-hover:border-accent transition-all duration-300 shadow-md group-hover:shadow-xl group-hover:scale-105"
+                                    >
+                                        {artist.profileImageUrl ? (
+                                            <img src={artist.profileImageUrl} alt={artist.fullName} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 group-hover:text-accent group-hover:bg-accent/10 transition-colors">
+                                                <User size={36} />
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                    <span className="text-sm font-medium text-primary group-hover:text-accent transition-colors text-center line-clamp-1 max-w-[100px]">
+                                        {artist.fullName}
+                                    </span>
+                                </Link>
+                            )) : (
+                                <p className="text-gray-500 italic">No featured artists found.</p>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </section>
+
             {/* Categories Section */}
             <section className="py-20 bg-background">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -136,46 +196,71 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Featured Artworks Section */}
+            {/* Trending Artworks Section */}
             <section className="py-20 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-end mb-12">
                         <div>
-                            <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Featured Masterpieces</h2>
-                            <p className="text-textSecondary">Hand-picked selections from our top artists</p>
+                            <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Trending Masterpieces</h2>
+                            <p className="text-textSecondary">Dynamic, top-rated selections currently trending</p>
                         </div>
                         <Link to="/marketplace" className="hidden md:flex items-center text-primary font-medium hover:text-secondary transition-colors">
                             View All <ArrowRight className="w-4 h-4 ml-2" />
                         </Link>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {featuredArtworks.map((art, index) => (
-                            <motion.div
-                                key={art.id}
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.2 }}
-                                className="group relative rounded-xl overflow-hidden bg-gray-100"
-                            >
-                                <div className="aspect-[4/5] overflow-hidden">
-                                    <img
-                                        src={art.image}
-                                        alt={art.title}
-                                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                                    />
-                                </div>
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 flex flex-col justify-end">
-                                    <span className="text-accent text-sm font-medium mb-1">{art.price}</span>
-                                    <h3 className="text-white text-xl font-bold mb-1">{art.title}</h3>
-                                    <p className="text-gray-300 text-sm">by {art.artist}</p>
-                                    <div className="mt-4 flex gap-2">
-                                        <Button variant="accent" size="sm" className="w-full">View Details</Button>
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8">
+                        {loading ? (
+                            <>
+                                <SkeletonArtwork />
+                                <SkeletonArtwork />
+                                <SkeletonArtwork />
+                            </>
+                        ) : trendingArtworks.length > 0 ? (
+                            trendingArtworks.map((art, index) => (
+                                <motion.div
+                                    key={art.artworkId || index}
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.1 }}
+                                    className="group relative rounded-xl overflow-hidden bg-gray-100 shadow-sm hover:shadow-xl transition-all duration-500"
+                                >
+                                    <div className="aspect-[4/5] overflow-hidden">
+                                        <img
+                                            src={art.imageUrl || 'https://via.placeholder.com/800'}
+                                            alt={art.title}
+                                            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                                        />
                                     </div>
-                                </div>
-                            </motion.div>
-                        ))}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-80 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 flex flex-col justify-end">
+                                        <div className="flex justify-between items-center mb-1">
+                                            <span className="text-accent text-sm font-bold bg-accent/20 px-2 py-0.5 rounded backdrop-blur-md border border-accent/50">
+                                                ${art.price}
+                                            </span>
+                                            {art.category && (
+                                                <span className="text-white/80 text-xs px-2 py-1 bg-white/10 rounded-full backdrop-blur-sm">
+                                                    {art.category}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <h3 className="text-white text-xl font-bold mb-1 line-clamp-1">{art.title}</h3>
+                                        <Link to={`/artists/${art.artistProfileId}`} className="text-gray-300 text-sm hover:text-white transition-colors cursor-pointer inline-block z-20 relative">
+                                            by {art.artistName}
+                                        </Link>
+                                        <div className="mt-4 flex gap-2">
+                                            <Link to={`/marketplace/artworks/${art.artworkId}`} className="w-full z-20 relative">
+                                                <Button variant="accent" size="sm" className="w-full shadow-lg shadow-accent/20">View Details</Button>
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))
+                        ) : (
+                            <div className="col-span-1 md:col-span-3 text-center py-12 text-gray-500">
+                                No trending artworks available at the moment.
+                            </div>
+                        )}
                     </div>
 
                     <div className="mt-8 md:hidden text-center">
@@ -220,7 +305,9 @@ const Home = () => {
                             </div>
                         </div>
                     </div>
-                    <Button variant="accent" size="lg">Start Your Journey</Button>
+                    <Link to="/register">
+                        <Button variant="accent" size="lg">Start Your Journey</Button>
+                    </Link>
                 </div>
             </section>
         </div>

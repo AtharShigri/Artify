@@ -64,27 +64,6 @@ namespace Artify.Api.Controllers.Auth
             }
         }
 
-        // ---------------- PASSWORD MANAGEMENT ----------------
 
-        [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword([FromBody] string email)
-        {
-            await _authService.ForgotPasswordAsync(email);
-            return Ok(new { message = "If the email exists, a reset link has been sent." });
-        }
-
-        [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
-        {
-            try
-            {
-                await _authService.ResetPasswordAsync(dto);
-                return Ok(new { message = "Password reset successful." });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
     }
 }

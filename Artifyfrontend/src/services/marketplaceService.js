@@ -19,6 +19,11 @@ const marketplaceService = {
     getArtistProfile: async (id) => {
         const response = await axios.get(`/marketplace/artists/${id}`);
         return response.data;
+    },
+
+    getTrendingArtworks: async () => {
+        const response = await axios.get('/marketplace/artworks/trending');
+        return response.data;
     }
 };
 

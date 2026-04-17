@@ -13,7 +13,7 @@ namespace Artify.Api.Mappings
                 .ForMember(dest => dest.ArtworkId, opt => opt.MapFrom(src => src.ArtworkId))
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
-                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.CategoryEntity))
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.CategoryEntity != null ? src.CategoryEntity.Name : ""))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
                 .ForMember(dest => dest.ArtistName, opt => opt.MapFrom(src =>
@@ -24,7 +24,8 @@ namespace Artify.Api.Mappings
                 .ForMember(dest => dest.LikesCount, opt => opt.MapFrom(src => src.LikesCount))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
                 .ForMember(dest => dest.IsForSale, opt => opt.MapFrom(src => src.IsForSale))
-                .ForMember(dest => dest.Stock, opt => opt.MapFrom(src => src.Stock));
+                .ForMember(dest => dest.Stock, opt => opt.MapFrom(src => src.Stock))
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => 0));
 
             // Artwork to ArtworkDetailDto (includes additional fields)
             CreateMap<Artwork, ArtworkDetailDto>()
@@ -58,11 +59,33 @@ namespace Artify.Api.Mappings
                         ? src.Skills.Split(',', StringSplitOptions.RemoveEmptyEntries)
                             .Select(s => s.Trim()).ToList()
                         : new List<string>()))
-                .ForMember(dest => dest.SocialLinks, opt => opt.MapFrom(src =>
-                    !string.IsNullOrEmpty(src.SocialLinks)
-                        ? System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(src.SocialLinks, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true })
-                        : new Dictionary<string, string>()))
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
+                .ForMember(dest => dest.SocialLinks, opt => opt.MapFrom(src => ParseSocialLinks(src.SocialLinks)))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Rating))
+                .ForMember(dest => dest.TotalArtworks, opt => opt.MapFrom(src => src.Artworks != null ? src.Artworks.Count : 0))
+                .ForMember(dest => dest.TotalReviews, opt => opt.MapFrom(src => 0))
+                .ForMember(dest => dest.FeaturedArtworks, opt => opt.MapFrom(src => src.Artworks.Take(4)));
+        }
+
+        private static Dictionary<string, string> ParseSocialLinks(string? socialLinksJson)
+        {
+            if (string.IsNullOrWhiteSpace(socialLinksJson))
+            {
+                return new Dictionary<string, string>();
+            }
+
+            try
+            {
+                var result = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(
+                    socialLinksJson, 
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    
+                return result ?? new Dictionary<string, string>();
+            }
+            catch
+            {
+                return new Dictionary<string, string>();
+            }
         }
     }
 }
