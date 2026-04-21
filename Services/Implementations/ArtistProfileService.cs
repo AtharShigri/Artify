@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Artify.Api.DTOs.Artist;
 using Artify.Api.DTOs.Auth;
@@ -8,6 +8,7 @@ using Artify.Api.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using Artify.Api.Enums;
 
 namespace Artify.Api.Services.Implementations
 {
@@ -52,7 +53,10 @@ namespace Artify.Api.Services.Implementations
                 Phone = artist.PhoneNumber,
                 City = artist.ArtistProfile?.Location,
                 SocialLink = artist.ArtistProfile?.SocialLinks,
-                ProfileImageUrl = artist.ArtistProfile?.ProfileImageUrl
+                ProfileImageUrl = artist.ArtistProfile?.ProfileImageUrl,
+                UserType = (int)artist.UserType,
+                TeamSize = artist.OwnedAgency?.TeamSize,
+                MemberNames = artist.OwnedAgency?.MemberNames
             };
         }
 
@@ -76,6 +80,12 @@ namespace Artify.Api.Services.Implementations
             artist.ArtistProfile.Category = dto.Category ?? artist.ArtistProfile.Category;
             artist.ArtistProfile.Location = dto.City ?? artist.ArtistProfile.Location;
             artist.ArtistProfile.SocialLinks = dto.SocialLink ?? artist.ArtistProfile.SocialLinks;
+
+            if (artist.UserType == UserType.Agency && artist.OwnedAgency != null)
+            {
+                artist.OwnedAgency.TeamSize = dto.TeamSize ?? artist.OwnedAgency.TeamSize;
+                artist.OwnedAgency.MemberNames = dto.MemberNames ?? artist.OwnedAgency.MemberNames;
+            }
 
             await _artistRepo.UpdateAsync(artist);
 

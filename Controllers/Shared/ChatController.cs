@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Artify.Api.Repositories.Interfaces;
 using Artify.Api.Services.Interfaces;
 using System;
 using System.Threading.Tasks;
@@ -13,10 +14,12 @@ namespace Artify.Api.Controllers.Shared
     public class ChatController : ControllerBase
     {
         private readonly IChatService _chatService;
+        private readonly IBuyerRepository _buyerRepo;
 
-        public ChatController(IChatService chatService)
+        public ChatController(IChatService chatService, IBuyerRepository buyerRepo)
         {
             _chatService = chatService;
+            _buyerRepo = buyerRepo;
         }
 
         [HttpGet("conversations")]
@@ -44,9 +47,49 @@ namespace Artify.Api.Controllers.Shared
         {
             try
             {
-                // In production, we'd also verify the User is a participant in this conversationId
+                var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
+                {
+                    return Unauthorized(new { message = "Invalid user token." });
+                }
+
+                // Security Check: Verify user is a participant
+                if (!await _chatService.IsUserInConversationAsync(conversationId, userId))
+                {
+                    return Forbid("You do not have permission to view this chat history.");
+                }
+
                 var history = await _chatService.GetChatHistoryAsync(conversationId);
                 return Ok(history);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("start/{artistProfileId}")]
+        public async Task<IActionResult> StartConversation(Guid artistProfileId)
+        {
+            try
+            {
+                var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
+                {
+                    return Unauthorized(new { message = "Invalid user token." });
+                }
+
+                // Resolve the User ID from the Artist Profile ID
+                var artistProfile = await _buyerRepo.GetArtistProfileByIdAsync(artistProfileId);
+                if (artistProfile == null)
+                {
+                    return NotFound(new { message = "Artist profile not found." });
+                }
+
+                var sellerId = artistProfile.UserId;
+
+                var conversation = await _chatService.GetOrCreateConversationAsync(userId, sellerId);
+                return Ok(conversation);
             }
             catch (Exception ex)
             {

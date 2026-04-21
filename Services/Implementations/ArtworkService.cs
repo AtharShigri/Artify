@@ -24,7 +24,8 @@ namespace Artify.Api.Services.Implementations
 
         public async Task<object> GetAllAsync(ClaimsPrincipal user)
         {
-            Guid artistId = _artistRepo.GetArtistId(user);
+            // If user is not authenticated, we return all artworks
+            Guid artistId = (user?.Identity?.IsAuthenticated == true) ? _artistRepo.GetArtistId(user) : Guid.Empty;
             var artworks = await _artworkRepo.GetAllByArtistAsync(artistId);
 
             return artworks.Select(a => new
@@ -33,31 +34,36 @@ namespace Artify.Api.Services.Implementations
                 a.Title,
                 a.Description,
                 a.Price,
-                a.CategoryEntity,
+                Category = a.CategoryEntity?.Name ?? "N/A",
                 a.ImageUrl,
                 a.IsForSale,
-                a.CreatedAt
+                a.CreatedAt,
+                a.ArtistProfileId,
+                ArtistName = a.ArtistProfile?.User?.FullName ?? "Unknown Artist"
             });
         }
 
         public async Task<object> GetByIdAsync(ClaimsPrincipal user, Guid artworkId)
         {
-            var artistId = _artistRepo.GetArtistId(user);
             var artwork = await _artworkRepo.GetByIdAsync(artworkId);
 
-            if (artwork == null || artwork.ArtistProfileId != artistId)
+            if (artwork == null)
                 return null;
 
+            // If it's a guest or if the artist owns it, they can see it. 
+            // In fact, since it's a GET request, anyone can see it now as per requirement.
             return new
             {
                 artwork.ArtworkId,
                 artwork.Title,
                 artwork.Description,
                 artwork.Price,
-                artwork.CategoryEntity,
+                Category = artwork.CategoryEntity?.Name ?? "N/A",
                 artwork.ImageUrl,
                 artwork.IsForSale,
-                artwork.CreatedAt
+                artwork.CreatedAt,
+                artwork.ArtistProfileId,
+                ArtistName = artwork.ArtistProfile?.User?.FullName ?? "Unknown Artist"
             };
         }
 

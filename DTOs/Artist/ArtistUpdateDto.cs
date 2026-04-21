@@ -1,4 +1,4 @@
-﻿using Artify.Api.Validation;
+using Artify.Api.Validation;
 
 namespace Artify.Api.DTOs.Artist
 {
@@ -11,5 +11,7 @@ namespace Artify.Api.DTOs.Artist
         public string Phone { get; set; }
         public string City { get; set; }
         public string SocialLink { get; set; }
+        public int? TeamSize { get; set; }
+        public string? MemberNames { get; set; }
     }
 }

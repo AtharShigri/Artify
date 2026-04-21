@@ -1,8 +1,9 @@
-﻿using Artify.Api.Data;
+using Artify.Api.Data;
 using Artify.Api.Models;
 using Artify.Api.Repositories.Implementations;
 using Artify.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 public class ReviewRepository : BaseRepository, IReviewRepository
 {
@@ -28,6 +29,16 @@ public class ReviewRepository : BaseRepository, IReviewRepository
     {
         return await _context.Reviews
             .Where(r => r.ArtistProfileId == artistProfileId)
+            .OrderByDescending(r => r.CreatedAt)
+            .Include(r => r.Reviewer)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Review>> GetReviewsByArtistIdsAsync(IEnumerable<Guid> artistProfileIds)
+    {
+        var idsList = artistProfileIds.ToList();
+        return await _context.Reviews
+            .Where(r => r.ArtistProfileId.HasValue && idsList.Contains(r.ArtistProfileId.Value))
             .OrderByDescending(r => r.CreatedAt)
             .Include(r => r.Reviewer)
             .ToListAsync();

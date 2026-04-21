@@ -1,4 +1,4 @@
-﻿using Artify.Api.Models;
+using Artify.Api.Models;
 
 namespace Artify.Api.Repositories.Interfaces
 {
@@ -11,6 +11,7 @@ namespace Artify.Api.Repositories.Interfaces
 
         Task<IEnumerable<Review>> GetReviewsByArtworkIdAsync(Guid artworkId);
         Task<IEnumerable<Review>> GetReviewsByArtistIdAsync(Guid artistProfileId);
+        Task<IEnumerable<Review>> GetReviewsByArtistIdsAsync(IEnumerable<Guid> artistProfileIds);
         Task<IEnumerable<Review>> GetAllByArtistAsync(Guid artistProfileId);
 
         Task<bool> ReviewExistsAsync(Guid reviewId);

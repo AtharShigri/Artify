@@ -16,6 +16,9 @@ public class Agency
     public Guid OwnerId { get; set; }
     public virtual ApplicationUser Owner { get; set; }
 
+    public int TeamSize { get; set; }
+    public string? MemberNames { get; set; }
+
     public virtual ICollection<AgencyMember> Members { get; set; }
 }
 }

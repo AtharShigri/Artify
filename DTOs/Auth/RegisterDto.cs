@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using System.ComponentModel.DataAnnotations;
 using Artify.Api.Validation;
 
@@ -20,5 +20,8 @@ namespace Artify.Api.DTOs.Auth
 
         [Required]
         public int UserType { get; set; }   
+
+        public int? TeamSize { get; set; }
+        public string? MemberNames { get; set; }
     }
 }

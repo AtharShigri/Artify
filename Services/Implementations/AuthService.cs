@@ -32,6 +32,8 @@ namespace Artify.Api.Services.Implementations
 
         public async Task<AuthResponseDto> RegisterUserAsync(RegisterDto dto, string role)
         {
+            var isAgency = (UserType)dto.UserType == UserType.Agency;
+
             var user = new ApplicationUser
             {
                 UserName = dto.Email,
@@ -42,8 +44,9 @@ namespace Artify.Api.Services.Implementations
                 IsActive = true
             };
 
-            // Handle Artist Profile Initialization
-            if (role == "Artist")
+            // Handle Artist Profile Initialization 
+            // (Both Artists and Agencies get a profile to showcase work/services)
+            if (role == "Artist" || isAgency)
             {
                 user.ArtistProfile = new ArtistProfile 
                 { 
@@ -54,12 +57,14 @@ namespace Artify.Api.Services.Implementations
             }
 
             // Handle Agency Initialization
-            if ((UserType)dto.UserType == UserType.Agency)
+            if (isAgency)
             {
                 user.OwnedAgency = new Agency
                 {
                     Name = $"{dto.FullName}'s Agency",
-                    Description = "New Agency Account"
+                    Description = "New Agency Account",
+                    TeamSize = dto.TeamSize ?? 0,
+                    MemberNames = dto.MemberNames
                 };
             }
 
@@ -67,9 +72,21 @@ namespace Artify.Api.Services.Implementations
             if (!result.Succeeded)
                 throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
 
-            await _userManager.AddToRoleAsync(user, role);
+            // Role Assignment
+            if (isAgency)
+            {
+                // Agencies get both capabilities
+                await _userManager.AddToRoleAsync(user, "Artist");
+                await _userManager.AddToRoleAsync(user, "Buyer");
+            }
+            else
+            {
+                await _userManager.AddToRoleAsync(user, role);
+            }
             
-            return await GenerateTokenAsync(user, role);
+            // For token generation, we use the primary role passed from the controller or "Agency" if applicable
+            string tokenRole = isAgency ? "Agency" : role;
+            return await GenerateTokenAsync(user, tokenRole);
         }
 
         // ---------------- LOGIN ----------------

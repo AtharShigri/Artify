@@ -43,10 +43,10 @@ export const AuthProvider = ({ children }) => {
         // user.role  : 'Artist' | 'Buyer' | 'Admin'
         // user.userType : 0 (Individual) | 1 (Agency)
         isAuthenticated: !!user,
-        isArtist: user?.role === 'Artist',
-        isBuyer: user?.role === 'Buyer',
+        isArtist: user?.role === 'Artist' || user?.role === 'Agency',
+        isBuyer: user?.role === 'Buyer' || user?.role === 'Agency',
         isAdmin: user?.role === 'Admin',
-        isAgency: user?.userType === 1,
+        isAgency: user?.role === 'Agency' || user?.userType === 1,
         loading,
         login,
         register,

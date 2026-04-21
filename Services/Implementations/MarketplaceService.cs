@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Artify.Api.Extensions;
 using Artify.Api.DTOs.Shared;
 using Artify.Api.Repositories.Interfaces;
@@ -13,15 +13,18 @@ namespace Artify.Api.Services.Implementations
         private readonly IMapper _mapper;
         private readonly IBuyerRepository _buyerRepository;
         private readonly IReviewRepository _reviewRepository;
+        private readonly IArtworkRepository _artworkRepository;
 
         public MarketplaceService(
             IMapper mapper,
             IBuyerRepository buyerRepository,
-            IReviewRepository reviewRepository)
+            IReviewRepository reviewRepository,
+            IArtworkRepository artworkRepository)
         {
             _mapper = mapper;
             _buyerRepository = buyerRepository;
             _reviewRepository = reviewRepository;
+            _artworkRepository = artworkRepository;
         }
 
         public async Task<IEnumerable<ArtworkResponseDto>> GetAllArtworksAsync(int page = 1, int pageSize = 20)
@@ -43,18 +46,10 @@ namespace Artify.Api.Services.Implementations
             // Get artist details
             if (artwork.ArtistProfile != null)
             {
-                dto.ArtistBio = artwork.ArtistProfile.Bio ?? "";
-                dto.ArtistLocation = artwork.ArtistProfile.Location ?? "";
-                dto.ArtistProfileImage = artwork.ArtistProfile.ProfileImageUrl ?? "";
-                dto.ArtistSkills = !string.IsNullOrEmpty(artwork.ArtistProfile.Skills)
-                    ? artwork.ArtistProfile.Skills.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                        .Select(s => s.Trim()).ToList()
-                    : new List<string>();
+                var reviews = await _reviewRepository.GetReviewsByArtistIdAsync(artwork.ArtistProfileId);
+                dto.ArtistRating = reviews.Any() ? reviews.Average(r => r.Rating) : 0;
+                dto.ArtistReviewCount = reviews.Count();
             }
-
-            // Get average rating
-            var reviews = await _reviewRepository.GetReviewsByArtworkIdAsync(artworkId);
-            dto.Rating = reviews.Any() ? reviews.Average(r => r.Rating) : 0;
 
             return dto;
         }
@@ -76,29 +71,22 @@ namespace Artify.Api.Services.Implementations
             return _mapper.Map<IEnumerable<ArtworkResponseDto>>(artworks);
         }
 
-        public async Task<ArtistProfileDto?> GetArtistProfileAsync(Guid artistProfileId)
+        public async Task<ArtistProfileDto?> GetArtistProfileAsync(Guid artistId)
         {
-            var artistProfile = await _buyerRepository.GetArtistProfileByIdAsync(artistProfileId);
-            if (artistProfile == null) return null;
+            var artist = await _buyerRepository.GetArtistProfileByIdAsync(artistId);
+            if (artist == null) return null;
 
-            var dto = _mapper.Map<ArtistProfileDto>(artistProfile);
+            var dto = _mapper.Map<ArtistProfileDto>(artist);
 
-            // Set FeaturedArtworks
-            if (artistProfile.Artworks != null && artistProfile.Artworks.Any())
-            {
-                dto.FeaturedArtworks = _mapper.Map<List<ArtworkResponseDto>>(
-                    artistProfile.Artworks
-                        .Where(a => a.IsForSale && a.Stock > 0)
-                        .OrderByDescending(a => a.LikesCount)
-                        .Take(6)
-                        .ToList());
-            }
-
-            // Get artist's rating
-            var reviews = await _reviewRepository.GetReviewsByArtistIdAsync(artistProfileId);
+            // Get reviews and rating
+            var reviews = await _reviewRepository.GetReviewsByArtistIdAsync(artistId);
             dto.Rating = reviews.Any() ? reviews.Average(r => r.Rating) : 0;
             dto.TotalReviews = reviews.Count();
-            dto.TotalArtworks = artistProfile.Artworks?.Count ?? 0;
+
+            // Get artworks count
+            var artworks = await _artworkRepository.GetAllByArtistAsync(artistId);
+            dto.TotalArtworks = artworks.Count();
+            dto.FeaturedArtworks = _mapper.Map<List<ArtworkResponseDto>>(artworks.Take(4));
 
             return dto;
         }
@@ -118,18 +106,45 @@ namespace Artify.Api.Services.Implementations
         private async Task<IEnumerable<ArtistProfileDto>> MapArtistsToDtos(IEnumerable<ArtistProfile> artists)
         {
             var artistDtos = new List<ArtistProfileDto>();
+            var artistIds = artists.Select(a => a.ArtistProfileId).ToList();
+
+            // Batch fetch all reviews for these artists
+            var allReviews = await _reviewRepository.GetReviewsByArtistIdsAsync(artistIds);
+            var reviewsByArtist = allReviews.GroupBy(r => r.ArtistProfileId)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            // Batch fetch all artworks for these artists (to avoid N+1 count loading)
+            var allArtworks = await _artworkRepository.GetArtworksByArtistIdsAsync(artistIds);
+            var artworksByArtist = allArtworks.GroupBy(a => a.ArtistProfileId)
+                .ToDictionary(g => g.Key, g => g.ToList());
 
             foreach (var artist in artists)
             {
                 var dto = _mapper.Map<ArtistProfileDto>(artist);
 
-                // Get rating
-                var reviews = await _reviewRepository.GetReviewsByArtistIdAsync(artist.ArtistProfileId);
-                dto.Rating = reviews.Any() ? reviews.Average(r => r.Rating) : 0;
-                dto.TotalReviews = reviews.Count();
+                // Get rating from our batched dictionary
+                if (reviewsByArtist.TryGetValue(artist.ArtistProfileId, out var reviews))
+                {
+                    dto.Rating = reviews.Any() ? reviews.Average(r => r.Rating) : 0;
+                    dto.TotalReviews = reviews.Count();
+                }
+                else
+                {
+                    dto.Rating = 0;
+                    dto.TotalReviews = 0;
+                }
 
-                // Get artworks count
-                dto.TotalArtworks = artist.Artworks?.Count ?? 0;
+                // Get artworks count from our batched dictionary
+                if (artworksByArtist.TryGetValue(artist.ArtistProfileId, out var artworks))
+                {
+                    dto.TotalArtworks = artworks.Count;
+                    dto.FeaturedArtworks = _mapper.Map<List<ArtworkResponseDto>>(artworks.Take(4));
+                }
+                else
+                {
+                    dto.TotalArtworks = 0;
+                    dto.FeaturedArtworks = new List<ArtworkResponseDto>();
+                }
 
                 artistDtos.Add(dto);
             }

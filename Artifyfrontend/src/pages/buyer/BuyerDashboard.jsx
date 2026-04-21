@@ -8,13 +8,47 @@ import {
 import Button from '../../components/common/Button';
 import { projectBoardService } from '../../services/projectBoardService';
 
-// ─── Orders Tab (original content) ──────────────────────────────────────────
+import orderService from '../../services/orderService';
+
+// ─── Orders Tab (Connected to real data) ──────────────────────────────────────────
 const OrdersTab = () => {
-    const orders = [
-        { id: '#ORD-7829', date: 'Jan 24, 2025', items: 2, total: '$950', status: 'In Transit', artist: 'Sara Khan' },
-        { id: '#ORD-7810', date: 'Jan 10, 2025', items: 1, total: '$450', status: 'Delivered', artist: 'Ali Ahmed' },
-        { id: '#ORD-7750', date: 'Dec 28, 2024', items: 1, total: '$1,200', status: 'Delivered', artist: 'John Doe' },
-    ];
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const data = await orderService.getBuyerOrders();
+                setOrders(data || []);
+            } catch (err) {
+                setError(err.message || 'Failed to load orders');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchOrders();
+    }, []);
+
+    if (loading) return (
+        <div className="flex items-center justify-center py-20 text-textSecondary">
+            <Loader2 className="w-5 h-5 animate-spin mr-2" />
+            Loading your orders...
+        </div>
+    );
+
+    if (error) return <div className="text-center py-16 text-error">{error}</div>;
+
+    if (orders.length === 0) return (
+        <div className="bg-white rounded-xl border border-border shadow-sm p-12 text-center">
+            <ShoppingBag className="w-10 h-10 mx-auto mb-3 text-textSecondary opacity-40" />
+            <h3 className="font-bold text-primary mb-1">No orders yet</h3>
+            <p className="text-sm text-textSecondary mb-4">When you purchase artwork, your orders will appear here.</p>
+            <Link to="/marketplace">
+                <Button variant="primary">Visit Marketplace</Button>
+            </Link>
+        </div>
+    );
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
@@ -24,7 +58,6 @@ const OrdersTab = () => {
                         <tr>
                             <th className="px-6 py-4 font-bold text-sm text-primary">Order ID</th>
                             <th className="px-6 py-4 font-bold text-sm text-primary">Date</th>
-                            <th className="px-6 py-4 font-bold text-sm text-primary">Artist</th>
                             <th className="px-6 py-4 font-bold text-sm text-primary">Total</th>
                             <th className="px-6 py-4 font-bold text-sm text-primary">Status</th>
                             <th className="px-6 py-4 text-right">Actions</th>
@@ -32,21 +65,20 @@ const OrdersTab = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                         {orders.map((order) => (
-                            <tr key={order.id} className="hover:bg-gray-50/50">
-                                <td className="px-6 py-4 font-medium text-primary">{order.id}</td>
-                                <td className="px-6 py-4 text-textSecondary">{order.date}</td>
-                                <td className="px-6 py-4 text-textSecondary">{order.artist}</td>
-                                <td className="px-6 py-4 font-medium text-primary">{order.total}</td>
+                            <tr key={order.orderId} className="hover:bg-gray-50/50">
+                                <td className="px-6 py-4 font-medium text-primary uppercase">#{order.orderId.substring(0, 8)}</td>
+                                <td className="px-6 py-4 text-textSecondary">{new Date(order.orderDate).toLocaleDateString()}</td>
+                                <td className="px-6 py-4 font-medium text-primary">PKR {order.totalAmount?.toLocaleString()}</td>
                                 <td className="px-6 py-4">
                                     <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium ${
-                                        order.status === 'Delivered'
+                                        order.deliveryStatus === 'Delivered'
                                             ? 'bg-green-100 text-green-700'
                                             : 'bg-blue-100 text-blue-700'
                                     }`}>
-                                        {order.status === 'Delivered'
+                                        {order.deliveryStatus === 'Delivered'
                                             ? <CheckCircle className="w-3 h-3" />
                                             : <Package className="w-3 h-3" />}
-                                        {order.status}
+                                        {order.deliveryStatus}
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 text-right">

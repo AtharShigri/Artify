@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Artify.Api.DTOs.Artist;
 using Artify.Api.DTOs.Auth;
@@ -9,7 +9,7 @@ namespace Artify.Api.Controllers.Artist
 {
     [Route("api/artist")]
     [ApiController]
-    [Authorize(Roles = "Artist")]
+    [Authorize]
     public class ArtistProfileController : ControllerBase
     {
         private readonly IAuthService _authService;

@@ -103,6 +103,7 @@ builder.Services.AddScoped<IHiringRepository, HiringRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IChatRepository, ChatRepository>();
 builder.Services.AddScoped<IEscrowRepository, EscrowRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
 builder.Services.AddScoped<IArtistDashboardService, ArtistDashboardService>();
 builder.Services.AddScoped<IArtistProfileService, ArtistProfileService>();
@@ -118,6 +119,7 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IMarketplaceService, MarketplaceService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddSignalR();
 
@@ -157,6 +159,7 @@ app.UseCors(builder => builder
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapHub<ChatHub>("/chathub");
+app.MapHub<NotificationHub>("/notificationhub");
 
 app.MapControllers();
 

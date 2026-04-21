@@ -35,20 +35,29 @@ const DashboardLayout = () => {
         { name: 'Overview', path: '/dashboard/artist', icon: LayoutDashboard },
         { name: 'Upload Artwork', path: '/dashboard/artist/upload', icon: Upload },
         { name: 'My Artworks', path: '/dashboard/artist/artworks', icon: ImageIcon },
-        { name: 'Orders', path: '/dashboard/artist/orders', icon: ShoppingBag },
+        { name: 'Orders (Selling)', path: '/dashboard/artist/orders', icon: ShoppingBag },
         { name: 'Job Feed', path: '/project-board', icon: Briefcase },
         { name: 'Messages', path: '/dashboard/chat', icon: MessageSquare },
         { name: 'Settings', path: '/dashboard/artist/settings', icon: Settings },
-        ...(isAgency ? [{ name: 'Agency Settings', path: '/dashboard/agency', icon: Building2 }] : []),
     ];
 
     const buyerLinks = [
-        { name: 'My Orders', path: '/dashboard/buyer/orders', icon: ShoppingBag },
-        { name: 'My Projects', path: '/dashboard/buyer/orders', icon: Briefcase, tab: 'projects' },
+        { name: 'Buyer Dashboard', path: '/dashboard/buyer', icon: LayoutDashboard },
         { name: 'Post a Project', path: '/dashboard/buyer/post-project', icon: PlusCircle },
         { name: 'Messages', path: '/dashboard/chat', icon: MessageSquare },
         { name: 'Settings', path: '/dashboard/buyer/settings', icon: Settings },
-        ...(isAgency ? [{ name: 'Agency Settings', path: '/dashboard/agency', icon: Building2 }] : []),
+    ];
+
+    const agencyLinks = [
+        { name: 'Dashboard', path: '/dashboard/artist', icon: LayoutDashboard },
+        { name: 'Upload Artwork', path: '/dashboard/artist/upload', icon: Upload },
+        { name: 'Post a Project', path: '/dashboard/buyer/post-project', icon: PlusCircle },
+        { name: 'My Artworks', path: '/dashboard/artist/artworks', icon: ImageIcon },
+        { name: 'Job Feed', path: '/project-board', icon: Briefcase },
+        { name: 'Buy Orders', path: '/dashboard/buyer/orders', icon: ShoppingBag },
+        { name: 'Sell Orders', path: '/dashboard/artist/orders', icon: ShoppingBag },
+        { name: 'Messages', path: '/dashboard/chat', icon: MessageSquare },
+        { name: 'Settings', path: '/dashboard/artist/settings', icon: Settings },
     ];
 
     const adminLinks = [
@@ -58,14 +67,13 @@ const DashboardLayout = () => {
     ];
 
     let links = buyerLinks;
-    if (isArtist) links = artistLinks;
-    if (isAdmin) links = adminLinks;
+    if (isAgency) links = agencyLinks;
+    else if (isArtist) links = artistLinks;
+    else if (isAdmin) links = adminLinks;
 
-    const roleLabel = isArtist
-        ? (isAgency ? 'Artist Agency' : 'Artist')
-        : isAdmin
+    const roleLabel = isAdmin
         ? 'Administrator'
-        : (isAgency ? 'Buyer Agency' : 'Buyer');
+        : (isAgency ? 'Agency' : (isArtist ? 'Artist' : 'Buyer'));
 
     return (
         <div className="min-h-screen bg-background flex">

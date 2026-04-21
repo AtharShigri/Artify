@@ -28,7 +28,7 @@ const ArtistSettings = lazy(() => import('../pages/artist/Settings'));
 // Dashboard Pages — Buyer
 const BuyerDashboard = lazy(() => import('../pages/buyer/BuyerDashboard'));
 const PostProject = lazy(() => import('../pages/buyer/PostProject'));
-const AgencySettings = lazy(() => import('../pages/buyer/AgencySettings'));
+const BuyerSettings = lazy(() => import('../pages/buyer/Settings'));
 
 // Dashboard Pages — Admin
 const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
@@ -83,12 +83,12 @@ const AppRoutes = () => {
                     <Route path="artist/*" element={<div className="p-8">Page under construction</div>} />
 
                     {/* Buyer Routes */}
-                    <Route path="buyer/orders" element={<BuyerDashboard />} />
+                    <Route path="buyer" element={<BuyerDashboard />} />
                     <Route path="buyer/post-project" element={<PostProject />} />
+                    <Route path="buyer/settings" element={<BuyerSettings />} />
                     <Route path="buyer/*" element={<div className="p-8">Page under construction</div>} />
 
                     {/* Agency Routes (any userType===1, both Artist & Buyer) */}
-                    <Route path="agency" element={<AgencySettings />} />
 
                     {/* Admin Routes */}
                     <Route path="admin" element={<AdminDashboard />} />

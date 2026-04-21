@@ -69,6 +69,12 @@ namespace Artify.Api.Repositories.Implementations
             return conversation;
         }
 
+        public async Task<bool> IsUserParticipantAsync(Guid conversationId, Guid userId)
+        {
+            return await _context.Conversations
+                .AnyAsync(c => c.Id == conversationId && (c.ParticipantA_Id == userId || c.ParticipantB_Id == userId));
+        }
+
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

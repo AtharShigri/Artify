@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -29,6 +29,7 @@ namespace Artify.Api.Models
     public string? Metadata { get; set; }
     
     public bool IsForSale { get; set; } = true;
+    public bool IsFeatured { get; set; } = false;
     public bool IsApproved { get; set; } = false;
     public bool IsDeleted { get; set; } = false;
     

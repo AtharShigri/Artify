@@ -1,4 +1,4 @@
-﻿using Artify.Api.Data;
+using Artify.Api.Data;
 using Artify.Api.Models;
 using Artify.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -45,10 +45,12 @@ namespace Artify.Api.Repositories.Implementations
         {
             return await _context.Artworks
                 .Where(a => a.IsForSale && a.Stock > 0)
-                .OrderByDescending(a => a.LikesCount)
+                .OrderByDescending(a => a.IsFeatured)
+                .ThenByDescending(a => a.LikesCount)
                 .Take(count)
                 .Include(a => a.ArtistProfile)
                 .ThenInclude(ap => ap.User)
+                .Include(a => a.CategoryEntity)
                 .ToListAsync();
         }
 
@@ -57,6 +59,7 @@ namespace Artify.Api.Repositories.Implementations
             return await _context.Artworks
                 .Include(a => a.ArtistProfile)
                 .ThenInclude(ap => ap.User)
+                .Include(a => a.CategoryEntity)
                 .FirstOrDefaultAsync(a => a.ArtworkId == artworkId);
         }
 
@@ -76,6 +79,7 @@ namespace Artify.Api.Repositories.Implementations
                 .Take(pageSize)
                 .Include(a => a.ArtistProfile)
                     .ThenInclude(ap => ap.User)
+                .Include(a => a.CategoryEntity)
                 .ToListAsync();
         }
 
@@ -112,6 +116,7 @@ namespace Artify.Api.Repositories.Implementations
                 .Where(a => a.IsForSale && a.Stock > 0)
                 .Include(a => a.ArtistProfile)
                 .ThenInclude(ap => ap.User)
+                .Include(a => a.CategoryEntity)
                 .ToListAsync();
         }
 
@@ -126,23 +131,24 @@ namespace Artify.Api.Repositories.Implementations
         public async Task<IEnumerable<ArtistProfile>> GetFeaturedArtistsAsync(int count = 10)
         {
             return await _context.ArtistProfiles
-                .OrderByDescending(ap => ap.Rating)
+                .OrderByDescending(ap => ap.IsFeatured)
+                .ThenByDescending(ap => ap.Rating)
                 .Take(count)
                 .Include(ap => ap.User)
                 .ToListAsync();
         }
 
-       public async Task<IEnumerable<ArtistProfile>> GetAllArtistsAsync(int page = 1, int pageSize = 20)
-{
-    return await _context.ArtistProfiles
-        .Include(ap => ap.User)     
-        .Include(ap => ap.Artworks)
-        .Where(ap => ap.User != null)
-        .OrderBy(ap => ap.User.FullName) 
-        .Skip((page - 1) * pageSize)
-        .Take(pageSize)
-        .ToListAsync();
-}
+        public async Task<IEnumerable<ArtistProfile>> GetAllArtistsAsync(int page = 1, int pageSize = 20)
+        {
+            return await _context.ArtistProfiles
+                .Include(ap => ap.User)
+                .Where(ap => ap.User != null)
+                .OrderBy(ap => ap.User.FullName)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .AsNoTracking()
+                .ToListAsync();
+        }
 
         public async Task<bool> SaveChangesAsync()
         {

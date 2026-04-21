@@ -20,7 +20,18 @@ const getChatHistory = async (conversationId) => {
     }
 };
 
+const startConversation = async (artistProfileId) => {
+    try {
+        const response = await api.post(`/chat/start/${artistProfileId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error starting conversation:', error);
+        throw error;
+    }
+};
+
 export const chatService = {
     getConversations,
     getChatHistory,
+    startConversation
 };

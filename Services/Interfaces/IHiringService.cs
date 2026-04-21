@@ -1,4 +1,5 @@
-﻿using Artify.Api.DTOs.Buyer;
+using Artify.Api.DTOs.Buyer;
+using Artify.Api.DTOs.Shared;
 
 namespace Artify.Api.Services.Interfaces
 {
@@ -9,7 +10,7 @@ namespace Artify.Api.Services.Interfaces
         Task<HiringResponseDto?> GetHiringRequestAsync(Guid requestId, Guid buyerId);
         Task<IEnumerable<HiringResponseDto>> GetBuyerHiringRequestsAsync(Guid buyerId);
         Task<bool> DeleteHiringRequestAsync(Guid requestId, Guid buyerId);
-        Task<string> InitiateArtistCommunicationAsync(Guid requestId, Guid buyerId);
+        Task<ConversationDto> InitiateArtistCommunicationAsync(Guid requestId, Guid buyerId);
 
         // --- Artist Actions ---
         Task<IEnumerable<HiringResponseDto>> GetArtistRequestsAsync(Guid artistId);

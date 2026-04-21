@@ -1,8 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Artify.Api.DTOs.Buyer;
 using Artify.Api.Models;
 using Artify.Api.Repositories.Interfaces;
 using Artify.Api.Services.Interfaces;
+using Artify.Api.DTOs.Shared;
 using Microsoft.EntityFrameworkCore;
 using Artify.Api.Data;
 
@@ -12,16 +13,22 @@ namespace Artify.Api.Services.Implementations
     {
         private readonly IHiringRepository _hiringRepository;
         private readonly ApplicationDbContext _context;
+        private readonly IChatService _chatService;
+        private readonly INotificationService _notificationService;
 
         public HiringService(
             IMapper mapper,
             IBuyerRepository buyerRepository,
             IHiringRepository hiringRepository,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            IChatService chatService,
+            INotificationService notificationService)
             : base(mapper, buyerRepository)
         {
             _hiringRepository = hiringRepository;
             _context = context;
+            _chatService = chatService;
+            _notificationService = notificationService;
         }
 
         // --- Buyer Actions ---
@@ -49,6 +56,24 @@ namespace Artify.Api.Services.Implementations
             };
 
             var createdRequest = await _hiringRepository.CreateHiringRequestAsync(hiringRequest);
+
+            // Notify artist
+            try
+            {
+                var buyer = await _buyerRepository.GetBuyerByIdAsync(buyerId);
+                await _notificationService.SendNotificationAsync(
+                    artist.UserId,
+                    "New Hiring Request",
+                    $"{buyer?.FullName} wants to hire you for a project!",
+                    "Success",
+                    "/dashboard/artist/projects"
+                );
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to send notification: {ex.Message}");
+            }
+
             return await MapHiringRequestToDto(createdRequest, hireDto);
         }
 
@@ -82,7 +107,7 @@ namespace Artify.Api.Services.Implementations
             return await _hiringRepository.DeleteHiringRequestAsync(requestId);
         }
 
-        public async Task<string> InitiateArtistCommunicationAsync(Guid requestId, Guid buyerId)
+        public async Task<ConversationDto> InitiateArtistCommunicationAsync(Guid requestId, Guid buyerId)
         {
             var request = await _hiringRepository.GetHiringRequestByIdAsync(requestId);
             if (request == null || request.BuyerId != buyerId)
@@ -92,7 +117,10 @@ namespace Artify.Api.Services.Implementations
             if (artist == null)
                 throw new Exception("Artist not found");
 
-            return $"Communication initiated with artist: {artist.User?.FullName}. Use the in-app messaging system.";
+            // Create or get the conversation
+            var conversation = await _chatService.GetOrCreateConversationAsync(buyerId, artist.UserId);
+            
+            return conversation;
         }
 
         // --- Artist Actions ---
@@ -119,6 +147,32 @@ namespace Artify.Api.Services.Implementations
 
             request.DeliveryStatus = "Accepted";
             await _hiringRepository.UpdateHiringRequestAsync(request);
+
+            // Auto-send message to the buyer
+            try
+            {
+                var artist = await _buyerRepository.GetArtistProfileByIdAsync(artistId);
+                var conversation = await _chatService.GetOrCreateConversationAsync(request.BuyerId, artist.UserId);
+                await _chatService.SaveAndProcessMessageAsync(
+                    conversation.Id, 
+                    artist.UserId, 
+                    "I have accepted your hiring request! Let's discuss the details of the project."
+                );
+
+                // Notification
+                await _notificationService.SendNotificationAsync(
+                    request.BuyerId,
+                    "Hiring Request Accepted",
+                    $"{artist.User?.FullName} has accepted your project!",
+                    "Success",
+                    "/dashboard/buyer/projects"
+                );
+            }
+            catch (Exception ex)
+            {
+                // Log and continue, we don't want to fail the acceptance if chat fails
+                System.Diagnostics.Debug.WriteLine($"Failed to send auto-message/notification: {ex.Message}");
+            }
         }
 
         public async Task RejectRequestAsync(Guid artistId, Guid requestId)
@@ -130,6 +184,23 @@ namespace Artify.Api.Services.Implementations
 
             request.DeliveryStatus = "Rejected";
             await _hiringRepository.UpdateHiringRequestAsync(request);
+
+            // Notify buyer
+            try
+            {
+                var artist = await _buyerRepository.GetArtistProfileByIdAsync(artistId);
+                await _notificationService.SendNotificationAsync(
+                    request.BuyerId,
+                    "Hiring Request Rejected",
+                    $"{artist?.User?.FullName} has declined your hiring request.",
+                    "Warning",
+                    "/dashboard/buyer/projects"
+                );
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to send notification: {ex.Message}");
+            }
         }
 
         // --- Shared / Validation Logic ---

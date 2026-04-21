@@ -21,6 +21,11 @@ const marketplaceService = {
         return response.data;
     },
 
+    getArtworkById: async (id) => {
+        const response = await axios.get(`/marketplace/artworks/${id}`);
+        return response.data;
+    },
+
     getTrendingArtworks: async () => {
         const response = await axios.get('/marketplace/artworks/trending');
         return response.data;

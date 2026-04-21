@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -25,6 +25,7 @@ namespace Artify.Api.Models
     
     public string? SocialLinks { get; set; } 
     public string? Skills { get; set; }
+    public bool IsFeatured { get; set; } = false;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation Properties

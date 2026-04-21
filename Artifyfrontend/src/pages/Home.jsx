@@ -1,18 +1,30 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Palette, Music, PenTool, Mic, Star, User } from 'lucide-react';
+import { ArrowRight, Palette, Music, PenTool, Mic, Star, User, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Button from '../components/common/Button';
 import SEO from '../components/common/SEO';
 import marketplaceService from '../services/marketplaceService';
 
-// Mock Data for Categories (Categories remain static or can be moved to API later)
-const categories = [
-    { id: 1, name: 'Visual Arts', icon: Palette, color: 'bg-purple-100 text-purple-600', desc: 'Paintings, Sketches, Digital Art' },
-    { id: 2, name: 'Calligraphy', icon: PenTool, color: 'bg-blue-100 text-blue-600', desc: 'Traditional & Modern Scripts' },
-    { id: 3, name: 'Music & Audio', icon: Music, color: 'bg-pink-100 text-pink-600', desc: 'Original Compositions & Scores' },
-    { id: 4, name: 'Performance', icon: Mic, color: 'bg-orange-100 text-orange-600', desc: 'Live Acts, spoken word' },
+import { ART_CATEGORIES } from '../constants/categories';
+import { getImageUrl } from '../utils/imageUtils';
+
+const colors = [
+    'bg-purple-100 text-purple-600',
+    'bg-blue-100 text-blue-600',
+    'bg-pink-100 text-pink-600',
+    'bg-orange-100 text-orange-600',
+    'bg-green-100 text-green-600',
+    'bg-indigo-100 text-indigo-600',
+    'bg-red-100 text-red-600',
 ];
+
+const categoryData = ART_CATEGORIES.map((name, index) => ({
+    id: index + 1,
+    name,
+    icon: index % 4 === 0 ? Palette : index % 4 === 1 ? PenTool : index % 4 === 2 ? Music : Mic,
+    color: colors[index % colors.length]
+}));
 
 const Home = () => {
     const targetRef = useRef(null);
@@ -20,6 +32,18 @@ const Home = () => {
         target: targetRef,
         offset: ["start start", "end start"]
     });
+
+    const categoryScrollRef = useRef(null);
+    const scrollCategories = (direction) => {
+        if (categoryScrollRef.current) {
+            const { scrollLeft, clientWidth } = categoryScrollRef.current;
+            const scrollAmount = clientWidth * 0.8;
+            categoryScrollRef.current.scrollTo({
+                left: direction === 'left' ? scrollLeft - scrollAmount : scrollLeft + scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    };
 
     const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
     const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
@@ -136,7 +160,7 @@ const Home = () => {
                     ) : (
                         <div className="flex flex-wrap justify-center gap-8 md:gap-12">
                             {featuredArtists.length > 0 ? featuredArtists.map((artist, index) => (
-                                <Link key={artist.artistProfileId || index} to={`/artists/${artist.artistProfileId}`} className="group flex flex-col items-center">
+                                <Link key={artist.artistProfileId || index} to={`/artist/${artist.artistProfileId || artist.id}`} className="group flex flex-col items-center">
                                     <motion.div 
                                         initial={{ opacity: 0, scale: 0.8 }}
                                         whileInView={{ opacity: 1, scale: 1 }}
@@ -145,7 +169,7 @@ const Home = () => {
                                         className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden mb-3 border-4 border-transparent group-hover:border-accent transition-all duration-300 shadow-md group-hover:shadow-xl group-hover:scale-105"
                                     >
                                         {artist.profileImageUrl ? (
-                                            <img src={artist.profileImageUrl} alt={artist.fullName} className="w-full h-full object-cover" />
+                                            <img src={getImageUrl(artist.profileImageUrl)} alt={artist.fullName} className="w-full h-full object-cover" />
                                         ) : (
                                             <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 group-hover:text-accent group-hover:bg-accent/10 transition-colors">
                                                 <User size={36} />
@@ -165,33 +189,53 @@ const Home = () => {
             </section>
 
             {/* Categories Section */}
-            <section className="py-20 bg-background">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <section className="py-20 bg-background relative overflow-hidden">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Browse by Category</h2>
                         <p className="text-textSecondary">Find the perfect artist for your specific needs</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {categories.map((cat, index) => (
-                            <motion.div
-                                key={cat.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-border group cursor-pointer"
-                            >
-                                <div className={`w-14 h-14 rounded-xl ${cat.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
-                                    <cat.icon className="w-7 h-7" />
-                                </div>
-                                <h3 className="text-xl font-bold mb-2 group-hover:text-secondary transition-colors">{cat.name}</h3>
-                                <p className="text-textSecondary text-sm mb-4">{cat.desc}</p>
-                                <div className="flex items-center text-secondary font-medium text-sm">
-                                    Explore <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                                </div>
-                            </motion.div>
-                        ))}
+                    <div className="relative group">
+                        {/* Navigation Buttons */}
+                        <button 
+                            onClick={() => scrollCategories('left')}
+                            className="absolute -left-4 md:-left-12 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white p-4 rounded-full shadow-xl border border-gray-100 text-primary transition-all hover:scale-110 md:opacity-0 group-hover:opacity-100"
+                        >
+                            <ChevronLeft className="w-6 h-6" />
+                        </button>
+
+                        <div 
+                            ref={categoryScrollRef}
+                            className="flex overflow-x-auto gap-8 pb-8 no-scrollbar snap-x scroll-smooth"
+                        >
+                            {categoryData.map((cat, index) => (
+                                <Link to={`/marketplace?category=${encodeURIComponent(cat.name)}`} key={cat.id} className="min-w-[280px] snap-center">
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: index * 0.05 }}
+                                        className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-border group/card cursor-pointer h-full"
+                                    >
+                                        <div className={`w-14 h-14 rounded-xl ${cat.color} flex items-center justify-center mb-6 group-hover/card:scale-110 transition-transform`}>
+                                            <cat.icon className="w-7 h-7" />
+                                        </div>
+                                        <h3 className="text-xl font-bold mb-2 group-hover/card:text-secondary transition-colors">{cat.name}</h3>
+                                        <div className="flex items-center text-secondary font-medium text-sm mt-4">
+                                            Explore <ArrowRight className="w-4 h-4 ml-1 group-hover/card:translate-x-1 transition-transform" />
+                                        </div>
+                                    </motion.div>
+                                </Link>
+                            ))}
+                        </div>
+
+                        <button 
+                            onClick={() => scrollCategories('right')}
+                            className="absolute -right-4 md:-right-12 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white p-4 rounded-full shadow-xl border border-gray-100 text-primary transition-all hover:scale-110 md:opacity-0 group-hover:opacity-100"
+                        >
+                            <ChevronRight className="w-6 h-6" />
+                        </button>
                     </div>
                 </div>
             </section>
@@ -228,7 +272,7 @@ const Home = () => {
                                 >
                                     <div className="aspect-[4/5] overflow-hidden">
                                         <img
-                                            src={art.imageUrl || 'https://via.placeholder.com/800'}
+                                            src={getImageUrl(art.imageUrl) || 'https://via.placeholder.com/800'}
                                             alt={art.title}
                                             className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                                         />
@@ -236,7 +280,7 @@ const Home = () => {
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-80 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 flex flex-col justify-end">
                                         <div className="flex justify-between items-center mb-1">
                                             <span className="text-accent text-sm font-bold bg-accent/20 px-2 py-0.5 rounded backdrop-blur-md border border-accent/50">
-                                                ${art.price}
+                                                PKR {art.price}
                                             </span>
                                             {art.category && (
                                                 <span className="text-white/80 text-xs px-2 py-1 bg-white/10 rounded-full backdrop-blur-sm">
@@ -245,11 +289,11 @@ const Home = () => {
                                             )}
                                         </div>
                                         <h3 className="text-white text-xl font-bold mb-1 line-clamp-1">{art.title}</h3>
-                                        <Link to={`/artists/${art.artistProfileId}`} className="text-gray-300 text-sm hover:text-white transition-colors cursor-pointer inline-block z-20 relative">
+                                        <Link to={`/artist/${art.artistProfileId || art.artistId}`} className="text-gray-300 text-sm hover:text-white transition-colors cursor-pointer inline-block z-20 relative">
                                             by {art.artistName}
                                         </Link>
                                         <div className="mt-4 flex gap-2">
-                                            <Link to={`/marketplace/artworks/${art.artworkId}`} className="w-full z-20 relative">
+                                            <Link to={`/artwork/${art.artworkId}`} className="w-full z-20 relative">
                                                 <Button variant="accent" size="sm" className="w-full shadow-lg shadow-accent/20">View Details</Button>
                                             </Link>
                                         </div>

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Button from '../../../components/common/Button';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from '../../../context/CartContext';
+import { getImageUrl } from '../../../utils/imageUtils';
 
 const ProductCard = ({ artwork }) => {
     const { addToCart } = useCart();
@@ -19,7 +20,7 @@ const ProductCard = ({ artwork }) => {
             <div className="aspect-[4/5] relative overflow-hidden bg-gray-100">
                 <Link to={`/artwork/${artwork.artworkId || artwork.id}`}>
                     <img
-                        src={artwork.imageUrl || artwork.image}
+                        src={getImageUrl(artwork.imageUrl || artwork.image)}
                         alt={artwork.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -44,7 +45,7 @@ const ProductCard = ({ artwork }) => {
                         {artwork.title}
                     </Link>
                     <span className="font-heading font-bold text-secondary">
-                        {typeof artwork.price === 'number' ? `$${artwork.price.toLocaleString()}` : artwork.price}
+                        {typeof artwork.price === 'number' ? `PKR ${artwork.price.toLocaleString()}` : typeof artwork.price === 'string' ? artwork.price.replace('$', 'PKR ') : artwork.price}
                     </span>
                 </div>
                 <p className="text-sm text-textSecondary mb-3">by {artwork.artistName || artwork.artist}</p>

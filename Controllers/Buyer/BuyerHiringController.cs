@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Artify.Api.DTOs.Buyer;
+using Artify.Api.DTOs.Shared;
 using Artify.Api.Services.Interfaces;
 
 namespace Artify.Api.Controllers.Buyer
@@ -132,7 +133,7 @@ namespace Artify.Api.Controllers.Buyer
 
       
         [HttpPost("{requestId}/communicate")]
-        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(ConversationDto), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
@@ -144,10 +145,10 @@ namespace Artify.Api.Controllers.Buyer
                 if (buyerId == null)
                     return Unauthorized(new { message = "User not authenticated" });
 
-                var message = await _hiringService
+                var conversation = await _hiringService
                     .InitiateArtistCommunicationAsync(requestId, buyerId.Value);
 
-                return Ok(new { message });
+                return Ok(conversation);
             }
             catch (Exception ex)
             {

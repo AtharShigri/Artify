@@ -25,6 +25,7 @@ namespace Artify.Api.Mappings
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
                 .ForMember(dest => dest.IsForSale, opt => opt.MapFrom(src => src.IsForSale))
                 .ForMember(dest => dest.Stock, opt => opt.MapFrom(src => src.Stock))
+                .ForMember(dest => dest.IsFeatured, opt => opt.MapFrom(src => src.IsFeatured))
                 .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => 0));
 
             // Artwork to ArtworkDetailDto (includes additional fields)
@@ -64,6 +65,8 @@ namespace Artify.Api.Mappings
                 .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Rating))
                 .ForMember(dest => dest.TotalArtworks, opt => opt.MapFrom(src => src.Artworks != null ? src.Artworks.Count : 0))
                 .ForMember(dest => dest.TotalReviews, opt => opt.MapFrom(src => 0))
+                .ForMember(dest => dest.UserType, opt => opt.MapFrom(src => src.User != null ? (int)src.User.UserType : 0))
+                .ForMember(dest => dest.IsFeatured, opt => opt.MapFrom(src => src.IsFeatured))
                 .ForMember(dest => dest.FeaturedArtworks, opt => opt.MapFrom(src => src.Artworks.Take(4)));
         }
 

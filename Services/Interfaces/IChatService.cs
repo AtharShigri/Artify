@@ -10,5 +10,6 @@ namespace Artify.Api.Services.Interfaces
         Task<IEnumerable<MessageDto>> GetChatHistoryAsync(Guid conversationId);
         Task<IEnumerable<ConversationDto>> GetUserConversationsAsync(Guid userId);
         Task<ConversationDto> GetOrCreateConversationAsync(Guid buyerId, Guid sellerId);
+        Task<bool> IsUserInConversationAsync(Guid conversationId, Guid userId);
     }
 }

@@ -36,12 +36,19 @@ namespace Artify.Api.Data
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<EscrowTransaction> EscrowTransactions { get; set; }
         public DbSet<PayoutMethod> PayoutMethods { get; set; }
-
+        public DbSet<Notification> Notifications { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            // Notification -> User
+            builder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany()
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // ----------------- Safe relationship configurations -----------------
 
