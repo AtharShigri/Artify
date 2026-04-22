@@ -133,6 +133,7 @@ namespace Artify.Api.Services.Implementations
 
             return new AuthResponseDto
             {
+                Id = user.Id,
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
                 Role = role,

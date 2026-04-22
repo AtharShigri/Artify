@@ -14,7 +14,8 @@ namespace Artify.Api.Mappings
                 .ForMember(dest => dest.ParticipantB_Name, opt => opt.MapFrom(src => src.ParticipantB != null ? src.ParticipantB.FullName : "Unknown"))
                 .ForMember(dest => dest.LastMessage, opt => opt.MapFrom(src => src.Messages.OrderByDescending(m => m.Timestamp).FirstOrDefault().Content ?? ""));
 
-            CreateMap<ChatMessage, MessageDto>();
+            CreateMap<ChatMessage, MessageDto>()
+                .ForMember(dest => dest.SenderName, opt => opt.MapFrom(src => src.Sender != null ? src.Sender.FullName : "Unknown"));
 
             CreateMap<Notification, NotificationDto>();
         }

@@ -38,8 +38,8 @@ const FilterSidebar = ({ isOpen, onClose }) => {
                         className="w-full accent-secondary"
                     />
                     <div className="flex justify-between text-sm text-textSecondary mt-2">
-                        <span>$0</span>
-                        <span>${priceRange}</span>
+                        <span>PKR 0</span>
+                        <span>PKR {priceRange}</span>
                     </div>
                 </div>
 

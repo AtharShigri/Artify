@@ -23,20 +23,26 @@ namespace Artify.Api.Repositories.Implementations
         {
             return await _context.Conversations
                 .Include(c => c.Messages)
+                .Include(c => c.ParticipantA)
+                .Include(c => c.ParticipantB)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<IEnumerable<Conversation>> GetUserConversationsAsync(Guid userId)
         {
             return await _context.Conversations
+                .Include(c => c.ParticipantA)
+                .Include(c => c.ParticipantB)
+                .Include(c => c.Messages)
                 .Where(c => c.ParticipantA_Id == userId || c.ParticipantB_Id == userId)
                 .OrderByDescending(c => c.CreatedAt)
-                .ToListAsync(); 
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<ChatMessage>> GetMessageHistoryAsync(Guid conversationId)
         {
             return await _context.ChatMessages
+                .Include(m => m.Sender)
                 .Where(m => m.ConversationId == conversationId)
                 .OrderBy(m => m.Timestamp)
                 .ToListAsync();
@@ -73,6 +79,19 @@ namespace Artify.Api.Repositories.Implementations
         {
             return await _context.Conversations
                 .AnyAsync(c => c.Id == conversationId && (c.ParticipantA_Id == userId || c.ParticipantB_Id == userId));
+        }
+
+        public async Task<bool> DeleteConversationAsync(Guid id)
+        {
+            var conversation = await _context.Conversations
+                .Include(c => c.Messages)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (conversation == null) return false;
+
+            _context.ChatMessages.RemoveRange(conversation.Messages);
+            _context.Conversations.Remove(conversation);
+            return true;
         }
 
         public async Task SaveChangesAsync()

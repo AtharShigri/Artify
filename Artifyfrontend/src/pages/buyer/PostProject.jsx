@@ -123,11 +123,11 @@ const PostProject = () => {
                         <label className="block text-sm font-medium text-textSecondary mb-1.5">
                             <span className="flex items-center gap-1.5">
                                 <DollarSign className="w-4 h-4" />
-                                Budget (USD) <span className="text-error">*</span>
+                                Budget (PKR) <span className="text-error">*</span>
                             </span>
                         </label>
                         <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary font-medium">$</span>
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary font-medium text-xs">PKR</span>
                             <input
                                 type="number"
                                 name="budget"
@@ -137,7 +137,7 @@ const PostProject = () => {
                                 min="1"
                                 step="0.01"
                                 placeholder="500.00"
-                                className="w-full pl-8 pr-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all"
+                                className="w-full pl-12 pr-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all"
                             />
                         </div>
                         <p className="mt-1 text-xs text-textSecondary">Artists will use this as a reference when submitting proposals.</p>

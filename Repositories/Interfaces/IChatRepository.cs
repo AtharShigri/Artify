@@ -12,6 +12,7 @@ namespace Artify.Api.Repositories.Interfaces
         Task AddMessageAsync(ChatMessage message);
         Task<Conversation> GetOrCreateConversationAsync(Guid participantAId, Guid participantBId);
         Task<bool> IsUserParticipantAsync(Guid conversationId, Guid userId);
+        Task<bool> DeleteConversationAsync(Guid id);
         Task SaveChangesAsync();
     }
 }

@@ -84,6 +84,8 @@ const AppRoutes = () => {
 
                     {/* Buyer Routes */}
                     <Route path="buyer" element={<BuyerDashboard />} />
+                    <Route path="buyer/orders" element={<BuyerDashboard />} />
+                    <Route path="buyer/projects" element={<BuyerDashboard />} />
                     <Route path="buyer/post-project" element={<PostProject />} />
                     <Route path="buyer/settings" element={<BuyerSettings />} />
                     <Route path="buyer/*" element={<div className="p-8">Page under construction</div>} />

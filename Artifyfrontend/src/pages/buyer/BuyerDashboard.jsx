@@ -122,7 +122,7 @@ const ProjectCard = ({ job, onStatusUpdate }) => {
                     <div className="flex items-center gap-4 mt-2">
                         <span className="flex items-center gap-1 text-sm font-semibold text-green-600">
                             <DollarSign className="w-4 h-4" />
-                            Budget: ${job.budget?.toLocaleString()}
+                            Budget: PKR {job.budget?.toLocaleString()}
                         </span>
                         <span className="text-sm text-textSecondary">
                             {proposals.length} proposal{proposals.length !== 1 ? 's' : ''}
@@ -176,7 +176,7 @@ const ProjectCard = ({ job, onStatusUpdate }) => {
                                         </p>
                                         <div className="pl-9">
                                             <span className="text-sm font-bold text-primary">
-                                                Bid: ${p.bidAmount?.toLocaleString()}
+                                                Bid: PKR {p.bidAmount?.toLocaleString()}
                                             </span>
                                         </div>
                                     </div>

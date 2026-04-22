@@ -60,6 +60,14 @@ namespace Artify.Api.Services.Implementations
                 );
             }
 
+            // Populate sender for DTO mapping
+            if (conversation != null)
+            {
+                message.Sender = senderId == conversation.ParticipantA_Id
+                    ? conversation.ParticipantA
+                    : conversation.ParticipantB;
+            }
+
             return _mapper.Map<MessageDto>(message);
         }
 
@@ -84,6 +92,21 @@ namespace Artify.Api.Services.Implementations
         public async Task<bool> IsUserInConversationAsync(Guid conversationId, Guid userId)
         {
             return await _chatRepo.IsUserParticipantAsync(conversationId, userId);
+        }
+
+        public async Task<bool> DeleteConversationAsync(Guid conversationId, Guid userId)
+        {
+            if (!await _chatRepo.IsUserParticipantAsync(conversationId, userId))
+            {
+                return false;
+            }
+
+            var deleted = await _chatRepo.DeleteConversationAsync(conversationId);
+            if (deleted)
+            {
+                await _chatRepo.SaveChangesAsync();
+            }
+            return deleted;
         }
     }
 }

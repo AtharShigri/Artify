@@ -96,5 +96,30 @@ namespace Artify.Api.Controllers.Shared
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+
+        [HttpDelete("{conversationId}")]
+        public async Task<IActionResult> DeleteChat(Guid conversationId)
+        {
+            try
+            {
+                var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
+                {
+                    return Unauthorized(new { message = "Invalid user token." });
+                }
+
+                var deleted = await _chatService.DeleteConversationAsync(conversationId, userId);
+                if (!deleted)
+                {
+                    return Forbid("You do not have permission to delete this chat or it does not exist.");
+                }
+
+                return Ok(new { message = "Chat deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
     }
 }

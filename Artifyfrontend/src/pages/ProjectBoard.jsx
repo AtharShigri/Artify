@@ -106,7 +106,7 @@ const ProjectBoard = () => {
                                 <div className="flex flex-wrap items-center gap-4 text-sm">
                                     <span className="flex items-center gap-1.5 text-green-600 font-semibold">
                                         <DollarSign className="w-4 h-4" />
-                                        Budget: ${job.budget?.toLocaleString()}
+                                        Budget: PKR {job.budget?.toLocaleString()}
                                     </span>
                                     <span className="flex items-center gap-1.5 text-textSecondary">
                                         <User className="w-4 h-4" />

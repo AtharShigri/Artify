@@ -77,7 +77,7 @@ const Checkout = () => {
                             <div className="p-4 bg-gray-50 rounded-lg border border-border mb-6">
                                 <div className="flex justify-between mb-2">
                                     <span className="text-gray-600">Total Amount</span>
-                                    <span className="font-bold text-lg">${cartTotal + 50}</span>
+                                    <span className="font-bold text-lg">PKR {cartTotal + 50}</span>
                                 </div>
                                 <p className="text-xs text-gray-400">Including shipping</p>
                             </div>
