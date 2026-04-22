@@ -38,6 +38,10 @@ namespace Artify.Api.Data
         public DbSet<PayoutMethod> PayoutMethods { get; set; }
         public DbSet<Notification> Notifications { get; set; }
 
+        // Protection models
+        public DbSet<ArtworkHash> ArtworkHashes { get; set; }
+        public DbSet<ArtworkMetadataLog> ArtworkMetadataLogs { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -141,6 +145,19 @@ namespace Artify.Api.Data
                 .HasOne(p => p.Artist)
                 .WithMany()
                 .HasForeignKey(p => p.ArtistId)
+                .OnDelete(DeleteBehavior.Cascade);
+            // ArtworkHash -> Artwork
+            builder.Entity<ArtworkHash>()
+                .HasOne(h => h.Artwork)
+                .WithMany()
+                .HasForeignKey(h => h.ArtworkId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // ArtworkMetadataLog -> Artwork
+            builder.Entity<ArtworkMetadataLog>()
+                .HasOne(m => m.Artwork)
+                .WithMany()
+                .HasForeignKey(m => m.ArtworkId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
