@@ -37,6 +37,10 @@ const artistService = {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
         return response.data;
+    },
+    deleteProfile: async () => {
+        const response = await axios.delete('/artist/profile');
+        return response.data;
     }
 };
 

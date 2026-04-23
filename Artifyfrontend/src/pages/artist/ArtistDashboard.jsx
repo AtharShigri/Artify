@@ -72,7 +72,7 @@ const ArtistDashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
                     title="Total Earnings"
-                    value={`$${stats.earnings}`}
+                    value={`PKR ${stats.earnings}`}
                     icon={DollarSign}
                     color="bg-green-500"
                     delay={0.1}

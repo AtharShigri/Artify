@@ -20,16 +20,17 @@ export const CartProvider = ({ children }) => {
 
     const addToCart = (product) => {
         setCartItems(prev => {
-            const existing = prev.find(item => item.id === product.id);
+            const productId = product.id || product.artworkId;
+            const existing = prev.find(item => (item.id || item.artworkId) === productId);
             if (existing) {
-                return prev; // Artworks are usually unique, so no quantity increment for now
+                return prev;
             }
-            return [...prev, { ...product, quantity: 1 }];
+            return [...prev, { ...product, id: productId, quantity: 1 }];
         });
     };
 
     const removeFromCart = (productId) => {
-        setCartItems(prev => prev.filter(item => item.id !== productId));
+        setCartItems(prev => prev.filter(item => (item.id || item.artworkId) !== productId));
     };
 
     const clearCart = () => {
@@ -37,8 +38,15 @@ export const CartProvider = ({ children }) => {
     };
 
     const cartTotal = cartItems.reduce((total, item) => {
-        // Assuming price is string like "$450"
-        const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
+        const rawPrice = item.price;
+        let price = 0;
+        
+        if (typeof rawPrice === 'number') {
+            price = rawPrice;
+        } else if (typeof rawPrice === 'string') {
+            price = parseFloat(rawPrice.replace(/[^0-9.]/g, '')) || 0;
+        }
+        
         return total + price;
     }, 0);
 

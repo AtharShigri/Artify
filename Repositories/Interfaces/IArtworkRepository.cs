@@ -1,4 +1,4 @@
-﻿using Artify.Api.Models;
+using Artify.Api.Models;
 
 namespace Artify.Api.Repositories.Interfaces
 {
@@ -12,5 +12,6 @@ namespace Artify.Api.Repositories.Interfaces
         Task DeleteAsync(Artwork artwork);
 
         Task<bool> ArtworkExistsAsync(Guid artworkId, Guid artistId);
+        Task<IEnumerable<Artwork>> GetArtworksByArtistIdsAsync(IEnumerable<Guid> artistIds);
     }
 }

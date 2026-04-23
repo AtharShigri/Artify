@@ -30,6 +30,6 @@ namespace Artify.Api.Models
 
         // Navigation property
         [ForeignKey("ArtistId")]
-        public Artist Artist { get; set; }
+        public ApplicationUser Artist { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 using AutoMapper;
 using Artify.Api.Data;
 using Artify.Api.Models;
+using Artify.Api.Hubs;
 using Artify.Api.Repositories.Interfaces;
 using Artify.Api.Repositories.Implementations;
 using Artify.Api.Services.Interfaces;
@@ -50,7 +51,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddIdentity<Artist, IdentityRole<Guid>>(options => {
+builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options => {
     options.Password.RequireDigit = false;
     options.Password.RequiredLength = 6;
     options.Password.RequireNonAlphanumeric = false;
@@ -83,6 +84,22 @@ builder.Services.AddAuthentication(options =>
         RoleClaimType = ClaimTypes.Role,
         NameClaimType = ClaimTypes.NameIdentifier
     };
+
+    // Allow SignalR WebSocket connections to pass JWT via query string
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) &&
+                (path.StartsWithSegments("/chathub") || path.StartsWithSegments("/notificationhub")))
+            {
+                context.Token = accessToken;
+            }
+            return System.Threading.Tasks.Task.CompletedTask;
+        }
+    };
 });
 
 
@@ -100,6 +117,13 @@ builder.Services.AddScoped<IBuyerRepository, BuyerRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IHiringRepository, HiringRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
+builder.Services.AddScoped<IEscrowRepository, EscrowRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IAdminArtworkRepository, AdminArtworkRepository>();
+builder.Services.AddScoped<IAdminReportRepository, AdminReportRepository>();
+builder.Services.AddScoped<IAdminTransactionRepository, AdminTransactionRepository>();
+builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
 
 builder.Services.AddScoped<IArtistDashboardService, ArtistDashboardService>();
 builder.Services.AddScoped<IArtistProfileService, ArtistProfileService>();
@@ -114,6 +138,16 @@ builder.Services.AddScoped<IHiringService, HiringService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IMarketplaceService, MarketplaceService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IAdminArtworkService, AdminArtworkService>();
+builder.Services.AddScoped<IAdminReportService, AdminReportService>();
+builder.Services.AddScoped<IAdminTransactionService, AdminTransactionService>();
+builder.Services.AddScoped<IAdminUserService, AdminUserService>();
+builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+builder.Services.AddScoped<IPlagiarismService, PlagiarismService>();
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -132,6 +166,8 @@ using (var scope = app.Services.CreateScope())
     await DbSeeder.SeedAdminUser(scope.ServiceProvider);
 }
 
+app.UseStaticFiles();
+app.UseRouting();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -148,6 +184,8 @@ app.UseCors(builder => builder
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapHub<ChatHub>("/chathub");
+app.MapHub<NotificationHub>("/notificationhub");
 
 app.MapControllers();
 

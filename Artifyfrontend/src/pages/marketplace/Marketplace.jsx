@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Filter, Search } from 'lucide-react';
 import ProductCard from './components/ProductCard';
 import FilterSidebar from './components/FilterSidebar';
@@ -6,30 +7,38 @@ import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import SEO from '../../components/common/SEO';
 
-// Mock Data
-const mockArtworks = Array.from({ length: 8 }).map((_, i) => ({
-    id: i + 1,
-    title: [
-        'Echoes of Silence', 'Abstract Harmony', 'Golden Dunes',
-        'Urban Rhythm', 'Serenity', 'Chaos & Calm', 'Vivid Dreams', 'Nightfall'
-    ][i],
-    artist: ['Ali Khan', 'Sara Ahmed', 'John Doe', 'Fatima Noor'][i % 4],
-    price: `$${(i + 1) * 150}`,
-    category: ['Visual Arts', 'Calligraphy', 'Digital Art', 'Sculptures'][i % 4],
-    image: [
-        'https://images.unsplash.com/photo-1579783902614-a3fb392796a5?auto=format&fit=crop&q=80&w=400',
-        'https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&q=80&w=400',
-        'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&q=80&w=400',
-        'https://images.unsplash.com/photo-1549887552-93f8efb4133f?auto=format&fit=crop&q=80&w=400',
-        'https://images.unsplash.com/photo-1629196914168-3a9644338cf5?auto=format&fit=crop&q=80&w=400',
-        'https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?auto=format&fit=crop&q=80&w=400',
-        'https://images.unsplash.com/photo-1580136608260-4eb11f4b64fe?auto=format&fit=crop&q=80&w=400',
-        'https://images.unsplash.com/photo-1552084117-5635e80c9e46?auto=format&fit=crop&q=80&w=400'
-    ][i]
-}));
+import marketplaceService from '../../services/marketplaceService';
+import Loader from '../../components/common/Loader';
 
 const Marketplace = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [artworks, setArtworks] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchParams] = useSearchParams();
+    const urlCategory = searchParams.get('category');
+
+    useEffect(() => {
+        const fetchArtworks = async () => {
+            try {
+                const data = await marketplaceService.getAllArtworks();
+                setArtworks(data || []);
+            } catch (error) {
+                console.error("Failed to load artworks", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchArtworks();
+    }, []);
+
+    const filteredArtworks = artworks.filter(artwork => {
+        const matchesSearch = artwork.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                              artwork.artistName?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = urlCategory ? artwork.category === urlCategory : true;
+        return matchesSearch && matchesCategory;
+    });
 
     return (
         <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-background">
@@ -57,6 +66,8 @@ const Marketplace = () => {
                                     type="text"
                                     placeholder="Search for art or artists..."
                                     className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                             </div>
                             <Button
@@ -70,11 +81,16 @@ const Marketplace = () => {
                     </div>
 
                     {/* Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {mockArtworks.map(artwork => (
-                            <ProductCard key={artwork.id} artwork={artwork} />
-                        ))}
-                    </div>
+                    {loading ? (
+                        <div className="flex justify-center items-center py-20"><Loader /></div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {filteredArtworks.map(artwork => (
+                                <ProductCard key={artwork.artworkId || artwork.id} artwork={artwork} />
+                            ))}
+                            {filteredArtworks.length === 0 && <p className="text-gray-500">No artworks found.</p>}
+                        </div>
+                    )}
 
                     {/* Load More */}
                     <div className="mt-12 flex justify-center">

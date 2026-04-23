@@ -3,13 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
-import { Mail, Lock } from 'lucide-react';
 import SEO from '../../components/common/SEO';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRole] = useState('buyer'); // Default role
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -22,14 +20,15 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            await login(email, password, role);
-
+            const userData = await login(email, password);
+            // Route based on role returned from JWT
+            const role = userData?.role?.toLowerCase();
             if (role === 'artist') {
                 navigate('/dashboard/artist');
             } else if (role === 'admin') {
                 navigate('/dashboard/admin');
             } else {
-                navigate('/');
+                navigate('/dashboard/buyer/orders');
             }
         } catch (err) {
             setError(err.message || 'Failed to login');
@@ -57,24 +56,6 @@ const Login = () => {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Role Selection */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <button
-                            type="button"
-                            onClick={() => setRole('buyer')}
-                            className={`p-3 text-center rounded-lg border transition-all ${role === 'buyer' ? 'bg-secondary/10 border-secondary text-secondary font-bold' : 'border-gray-200 text-textSecondary hover:border-gray-300'}`}
-                        >
-                            Art Enthusiast
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setRole('artist')}
-                            className={`p-3 text-center rounded-lg border transition-all ${role === 'artist' ? 'bg-secondary/10 border-secondary text-secondary font-bold' : 'border-gray-200 text-textSecondary hover:border-gray-300'}`}
-                        >
-                            Artist
-                        </button>
-                    </div>
-
                     <Input
                         label="Email Address"
                         type="email"
@@ -82,7 +63,6 @@ const Login = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="pl-4"
                     />
 
                     <div className="space-y-1">
@@ -113,10 +93,10 @@ const Login = () => {
                     </Link>
                 </p>
 
-                <div className="mt-6 pt-6 border-t border-gray-100 text-center">
-                    <p className="text-xs text-textSecondary">
-                        Demo credentials: demo@artify.com / password
-                    </p>
+                <div className="mt-4 text-center">
+                    <Link to="/admin" className="text-xs text-textSecondary hover:text-primary transition-colors underline">
+                        Admin login
+                    </Link>
                 </div>
             </div>
         </div>

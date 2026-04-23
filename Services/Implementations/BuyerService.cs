@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Artify.Api.DTOs.Buyer;
 using Artify.Api.DTOs.Shared;
 using Artify.Api.Models;
@@ -158,6 +158,12 @@ namespace Artify.Api.Services.Implementations
             // Note: We don't have a method to get reviews by buyer in IReviewRepository
             // This would need to be added to the repository interface
             return 0;
+        }
+
+        public async Task<IEnumerable<OrderResponseDto>> GetBuyerOrdersAsync(Guid buyerId)
+        {
+            var orders = await _orderRepository.GetOrdersByBuyerIdAsync(buyerId);
+            return _mapper.Map<IEnumerable<OrderResponseDto>>(orders);
         }
     }
 }

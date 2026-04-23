@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Artify.Api.DTOs.Buyer;
@@ -8,7 +8,6 @@ namespace Artify.Api.Controllers.Buyer
 {
     [Route("api/buyer/reviews")]
     [ApiController]
-    [Authorize(Roles = "Buyer")]
     public class ReviewsController : ControllerBase
     {
         private readonly IReviewService _reviewService;

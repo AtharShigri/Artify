@@ -1,4 +1,4 @@
-﻿using Artify.Api.DTOs.Admin;
+using Artify.Api.DTOs.Admin;
 using Artify.Api.Mappings;
 using Artify.Api.Repositories.Interfaces;
 using Artify.Api.Services.Interfaces;
@@ -8,10 +8,12 @@ namespace Artify.Api.Services.Implementations
     public class AdminArtworkService : IAdminArtworkService
     {
         private readonly IAdminArtworkRepository _repository;
+        private readonly INotificationService _notificationService;
 
-        public AdminArtworkService(IAdminArtworkRepository repository)
+        public AdminArtworkService(IAdminArtworkRepository repository, INotificationService notificationService)
         {
             _repository = repository;
+            _notificationService = notificationService;
         }
 
         public async Task<IEnumerable<object>> GetAllArtworksAsync()
@@ -37,7 +39,8 @@ namespace Artify.Api.Services.Implementations
             var artwork = await _repository.GetArtworkByIdAsync(artworkId);
             if (artwork == null) throw new KeyNotFoundException("Artwork not found.");
 
-            artwork.Status = "Approved";
+            artwork.Status = "Published";
+            artwork.IsApproved = true;
             var updated = await _repository.UpdateArtworkAsync(artwork);
             return AdminArtworkMappings.ToAdminArtworkDto(updated);
         }
@@ -46,6 +49,19 @@ namespace Artify.Api.Services.Implementations
         {
             var artwork = await _repository.GetArtworkByIdAsync(artworkId);
             if (artwork == null) throw new KeyNotFoundException("Artwork not found.");
+
+            artwork.Status = "Rejected";
+            artwork.IsApproved = false;
+
+            if (artwork.ArtistProfile != null)
+            {
+                await _notificationService.SendNotificationAsync(
+                    artwork.ArtistProfile.UserId,
+                    "Artwork Rejected",
+                    $"Your artwork '{artwork.Title}' was rejected. Reason: {dto.RejectionReason ?? "Does not meet platform guidelines."}",
+                    "Error"
+                );
+            }
 
             var updated = await _repository.UpdateArtworkAsync(artwork);
             return AdminArtworkMappings.ToAdminArtworkDto(updated);

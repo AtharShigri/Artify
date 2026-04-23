@@ -9,9 +9,9 @@ namespace Artify.Api.Mappings
     {
         public ArtistMappings()
         {
-            CreateMap<ArtistRegisterDto, Artist>();
-            CreateMap<ArtistUpdateDto, Artist>();
-            CreateMap<Artist, ArtistUpdateDto>();
+            CreateMap<ArtistRegisterDto, ApplicationUser>();
+            CreateMap<ArtistUpdateDto, ApplicationUser>();
+            CreateMap<ApplicationUser, ArtistUpdateDto>();
         }
     }
 }

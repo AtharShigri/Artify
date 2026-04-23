@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,7 +8,7 @@ namespace Artify.Api.Models
     {
         [Key]
         public Guid ReviewId { get; set; }
-        public Guid OrderId { get; set; }
+        public Guid? OrderId { get; set; }
 
         public Guid ReviewerId { get; set; }
         [ForeignKey("ReviewerId")]

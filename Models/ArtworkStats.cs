@@ -1,5 +1,4 @@
-﻿// ========================= ArtworkStats.cs =========================
-namespace Artify.Api.Models
+﻿namespace Artify.Api.Models
 {
     public class ArtworkStats
     {

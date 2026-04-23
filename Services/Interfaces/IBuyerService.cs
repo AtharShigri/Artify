@@ -1,4 +1,4 @@
-﻿using Artify.Api.DTOs.Buyer;
+using Artify.Api.DTOs.Buyer;
 using Artify.Api.DTOs.Shared;
 using Artify.Api.Models;
 
@@ -21,5 +21,6 @@ namespace Artify.Api.Services.Interfaces
         // Statistics
         Task<int> GetTotalOrdersAsync(Guid buyerId);
         Task<int> GetTotalReviewsAsync(Guid buyerId);
+        Task<IEnumerable<OrderResponseDto>> GetBuyerOrdersAsync(Guid buyerId);
     }
 }

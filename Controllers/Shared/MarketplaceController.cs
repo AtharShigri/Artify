@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Authorization;
 using Artify.Api.DTOs.Shared;
 using Artify.Api.Services.Interfaces;
 using Artify.Api.Models;
+using System.Net.Mime;
 
 namespace Artify.Api.Controllers.Shared
 {
     [Route("api/marketplace")]
     [ApiController]
-    [AllowAnonymous] // Public endpoints
+    [AllowAnonymous]
+    [Produces(MediaTypeNames.Application.Json)]
     public class MarketplaceController : ControllerBase
     {
         private readonly IMarketplaceService _marketplaceService;
@@ -26,13 +28,17 @@ namespace Artify.Api.Controllers.Shared
         /// Get all artworks with pagination
         /// </summary>
         [HttpGet("artworks")]
-        [ProducesResponseType(typeof(IEnumerable<ArtworkResponseDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ArtworkResponseDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllArtworks(
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 20)
         {
             try
             {
+                // Basic guard clauses for pagination
+                page = page < 1 ? 1 : page;
+                pageSize = pageSize > 100 ? 100 : pageSize;
+
                 var artworks = await _marketplaceService.GetAllArtworksAsync(page, pageSize);
                 return Ok(artworks);
             }
@@ -46,10 +52,10 @@ namespace Artify.Api.Controllers.Shared
         /// <summary>
         /// Get artwork by ID
         /// </summary>
-        [HttpGet("artworks/{id}")]
-        [ProducesResponseType(typeof(ArtworkDetailDto), 200)]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> GetArtworkById(Guid id)
+        [HttpGet("artworks/{id:guid}")]
+        [ProducesResponseType(typeof(ArtworkDetailDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetArtworkById([FromRoute] Guid id)
         {
             try
             {
@@ -61,7 +67,7 @@ namespace Artify.Api.Controllers.Shared
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting artwork by ID");
+                _logger.LogError(ex, "Error getting artwork by ID: {Id}", id);
                 return StatusCode(500, new { message = "An error occurred while fetching artwork" });
             }
         }
@@ -70,8 +76,8 @@ namespace Artify.Api.Controllers.Shared
         /// Get artworks by category
         /// </summary>
         [HttpGet("artworks/category/{category}")]
-        [ProducesResponseType(typeof(IEnumerable<ArtworkResponseDto>), 200)]
-        public async Task<IActionResult> GetArtworksByCategory(Category category)
+        [ProducesResponseType(typeof(IEnumerable<ArtworkResponseDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetArtworksByCategory([FromRoute] Category category)
         {
             try
             {
@@ -80,7 +86,7 @@ namespace Artify.Api.Controllers.Shared
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting artworks by category");
+                _logger.LogError(ex, "Error getting artworks by category: {Category}", category);
                 return StatusCode(500, new { message = "An error occurred while fetching artworks" });
             }
         }
@@ -89,7 +95,7 @@ namespace Artify.Api.Controllers.Shared
         /// Search artworks with filters
         /// </summary>
         [HttpGet("artworks/search")]
-        [ProducesResponseType(typeof(IEnumerable<ArtworkResponseDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ArtworkResponseDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> SearchArtworks([FromQuery] SearchArtworksDto searchDto)
         {
             try
@@ -107,10 +113,10 @@ namespace Artify.Api.Controllers.Shared
         /// <summary>
         /// Get artist profile
         /// </summary>
-        [HttpGet("artists/{artistId}")]
-        [ProducesResponseType(typeof(ArtistProfileDto), 200)]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> GetArtistProfile(Guid artistId)
+        [HttpGet("artists/{artistId:guid}")]
+        [ProducesResponseType(typeof(ArtistProfileDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetArtistProfile([FromRoute] Guid artistId)
         {
             try
             {
@@ -122,7 +128,7 @@ namespace Artify.Api.Controllers.Shared
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting artist profile");
+                _logger.LogError(ex, "Error getting artist profile for: {ArtistId}", artistId);
                 return StatusCode(500, new { message = "An error occurred while fetching artist profile" });
             }
         }
@@ -131,13 +137,16 @@ namespace Artify.Api.Controllers.Shared
         /// Get all artists
         /// </summary>
         [HttpGet("artists")]
-        [ProducesResponseType(typeof(IEnumerable<ArtistProfileDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ArtistProfileDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllArtists(
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 20)
         {
             try
             {
+                page = page < 1 ? 1 : page;
+                pageSize = pageSize > 100 ? 100 : pageSize;
+
                 var artists = await _marketplaceService.GetAllArtistsAsync(page, pageSize);
                 return Ok(artists);
             }
@@ -152,7 +161,7 @@ namespace Artify.Api.Controllers.Shared
         /// Get featured artists
         /// </summary>
         [HttpGet("artists/featured")]
-        [ProducesResponseType(typeof(IEnumerable<ArtistProfileDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ArtistProfileDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetFeaturedArtists()
         {
             try
@@ -171,7 +180,7 @@ namespace Artify.Api.Controllers.Shared
         /// Get all available categories
         /// </summary>
         [HttpGet("categories")]
-        [ProducesResponseType(typeof(IEnumerable<string>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCategories()
         {
             try
@@ -190,7 +199,7 @@ namespace Artify.Api.Controllers.Shared
         /// Get trending artworks
         /// </summary>
         [HttpGet("artworks/trending")]
-        [ProducesResponseType(typeof(IEnumerable<ArtworkResponseDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ArtworkResponseDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetTrendingArtworks()
         {
             try

@@ -1,4 +1,4 @@
-﻿namespace Artify.Api.DTOs.Shared
+namespace Artify.Api.DTOs.Shared
 {
     public class ArtworkResponseDto
     {
@@ -15,6 +15,7 @@
         public DateTime CreatedAt { get; set; }
         public bool IsForSale { get; set; }
         public int Stock { get; set; }
+        public bool IsFeatured { get; set; }
     }
 
     public class ArtworkDetailDto : ArtworkResponseDto
@@ -24,6 +25,8 @@
         public string ArtistProfileImage { get; set; } = string.Empty;
         public List<string> ArtistSkills { get; set; } = new();
         public int ViewsCount { get; set; }
+        public double ArtistRating { get; set; }
+        public int ArtistReviewCount { get; set; }
     }
 
     public class ArtistProfileDto
@@ -42,6 +45,8 @@
         public DateTime CreatedAt { get; set; }
         public int TotalArtworks { get; set; }
         public int TotalReviews { get; set; }
+        public int UserType { get; set; }
+        public bool IsFeatured { get; set; }
 
         // ✅ NEW: Added FeaturedArtworks property
         public List<ArtworkResponseDto> FeaturedArtworks { get; set; } = new();

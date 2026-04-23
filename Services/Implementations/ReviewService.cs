@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Artify.Api.DTOs.Buyer;
 using Artify.Api.Models;
 using Artify.Api.Repositories.Interfaces;
@@ -40,6 +40,13 @@ namespace Artify.Api.Services.Implementations
             };
 
             var createdReview = await _reviewRepository.CreateReviewAsync(review);
+            
+            // ✅ Update Artist Rating Dynamically
+            if (review.ArtistProfileId.HasValue)
+            {
+                await UpdateArtistAverageRatingAsync(review.ArtistProfileId.Value);
+            }
+
             return await MapReviewToDto(createdReview);
         }
 
@@ -54,6 +61,13 @@ namespace Artify.Api.Services.Implementations
             review.CreatedAt = DateTime.UtcNow; // Update timestamp
 
             await _reviewRepository.UpdateReviewAsync(review);
+
+            // ✅ Update Artist Rating Dynamically
+            if (review.ArtistProfileId.HasValue)
+            {
+                await UpdateArtistAverageRatingAsync(review.ArtistProfileId.Value);
+            }
+
             return await MapReviewToDto(review);
         }
 
@@ -63,7 +77,16 @@ namespace Artify.Api.Services.Implementations
             if (review == null || review.ReviewerId != buyerId)
                 return false;
 
-            return await _reviewRepository.DeleteReviewAsync(reviewId);
+            var artistId = review.ArtistProfileId;
+            var deleted = await _reviewRepository.DeleteReviewAsync(reviewId);
+
+            // ✅ Update Artist Rating Dynamically
+            if (deleted && artistId.HasValue)
+            {
+                await UpdateArtistAverageRatingAsync(artistId.Value);
+            }
+
+            return deleted;
         }
 
         public async Task<IEnumerable<ReviewResponseDto>> GetArtworkReviewsAsync(Guid artworkId)
@@ -159,6 +182,20 @@ namespace Artify.Api.Services.Implementations
             }
 
             return false;
+        }
+
+
+        private async Task UpdateArtistAverageRatingAsync(Guid artistProfileId)
+        {
+            var reviews = await _reviewRepository.GetReviewsByArtistIdAsync(artistProfileId);
+            var average = reviews.Any() ? reviews.Average(r => r.Rating) : 0;
+
+            var profile = await _buyerRepository.GetArtistProfileByIdAsync(artistProfileId);
+            if (profile != null)
+            {
+                profile.Rating = (float)average;
+                await _buyerRepository.UpdateBuyerAsync(profile.User); // This updates the whole aggregate
+            }
         }
 
 

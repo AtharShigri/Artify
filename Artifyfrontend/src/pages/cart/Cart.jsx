@@ -64,15 +64,15 @@ const Cart = () => {
                         <div className="space-y-4 mb-6">
                             <div className="flex justify-between text-textSecondary">
                                 <span>Subtotal</span>
-                                <span>${cartTotal}</span>
+                                <span>PKR {cartTotal}</span>
                             </div>
                             <div className="flex justify-between text-textSecondary">
                                 <span>Shipping (Estimate)</span>
-                                <span>$50</span>
+                                <span>PKR 50</span>
                             </div>
                             <div className="border-t border-gray-100 pt-4 flex justify-between font-bold text-lg text-primary">
                                 <span>Total</span>
-                                <span>${cartTotal + 50}</span>
+                                <span>PKR {cartTotal + 50}</span>
                             </div>
                         </div>
 

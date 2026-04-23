@@ -416,3 +416,8 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# User-uploaded images
+wwwroot/images/artists/
+wwwroot/images/artworks/
+wwwroot/images/watermarked/

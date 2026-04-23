@@ -1,34 +1,41 @@
 import api from '../api/axios';
 
-export const authService = {
-    // Login
-    login: async (email, password, role) => {
-        const endpoint = role === 'artist' ? '/artist/login' : role === 'admin' ? '/admin/login' : '/buyer/login';
+// Helper to handle API errors consistently
+const handleError = (error, fallback) => {
+    if (error.response?.data) {
+        const d = error.response.data;
+        if (typeof d === 'string') throw new Error(d);
+        if (d.message) throw new Error(d.message);
+        if (d.errors) throw new Error(Object.values(d.errors).flat().join(', '));
+    }
+    throw new Error(error.message || fallback);
+};
 
+export const authService = {
+    // Unified Login — backend determines role from Identity
+    login: async (email, password) => {
         try {
-            const response = await api.post(endpoint, { email, password });
+            const response = await api.post('/auth/login', { email, password });
             if (response.data) {
-                // Backend might return token differently, adjusting to typical response structure
-                // Assuming response.data contains the user object with token
-                const userData = { ...response.data, role };
+                // response.data = { token, expiration, role, fullName, email, profileImageUrl, userType }
+                const userData = { ...response.data };
                 localStorage.setItem('user', JSON.stringify(userData));
                 return userData;
             }
         } catch (error) {
-            throw error.response?.data?.message || error.message || 'Login failed';
+            handleError(error, 'Login failed');
         }
     },
 
-    // Register
+    // Register — role determines endpoint; userType (0=Individual, 1=Agency) is in body
     register: async (userData) => {
         const { role, ...data } = userData;
-        const endpoint = role === 'artist' ? '/artist/register' : '/buyer/register';
-
+        const endpoint = role === 'artist' ? '/auth/register/artist' : '/auth/register/buyer';
         try {
             const response = await api.post(endpoint, data);
             return response.data;
         } catch (error) {
-            throw error.response?.data?.message || error.message || 'Registration failed';
+            handleError(error, 'Registration failed');
         }
     },
 
@@ -37,8 +44,12 @@ export const authService = {
         localStorage.removeItem('user');
     },
 
-    // Get current user
+    // Get current user from localStorage
     getCurrentUser: () => {
-        return JSON.parse(localStorage.getItem('user'));
+        try {
+            return JSON.parse(localStorage.getItem('user'));
+        } catch {
+            return null;
+        }
     }
 };
