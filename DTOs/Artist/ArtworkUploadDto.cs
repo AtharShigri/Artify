@@ -10,6 +10,9 @@ namespace Artify.Api.DTOs.Artist
         public decimal Price { get; set; }
         public Guid? CategoryId { get; set; }
         public string? Metadata { get; set; }
-        public IFormFile File { get; set; }   
+        public IFormFile File { get; set; }
+        public bool ApplyWatermark { get; set; }
+        public bool RegisterFingerprint { get; set; }
+        public string? CopyrightText { get; set; }
     }
 }

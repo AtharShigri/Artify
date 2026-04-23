@@ -11,15 +11,18 @@ namespace Artify.Api.Services.Implementations
         private readonly IArtworkRepository _artworkRepo;
         private readonly IArtistRepository _artistRepo;
         private readonly IWebHostEnvironment _environment;
+        private readonly IProtectionService _protectionService;
 
         public ArtworkService(
             IArtworkRepository artworkRepo,
             IArtistRepository artistRepo,
-            IWebHostEnvironment environment)
+            IWebHostEnvironment environment,
+            IProtectionService protectionService)
         {
             _artworkRepo = artworkRepo;
             _artistRepo = artistRepo;
             _environment = environment;
+            _protectionService = protectionService;
         }
 
         public async Task<object> GetAllAsync(ClaimsPrincipal user)
@@ -50,6 +53,8 @@ namespace Artify.Api.Services.Implementations
             if (artwork == null)
                 return null;
 
+            var protectionStatus = await _protectionService.GetProtectionStatusAsync(user, artworkId);
+
             // If it's a guest or if the artist owns it, they can see it. 
             // In fact, since it's a GET request, anyone can see it now as per requirement.
             return new
@@ -63,7 +68,8 @@ namespace Artify.Api.Services.Implementations
                 artwork.IsForSale,
                 artwork.CreatedAt,
                 artwork.ArtistProfileId,
-                ArtistName = artwork.ArtistProfile?.User?.FullName ?? "Unknown Artist"
+                ArtistName = artwork.ArtistProfile?.User?.FullName ?? "Unknown Artist",
+                ProtectionStatus = protectionStatus
             };
         }
 
@@ -86,9 +92,32 @@ namespace Artify.Api.Services.Implementations
     var filePath = Path.Combine(folderPath, fileName);
 
     Directory.CreateDirectory(folderPath);
-    using (var stream = new FileStream(filePath, FileMode.Create))
+    
+    string imageUrl = $"/images/artworks/{fileName}";
+
+    // Handle Watermarking
+    if (dto.ApplyWatermark)
     {
-        await dto.File.CopyToAsync(stream);
+        var watermarkResult = await _protectionService.ApplyWatermarkAsync(user, dto.File);
+        if (watermarkResult.Success)
+        {
+            imageUrl = watermarkResult.WatermarkedUrl;
+        }
+        else 
+        {
+            // Fallback to original if watermarking fails
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await dto.File.CopyToAsync(stream);
+            }
+        }
+    }
+    else 
+    {
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await dto.File.CopyToAsync(stream);
+        }
     }
 
     var artwork = new Artwork
@@ -98,18 +127,45 @@ namespace Artify.Api.Services.Implementations
         Description = dto.Description,
         Price = dto.Price,
         Metadata = dto.Metadata,     
-        ImageUrl = $"/images/artworks/{fileName}",
+        ImageUrl = imageUrl,
         IsForSale = true,
         CategoryId  = dto.CategoryId,
         Status = "Published"
     };
 
     await _artworkRepo.AddAsync(artwork);
+
+    // Handle Metadata & Fingerprinting after saving artwork
+    if (dto.RegisterFingerprint)
+    {
+        await _protectionService.GenerateHashAsync(user, new HashDto { ArtworkId = artwork.ArtworkId });
+    }
+
+    if (!string.IsNullOrEmpty(dto.CopyrightText))
+    {
+        var artistProfile = await _artistRepo.GetByIdAsync(artistId);
+        await _protectionService.EmbedMetadataAsync(user, new MetadataDto 
+        { 
+            ArtworkId = artwork.ArtworkId, 
+            CopyrightText = dto.CopyrightText,
+            ArtistName = artistProfile?.FullName ?? "Artify Artist",
+            Description = dto.Description
+        });
+    }
+
+    // Auto Plagiarism Check
+    var plagiarismResult = await _protectionService.CheckPlagiarismAsync(user, dto.File);
+    if (plagiarismResult.PlagiarismDetected)
+    {
+        artwork.Status = "Flagged";
+        await _artworkRepo.UpdateAsync(artwork);
+    }
     
     return new { 
         Success = true, 
         ArtworkId = artwork.ArtworkId, 
-        ArtworkUrl = artwork.ImageUrl 
+        ArtworkUrl = artwork.ImageUrl,
+        PlagiarismDetected = plagiarismResult.PlagiarismDetected
     };
 }
         public async Task<object> UpdateAsync(ClaimsPrincipal user, Guid artworkId, ArtworkUpdateDto dto)
@@ -135,14 +191,53 @@ namespace Artify.Api.Services.Implementations
                 var filePath = Path.Combine(folderPath, fileName);
 
                 Directory.CreateDirectory(folderPath);
-                using (var stream = new FileStream(filePath, FileMode.Create))
+
+                if (dto.ApplyWatermark == true)
                 {
-                    await dto.File.CopyToAsync(stream);
+                    var watermarkResult = await _protectionService.ApplyWatermarkAsync(user, dto.File);
+                    if (watermarkResult.Success)
+                    {
+                        artwork.ImageUrl = watermarkResult.WatermarkedUrl;
+                    }
+                    else
+                    {
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await dto.File.CopyToAsync(stream);
+                        }
+                        artwork.ImageUrl = $"/images/artworks/{fileName}";
+                    }
                 }
-                artwork.ImageUrl = $"/images/artworks/{fileName}";
+                else
+                {
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await dto.File.CopyToAsync(stream);
+                    }
+                    artwork.ImageUrl = $"/images/artworks/{fileName}";
+                }
             }
 
             await _artworkRepo.UpdateAsync(artwork);
+
+            // Handle Metadata & Fingerprinting
+            if (dto.RegisterFingerprint == true)
+            {
+                await _protectionService.GenerateHashAsync(user, new HashDto { ArtworkId = artwork.ArtworkId });
+            }
+
+            if (!string.IsNullOrEmpty(dto.CopyrightText))
+            {
+                var artistProfile = await _artistRepo.GetByIdAsync(artistId);
+                await _protectionService.EmbedMetadataAsync(user, new MetadataDto
+                {
+                    ArtworkId = artwork.ArtworkId,
+                    CopyrightText = dto.CopyrightText,
+                    ArtistName = artistProfile?.FullName ?? "Artify Artist",
+                    Description = artwork.Description
+                });
+            }
+
             return new { Success = true };
         }
 

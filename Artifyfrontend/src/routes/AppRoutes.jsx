@@ -33,6 +33,10 @@ const BuyerSettings = lazy(() => import('../pages/buyer/Settings'));
 
 // Dashboard Pages — Admin
 const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
+const AdminUsers = lazy(() => import('../pages/admin/AdminUsers'));
+const AdminArtworks = lazy(() => import('../pages/admin/AdminArtworks'));
+const AdminReports = lazy(() => import('../pages/admin/AdminReports'));
+const AdminTransactions = lazy(() => import('../pages/admin/AdminTransactions'));
 
 // Chat Page
 const ChatPage = lazy(() => import('../pages/chat/ChatPage'));
@@ -96,6 +100,10 @@ const AppRoutes = () => {
 
                     {/* Admin Routes */}
                     <Route path="admin" element={<AdminDashboard />} />
+                    <Route path="admin/users" element={<AdminUsers />} />
+                    <Route path="admin/artworks" element={<AdminArtworks />} />
+                    <Route path="admin/reports" element={<AdminReports />} />
+                    <Route path="admin/transactions" element={<AdminTransactions />} />
                     <Route path="admin/*" element={<div className="p-8">Page under construction</div>} />
                 </Route>
 

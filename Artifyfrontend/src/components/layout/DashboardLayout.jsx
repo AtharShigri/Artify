@@ -16,7 +16,8 @@ import {
     PlusCircle,
     Building2,
     MessageSquare,
-    Shield
+    Shield,
+    DollarSign
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../common/Button';
@@ -63,9 +64,11 @@ const DashboardLayout = () => {
     ];
 
     const adminLinks = [
-        { name: 'Dashboard', path: '/dashboard/admin', icon: LayoutDashboard },
+        { name: 'Overview', path: '/dashboard/admin', icon: LayoutDashboard },
         { name: 'Users', path: '/dashboard/admin/users', icon: Users },
-        { name: 'Reports', path: '/dashboard/admin/reports', icon: AlertTriangle },
+        { name: 'Artworks', path: '/dashboard/admin/artworks', icon: ImageIcon },
+        { name: 'Financials', path: '/dashboard/admin/transactions', icon: DollarSign },
+        { name: 'Monitoring', path: '/dashboard/admin/reports', icon: Shield },
     ];
 
     let links = buyerLinks;

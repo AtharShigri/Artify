@@ -120,6 +120,10 @@ builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IChatRepository, ChatRepository>();
 builder.Services.AddScoped<IEscrowRepository, EscrowRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IAdminArtworkRepository, AdminArtworkRepository>();
+builder.Services.AddScoped<IAdminReportRepository, AdminReportRepository>();
+builder.Services.AddScoped<IAdminTransactionRepository, AdminTransactionRepository>();
+builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
 
 builder.Services.AddScoped<IArtistDashboardService, ArtistDashboardService>();
 builder.Services.AddScoped<IArtistProfileService, ArtistProfileService>();
@@ -136,6 +140,12 @@ builder.Services.AddScoped<IMarketplaceService, MarketplaceService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IAdminArtworkService, AdminArtworkService>();
+builder.Services.AddScoped<IAdminReportService, AdminReportService>();
+builder.Services.AddScoped<IAdminTransactionService, AdminTransactionService>();
+builder.Services.AddScoped<IAdminUserService, AdminUserService>();
+builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+builder.Services.AddScoped<IPlagiarismService, PlagiarismService>();
 
 builder.Services.AddSignalR();
 

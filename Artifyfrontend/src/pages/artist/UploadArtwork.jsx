@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, X } from 'lucide-react';
+import { Upload, X, Shield } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
@@ -31,6 +31,9 @@ const UploadArtwork = () => {
         height: '',
         year: '',
         isAvailable: true,
+        applyWatermark: false,
+        registerFingerprint: false,
+        copyrightText: '',
     });
 
     useEffect(() => {
@@ -53,6 +56,9 @@ const UploadArtwork = () => {
                     height: '',
                     year: '',
                     isAvailable: data.isForSale ?? true,
+                    applyWatermark: data.imageUrl?.includes('/watermarked/') || false,
+                    registerFingerprint: data.protectionStatus?.isFingerprinted || false,
+                    copyrightText: data.protectionStatus?.metadata?.copyrightNotice || '',
                 });
                 if (data.imageUrl) {
                     setExistingImageUrl(
@@ -117,11 +123,19 @@ const UploadArtwork = () => {
 
             if (isEditMode) {
                 if (file) data.append('File', file); // only send if user picked a new one
+                data.append('ApplyWatermark', formData.applyWatermark);
+                data.append('RegisterFingerprint', formData.registerFingerprint);
+                data.append('CopyrightText', formData.copyrightText);
+                
                 await artworkService.update(id, data);
                 alert('Artwork updated successfully!');
             } else {
                 data.append('Category', formData.category);
                 data.append('File', file);
+                data.append('ApplyWatermark', formData.applyWatermark);
+                data.append('RegisterFingerprint', formData.registerFingerprint);
+                data.append('CopyrightText', formData.copyrightText);
+
                 await artworkService.create(data);
                 alert('Artwork uploaded successfully!');
             }
@@ -293,6 +307,57 @@ const UploadArtwork = () => {
                     <label htmlFor="isAvailable" className="text-sm font-medium text-textSecondary">
                         Available for Sale
                     </label>
+                </div>
+
+                {/* Protection Suite */}
+                <div className="pt-6 border-t border-border">
+                    <h3 className="text-lg font-heading font-semibold text-primary mb-4 flex items-center gap-2">
+                        <Shield className="w-5 h-5 text-secondary" />
+                        Artwork Protection Suite
+                    </h3>
+                    
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <input
+                                type="checkbox"
+                                id="applyWatermark"
+                                name="applyWatermark"
+                                checked={formData.applyWatermark}
+                                onChange={handleInputChange}
+                                className="w-4 h-4 accent-secondary"
+                            />
+                            <label htmlFor="applyWatermark" className="text-sm font-medium text-textSecondary">
+                                Apply Visible Watermark (Copyright text tiled across image)
+                            </label>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <input
+                                type="checkbox"
+                                id="registerFingerprint"
+                                name="registerFingerprint"
+                                checked={formData.registerFingerprint}
+                                onChange={handleInputChange}
+                                className="w-4 h-4 accent-secondary"
+                            />
+                            <label htmlFor="registerFingerprint" className="text-sm font-medium text-textSecondary">
+                                Register Digital Fingerprint (SHA-256 + pHash)
+                            </label>
+                        </div>
+
+                        <div>
+                            <Input
+                                name="copyrightText"
+                                label="Copyright Notice"
+                                placeholder="e.g. © 2024 Artist Name. All rights reserved."
+                                value={formData.copyrightText}
+                                onChange={handleInputChange}
+                            />
+                            <p className="text-xs text-textSecondary mt-1">
+                                This will be embedded in the platform metadata registry.
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4">
