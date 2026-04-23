@@ -146,7 +146,7 @@ namespace Artify.Api.Services.Implementations
                 existing.CopyrightText = dto.CopyrightText;
                 existing.Description = dto.Description;
                 existing.CreatedAt = DateTime.UtcNow;
-                await _protectionRepo.AddMetadataLogAsync(existing); // will use EF tracking
+                await _protectionRepo.UpdateMetadataLogAsync(existing); // will use EF tracking
             }
             else
             {
@@ -208,6 +208,8 @@ namespace Artify.Api.Services.Implementations
 
             if (existing == null)
                 await _protectionRepo.AddHashRecordAsync(hashRecord);
+            else
+                await _protectionRepo.UpdateHashRecordAsync(hashRecord);
 
             // Also store on the artwork itself for quick plagiarism lookup
             artwork.HashValue = sha256;

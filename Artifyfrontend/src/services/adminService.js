@@ -19,8 +19,8 @@ const adminService = {
         const response = await axios.get('/admin/users');
         return response.data;
     },
-    updateUserStatus: async (userId, status) => {
-        const response = await axios.put(`/admin/users/status/${userId}`, { isActive: status });
+    updateUserStatus: async (userId, payload) => {
+        const response = await axios.put(`/admin/users/status/${userId}`, payload);
         return response.data;
     },
     

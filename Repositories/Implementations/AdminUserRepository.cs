@@ -1,4 +1,4 @@
-﻿// ========================= AdminUserRepository.cs =========================
+// ========================= AdminUserRepository.cs =========================
 using Artify.Api.Data;
 using Artify.Api.Models;
 using Artify.Api.Repositories.Interfaces;
@@ -18,6 +18,7 @@ namespace Artify.Api.Repositories.Implementations
         public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync()
         {
             return await _context.Users
+                .Include(u => u.ArtistProfile)
                 .OrderByDescending(u => u.CreatedAt)
                 .ToListAsync();
         }
@@ -25,6 +26,7 @@ namespace Artify.Api.Repositories.Implementations
         public async Task<ApplicationUser?> GetUserByIdAsync(Guid userId)
         {
             return await _context.Users
+                .Include(u => u.ArtistProfile)
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
 

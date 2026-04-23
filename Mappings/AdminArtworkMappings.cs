@@ -1,4 +1,4 @@
-﻿// ========================= AdminArtworkMappings.cs =========================
+// ========================= AdminArtworkMappings.cs =========================
 using Artify.Api.DTOs.Admin;
 using Artify.Api.Models;
 
@@ -17,6 +17,7 @@ namespace Artify.Api.Mappings
                 artwork.Price,
                 artwork.Status,
                 artwork.ArtistProfileId,
+                artwork.ImageUrl,
                 artwork.CreatedAt
             };
         }

@@ -38,25 +38,7 @@ const ArtworkDetails = () => {
         }
     }, [id]);
 
-    const handleMakeOffer = async () => {
-        if (!user) {
-            navigate('/login');
-            return;
-        }
-        try {
-            const artistId = artwork.artistProfileId || artwork.artistId;
-            const conversation = await chatService.startConversation(artistId);
-            // In a real app, we'd send a "Make an Offer" message automatically here
-            navigate('/dashboard/chat', { 
-                state: { 
-                    activeConversation: conversation,
-                    initialMessage: `I'm interested in making an offer for "${artwork.title}".`
-                } 
-            });
-        } catch (err) {
-            alert(err.response?.data?.message || "Failed to initiate offer");
-        }
-    };
+
 
     const handleAddToCart = () => {
         // Map artworkId to id for CartContext compatibility
@@ -64,6 +46,7 @@ const ArtworkDetails = () => {
             ...artwork,
             id: artwork.artworkId || artwork.id
         });
+        alert("Artwork added to cart!");
     };
 
     if (loading) return <div className="min-h-screen flex justify-center items-center"><Loader /></div>;
@@ -137,14 +120,7 @@ const ArtworkDetails = () => {
                             >
                                 Add to Cart
                             </Button>
-                            <Button 
-                                variant="secondary" 
-                                size="lg" 
-                                className="w-full"
-                                onClick={handleMakeOffer}
-                            >
-                                Make an Offer
-                            </Button>
+
                         </div>
 
                         {/* Trust Badges */}

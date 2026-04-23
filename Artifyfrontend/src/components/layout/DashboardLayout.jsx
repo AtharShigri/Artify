@@ -40,7 +40,7 @@ const DashboardLayout = () => {
         { name: 'Orders (Selling)', path: '/dashboard/artist/orders', icon: ShoppingBag },
         { name: 'Job Feed', path: '/project-board', icon: Briefcase },
         { name: 'Messages', path: '/dashboard/chat', icon: MessageSquare },
-        { name: 'Protection', path: '/dashboard/artist/protection', icon: Shield },
+
         { name: 'Settings', path: '/dashboard/artist/settings', icon: Settings },
     ];
 

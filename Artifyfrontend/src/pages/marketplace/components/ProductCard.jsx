@@ -32,7 +32,9 @@ const ProductCard = ({ artwork }) => {
                         className="rounded-full w-10 h-10 p-0 flex items-center justify-center"
                         onClick={(e) => {
                             e.preventDefault();
+                            e.stopPropagation();
                             addToCart(artwork);
+                            alert("Added to cart!");
                         }}
                     >
                         <ShoppingBag className="w-4 h-4" />

@@ -22,6 +22,12 @@ namespace Artify.Api.Repositories.Implementations
             await _context.SaveChangesAsync();
         }
 
+        public async Task UpdateHashRecordAsync(ArtworkHash hash)
+        {
+            _context.ArtworkHashes.Update(hash);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<ArtworkHash?> GetArtworkHashAsync(Guid artworkId)
         {
             return await _context.ArtworkHashes
@@ -41,6 +47,12 @@ namespace Artify.Api.Repositories.Implementations
         public async Task AddMetadataLogAsync(ArtworkMetadataLog log)
         {
             await _context.ArtworkMetadataLogs.AddAsync(log);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateMetadataLogAsync(ArtworkMetadataLog log)
+        {
+            _context.ArtworkMetadataLogs.Update(log);
             await _context.SaveChangesAsync();
         }
 

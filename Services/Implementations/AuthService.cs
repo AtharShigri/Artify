@@ -99,6 +99,9 @@ namespace Artify.Api.Services.Implementations
             if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
                 throw new Exception("Invalid credentials");
 
+            if (!user.IsActive)
+                throw new Exception("Your account has been restricted.");
+
             var roles = await _userManager.GetRolesAsync(user);
             var primaryRole = roles.FirstOrDefault() ?? "Buyer";
 

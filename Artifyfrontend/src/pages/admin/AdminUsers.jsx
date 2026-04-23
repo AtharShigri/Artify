@@ -24,13 +24,23 @@ const AdminUsers = () => {
         }
     };
 
-    const handleToggleStatus = async (userId, currentStatus) => {
+    const handleToggleStatus = async (userId, currentIsActive, currentIsApproved) => {
         try {
-            await adminService.updateUserStatus(userId, !currentStatus);
+            await adminService.updateUserStatus(userId, { isActive: !currentIsActive, isApproved: currentIsApproved });
             // Update local state
-            setUsers(users.map(u => u.id === userId ? { ...u, isActive: !currentStatus } : u));
+            setUsers(users.map(u => u.id === userId ? { ...u, isActive: !currentIsActive } : u));
         } catch (err) {
             console.error("Error updating user status:", err);
+        }
+    };
+
+    const handleToggleApproval = async (userId, currentIsActive, currentIsApproved) => {
+        try {
+            await adminService.updateUserStatus(userId, { isActive: currentIsActive, isApproved: !currentIsApproved });
+            // Update local state
+            setUsers(users.map(u => u.id === userId ? { ...u, isApproved: !currentIsApproved } : u));
+        } catch (err) {
+            console.error("Error updating user approval:", err);
         }
     };
 
@@ -97,24 +107,48 @@ const AdminUsers = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                            user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                                        }`}>
-                                            {user.isActive ? 'Active' : 'Blocked'}
-                                        </span>
+                                        <div className="flex flex-col gap-1 items-start">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                            }`}>
+                                                {user.isActive ? 'Active' : 'Blocked'}
+                                            </span>
+                                            {user.isArtist && (
+                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                    user.isApproved ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'
+                                                }`}>
+                                                    {user.isApproved ? 'Approved' : 'Pending'}
+                                                </span>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <button 
-                                            onClick={() => handleToggleStatus(user.id, user.isActive)}
-                                            className={`p-2 rounded-lg transition-colors ${
-                                                user.isActive 
-                                                ? 'text-gray-400 hover:bg-red-50 hover:text-red-500' 
-                                                : 'text-gray-400 hover:bg-green-50 hover:text-green-500'
-                                            }`}
-                                            title={user.isActive ? "Block User" : "Unblock User"}
-                                        >
-                                            {user.isActive ? <Ban className="w-5 h-5" /> : <CheckCircle className="w-5 h-5" />}
-                                        </button>
+                                        <div className="flex justify-end gap-1">
+                                            {user.isArtist && (
+                                                <button 
+                                                    onClick={() => handleToggleApproval(user.id, user.isActive, user.isApproved)}
+                                                    className={`p-2 rounded-lg transition-colors ${
+                                                        user.isApproved 
+                                                        ? 'text-gray-400 hover:bg-yellow-50 hover:text-yellow-600' 
+                                                        : 'text-gray-400 hover:bg-blue-50 hover:text-blue-600'
+                                                    }`}
+                                                    title={user.isApproved ? "Revoke Approval" : "Approve Artist"}
+                                                >
+                                                    <CheckCircle className="w-5 h-5" />
+                                                </button>
+                                            )}
+                                            <button 
+                                                onClick={() => handleToggleStatus(user.id, user.isActive, user.isApproved)}
+                                                className={`p-2 rounded-lg transition-colors ${
+                                                    user.isActive 
+                                                    ? 'text-gray-400 hover:bg-red-50 hover:text-red-500' 
+                                                    : 'text-gray-400 hover:bg-green-50 hover:text-green-500'
+                                                }`}
+                                                title={user.isActive ? "Block User" : "Unblock User"}
+                                            >
+                                                <Ban className="w-5 h-5" />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

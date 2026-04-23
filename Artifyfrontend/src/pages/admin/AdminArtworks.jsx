@@ -95,7 +95,7 @@ const AdminArtworks = () => {
                             {artwork.status === 'Flagged' && (
                                 <div className="absolute bottom-0 left-0 right-0 bg-red-600/90 text-white p-2 flex items-center justify-center gap-2 text-xs font-bold">
                                     <ShieldAlert className="w-4 h-4" />
-                                    AUTO-PLAGIARISM DETECTED
+                                    POTENTIAL PLAGIARISM
                                 </div>
                             )}
                         </div>

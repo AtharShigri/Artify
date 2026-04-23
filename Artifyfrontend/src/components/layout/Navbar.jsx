@@ -4,6 +4,7 @@ import { Menu, X, ShoppingBag, User, LayoutDashboard, Briefcase, PlusCircle, Bel
 import * as signalR from '@microsoft/signalr';
 import Button from '../common/Button';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 import { cn } from '../../utils/cn';
 import { getImageUrl } from '../../utils/imageUtils';
 import api from '../../api/axios';
@@ -190,6 +191,7 @@ const NotificationBell = ({ user }) => {
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { user, logout, isArtist, isBuyer, isAdmin } = useAuth();
+    const { cartItems } = useCart();
     const location = useLocation();
 
     const isActive = (path) => location.pathname === path;
@@ -211,7 +213,9 @@ const Navbar = () => {
         { name: 'Post a Project', path: '/dashboard/buyer/post-project', icon: PlusCircle },
     ];
 
-    const navLinks = isArtist ? artistLinks : isBuyer ? buyerLinks : publicLinks;
+    const adminLinks = [];
+
+    const navLinks = isAdmin ? adminLinks : isArtist ? artistLinks : isBuyer ? buyerLinks : publicLinks;
 
     const dashboardPath = isArtist
         ? '/dashboard/artist'
@@ -255,7 +259,11 @@ const Navbar = () => {
                             <>
                                 <Link to="/cart" className="p-2 text-textSecondary hover:text-primary transition-colors relative rounded-lg hover:bg-gray-50">
                                     <ShoppingBag className="w-5 h-5" />
-                                    <span className="absolute top-1 right-1 w-2 h-2 bg-accent rounded-full" />
+                                    {cartItems?.length > 0 && (
+                                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-accent text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                                            {cartItems.length}
+                                        </span>
+                                    )}
                                 </Link>
                                 <div className="h-6 w-px bg-border" />
                             </>

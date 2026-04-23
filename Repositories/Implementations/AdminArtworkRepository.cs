@@ -1,4 +1,4 @@
-﻿using Artify.Api.Data;
+using Artify.Api.Data;
 using Artify.Api.Models;
 using Artify.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +36,7 @@ namespace Artify.Api.Repositories.Implementations
         public async Task<Artwork?> GetArtworkByIdAsync(Guid artworkId)
         {
             return await _context.Artworks
+                .Include(a => a.ArtistProfile)
                 .FirstOrDefaultAsync(a => a.ArtworkId == artworkId);
         }
 

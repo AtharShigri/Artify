@@ -130,7 +130,8 @@ namespace Artify.Api.Services.Implementations
         ImageUrl = imageUrl,
         IsForSale = true,
         CategoryId  = dto.CategoryId,
-        Status = "Published"
+        Status = "Pending",
+        IsApproved = false
     };
 
     await _artworkRepo.AddAsync(artwork);
@@ -236,6 +237,16 @@ namespace Artify.Api.Services.Implementations
                     ArtistName = artistProfile?.FullName ?? "Artify Artist",
                     Description = artwork.Description
                 });
+            }
+
+            if (dto.File != null && dto.File.Length > 0)
+            {
+                var plagiarismResult = await _protectionService.CheckPlagiarismAsync(user, dto.File);
+                if (plagiarismResult.PlagiarismDetected)
+                {
+                    artwork.Status = "Flagged";
+                    await _artworkRepo.UpdateAsync(artwork);
+                }
             }
 
             return new { Success = true };

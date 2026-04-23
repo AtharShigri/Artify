@@ -24,7 +24,7 @@ const ArtistDashboard = lazy(() => import('../pages/artist/ArtistDashboard'));
 const UploadArtwork = lazy(() => import('../pages/artist/UploadArtwork'));
 const MyArtworks = lazy(() => import('../pages/artist/MyArtworks'));
 const ArtistSettings = lazy(() => import('../pages/artist/Settings'));
-const ArtworkProtection = lazy(() => import('../pages/artist/ArtworkProtection'));
+
 
 // Dashboard Pages — Buyer
 const BuyerDashboard = lazy(() => import('../pages/buyer/BuyerDashboard'));
@@ -85,7 +85,7 @@ const AppRoutes = () => {
                     <Route path="artist/artworks" element={<MyArtworks />} />
                     <Route path="artist/artworks/:id/edit" element={<UploadArtwork />} />
                     <Route path="artist/settings" element={<ArtistSettings />} />
-                    <Route path="artist/protection" element={<ArtworkProtection />} />
+
                     <Route path="artist/*" element={<div className="p-8">Page under construction</div>} />
 
                     {/* Buyer Routes */}

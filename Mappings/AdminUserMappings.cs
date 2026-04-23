@@ -1,4 +1,4 @@
-﻿using Artify.Api.DTOs.Admin;
+using Artify.Api.DTOs.Admin;
 using Artify.Api.Models;
 
 namespace Artify.Api.Mappings
@@ -14,6 +14,8 @@ namespace Artify.Api.Mappings
                 user.Email,
                 user.RoleType,
                 user.IsActive,
+                IsApproved = user.ArtistProfile?.IsApproved,
+                IsArtist = user.ArtistProfile != null,
                 user.CreatedAt
             };
         }
@@ -21,6 +23,10 @@ namespace Artify.Api.Mappings
         public static ApplicationUser ApplyStatusUpdate(ApplicationUser user, UpdateUserStatusDto dto)
         {
             user.IsActive = dto.IsActive;
+            if (dto.IsApproved.HasValue && user.ArtistProfile != null)
+            {
+                user.ArtistProfile.IsApproved = dto.IsApproved.Value;
+            }
             return user;
         }
     }
