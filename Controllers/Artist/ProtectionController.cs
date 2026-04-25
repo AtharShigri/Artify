@@ -53,7 +53,14 @@ namespace Artify.Api.Controllers.Artist
             if (dto.File == null || dto.File.Length == 0)
                 return BadRequest(new { message = "No file uploaded." });
 
-            var result = await _protectionService.CheckPlagiarismAsync(User, dto.File);
+            byte[] imageBytes;
+            using (var ms = new MemoryStream())
+            {
+                await dto.File.CopyToAsync(ms);
+                imageBytes = ms.ToArray();
+            }
+
+            var result = await _protectionService.CheckPlagiarismAsync(User, imageBytes);
             return Ok(result);
         }
 

@@ -71,5 +71,11 @@ namespace Artify.Api.Repositories.Implementations
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        public async Task<Category?> GetCategoryByNameAsync(string name)
+        {
+            return await _context.Categories
+                .FirstOrDefaultAsync(c => c.Name == name);
+        }
     }
 }

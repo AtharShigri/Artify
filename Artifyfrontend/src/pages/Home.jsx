@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import Button from '../components/common/Button';
 import SEO from '../components/common/SEO';
 import marketplaceService from '../services/marketplaceService';
+import { useAuth } from '../context/AuthContext';
 
 import { ART_CATEGORIES } from '../constants/categories';
 import { getImageUrl } from '../utils/imageUtils';
@@ -27,6 +28,7 @@ const categoryData = ART_CATEGORIES.map((name, index) => ({
 }));
 
 const Home = () => {
+    const { user } = useAuth();
     const targetRef = useRef(null);
     const { scrollYProgress } = useScroll({
         target: targetRef,
@@ -92,65 +94,98 @@ const Home = () => {
                 description="Artify is the premier marketplace for original art. Discover unique paintings, sculptures, and digital art from top artists."
             />
             {/* Hero Section */}
-            <section ref={targetRef} className="relative h-[90vh] flex items-center justify-center overflow-hidden bg-primary text-white">
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&q=80&w=1920')] bg-cover bg-center opacity-20"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-primary via-transparent to-transparent"></div>
+            <section ref={targetRef} className="relative h-[95vh] flex items-center justify-center overflow-hidden bg-[#020617] text-white">
+                {/* 1. Enhanced High-Contrast Background */}
+                <div className="absolute inset-0 z-0">
+                    {/* Blob 1: Vibrant Indigo */}
+                    <motion.div
+                        animate={{
+                            scale: [1, 1.2, 1],
+                            x: [0, 50, 0],
+                            y: [0, 30, 0],
+                        }}
+                        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] bg-indigo-600/30 rounded-full blur-[100px]"
+                    />
 
-                <motion.div
-                    style={{ opacity, scale }}
-                    className="relative z-10 text-center px-4 max-w-4xl mx-auto"
-                >
-                    <motion.span
+                    {/* Blob 2: Vibrant Pink/Secondary */}
+                    <motion.div
+                        animate={{
+                            scale: [1.2, 1, 1.2],
+                            x: [0, -50, 0],
+                            y: [0, -30, 0],
+                        }}
+                        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute bottom-[5%] right-[-5%] w-[600px] h-[600px] bg-pink-500/20 rounded-full blur-[120px]"
+                    />
+                    {/* Subtle Grid for Depth (Optional but keeps it from looking flat) */}
+                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 pointer-events-none"></div>
+                </div>
+
+                {/* 2. Text Content with "Readability Shield" */}
+                <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
+                    {/* This div acts as a dark glow behind the text to pop it out from blobs */}
+                    <div className="absolute inset-0 -m-20 bg-[#020617]/40 blur-3xl -z-10 rounded-full" />
+
+                    <motion.div
+                        style={{ opacity, scale }}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="inline-block px-4 py-1.5 rounded-full bg-accent/20 text-accent border border-accent/30 text-sm font-medium mb-6 backdrop-blur-sm"
+                        transition={{ duration: 0.8 }}
                     >
-                        The Premier Marketplace for Creativity
-                    </motion.span>
-                    <motion.h1
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}
-                        className="text-5xl md:text-7xl font-heading font-bold mb-6 leading-tight"
-                    >
-                        Discover Art That <br /> <span className="text-secondary">Moves the Soul</span>
-                    </motion.h1>
-                    <motion.p
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6 }}
-                        className="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto"
-                    >
-                        Connect directly with world-class painters, musicians, and performers.
-                        Commission unique works or buy original pieces securely.
-                    </motion.p>
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.8 }}
-                        className="flex flex-col sm:flex-row gap-4 justify-center"
-                    >
-                        <Link to="/marketplace">
-                            <Button variant="accent" size="lg" className="w-full sm:w-auto">Explore Marketplace</Button>
-                        </Link>
-                        <Link to="/register">
-                            <Button variant="secondary" size="lg" className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-primary">Join as Artist</Button>
-                        </Link>
-                    </motion.div>
-                </motion.div>
-            </section>
+                        {/* Pill Badge */}
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-xl mb-8">
+                            <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                            <span className="text-xs font-bold tracking-widest uppercase text-white">
+                                The Premier Marketplace for Creativity
+                            </span>
+                        </div>
 
+                        {/* Typography - Added font-black and white-shadow */}
+                        <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter leading-none text-white drop-shadow-2xl">
+                            Artify Your <br />
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-white to-pink-400">
+                                Digital Horizon
+                            </span>
+                        </h1>
+
+                        <p className="text-lg md:text-2xl text-gray-200 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
+                            Connect with world-class creators.
+                            Commission original pieces or trade digital masterpieces securely.
+                        </p>
+
+                        {/* CTA Group */}
+                        <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                            <Link to="/marketplace">
+                                <Button
+                                    size="xl"
+                                    className="px-10 py-7 bg-white text-black hover:bg-gray-200 rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all"
+                                >
+                                    Explore Now
+                                </Button>
+                            </Link>
+
+                            {(!user || (user.role !== 'Artist' && user.role !== 'Agency')) && (
+                                <Link to="/register">
+                                    <button className="px-10 py-3 text-white font-semibold border-b-2 border-white/30 hover:border-white transition-all">
+                                        Join as Artist
+                                    </button>
+                                </Link>
+                            )}
+                        </div>
+                    </motion.div>
+                </div>
+            </section>
             {/* Featured Artists Badges Row */}
             <section className="py-12 bg-white border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h3 className="text-center text-sm font-bold text-gray-400 uppercase tracking-wider mb-8">
                         Recognized Artists
                     </h3>
-                    
+
                     {loading ? (
                         <div className="flex flex-wrap justify-center gap-8 md:gap-12">
-                            {[1,2,3,4,5].map(i => (
+                            {[1, 2, 3, 4, 5].map(i => (
                                 <div key={i} className="flex flex-col items-center animate-pulse">
                                     <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gray-200 mb-3"></div>
                                     <div className="w-16 h-4 bg-gray-200 rounded"></div>
@@ -161,7 +196,7 @@ const Home = () => {
                         <div className="flex flex-wrap justify-center gap-8 md:gap-12">
                             {featuredArtists.length > 0 ? featuredArtists.map((artist, index) => (
                                 <Link key={artist.artistProfileId || index} to={`/artist/${artist.artistProfileId || artist.id}`} className="group flex flex-col items-center">
-                                    <motion.div 
+                                    <motion.div
                                         initial={{ opacity: 0, scale: 0.8 }}
                                         whileInView={{ opacity: 1, scale: 1 }}
                                         viewport={{ once: true }}
@@ -198,14 +233,14 @@ const Home = () => {
 
                     <div className="relative group">
                         {/* Navigation Buttons */}
-                        <button 
+                        <button
                             onClick={() => scrollCategories('left')}
                             className="absolute -left-4 md:-left-12 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white p-4 rounded-full shadow-xl border border-gray-100 text-primary transition-all hover:scale-110 md:opacity-0 group-hover:opacity-100"
                         >
                             <ChevronLeft className="w-6 h-6" />
                         </button>
 
-                        <div 
+                        <div
                             ref={categoryScrollRef}
                             className="flex overflow-x-auto gap-8 pb-8 no-scrollbar snap-x scroll-smooth"
                         >
@@ -230,7 +265,7 @@ const Home = () => {
                             ))}
                         </div>
 
-                        <button 
+                        <button
                             onClick={() => scrollCategories('right')}
                             className="absolute -right-4 md:-right-12 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white p-4 rounded-full shadow-xl border border-gray-100 text-primary transition-all hover:scale-110 md:opacity-0 group-hover:opacity-100"
                         >
@@ -349,9 +384,11 @@ const Home = () => {
                             </div>
                         </div>
                     </div>
-                    <Link to="/register">
-                        <Button variant="accent" size="lg">Start Your Journey</Button>
-                    </Link>
+                    {(!user || (user.role !== 'Artist' && user.role !== 'Agency')) && (
+                        <Link to="/register">
+                            <Button variant="accent" size="lg">Start Your Journey</Button>
+                        </Link>
+                    )}
                 </div>
             </section>
         </div>

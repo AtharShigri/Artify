@@ -123,6 +123,7 @@ const UploadArtwork = () => {
 
             if (isEditMode) {
                 if (file) data.append('File', file); // only send if user picked a new one
+                data.append('Category', formData.category);
                 data.append('ApplyWatermark', formData.applyWatermark);
                 data.append('RegisterFingerprint', formData.registerFingerprint);
                 data.append('CopyrightText', formData.copyrightText);

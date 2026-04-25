@@ -35,12 +35,14 @@ namespace Artify.Api.Services.Implementations
             var artistUser = await _artistRepo.GetByIdAsync(artistId);
             var artistName = artistUser?.FullName ?? "Artify Artist";
 
+            var wwwRoot = Path.Combine(_env.ContentRootPath, "wwwroot");
+            
             // Ensure output directory exists
-            var outputDir = Path.Combine(_env.WebRootPath, "images", "watermarked");
+            var outputDir = Path.Combine(wwwRoot, "images", "watermarked");
             Directory.CreateDirectory(outputDir);
 
             // Temp dir for input
-            var tempDir = Path.Combine(_env.WebRootPath, "images", "temp");
+            var tempDir = Path.Combine(wwwRoot, "images", "temp");
             Directory.CreateDirectory(tempDir);
 
             var tempFile = Path.Combine(tempDir, $"{Guid.NewGuid()}_{file.FileName}");
@@ -185,7 +187,8 @@ namespace Artify.Api.Services.Implementations
             if (string.IsNullOrEmpty(artwork.ImageUrl))
                 return new HashResultDto { Success = false };
 
-            var imagePath = Path.Combine(_env.WebRootPath, artwork.ImageUrl.TrimStart('/'));
+            var wwwRoot = Path.Combine(_env.ContentRootPath, "wwwroot");
+            var imagePath = Path.Combine(wwwRoot, artwork.ImageUrl.TrimStart('/').Replace("/", "\\"));
             if (!File.Exists(imagePath))
                 return new HashResultDto { Success = false };
 
@@ -228,21 +231,15 @@ namespace Artify.Api.Services.Implementations
         // ── 4. PLAGIARISM CHECK ───────────────────────────────────────────────
         // Compares an uploaded image against ALL registered artworks using pHash Hamming distance.
         // Threshold: Hamming ≤ 10 out of 64 bits → similar (≥ 84%)
-        public async Task<PlagiarismResultDto> CheckPlagiarismAsync(ClaimsPrincipal user, IFormFile file)
+        public async Task<PlagiarismResultDto> CheckPlagiarismAsync(ClaimsPrincipal user, byte[] imageBytes)
         {
-            // Save and read uploaded file
-            var tempDir = Path.Combine(_env.WebRootPath, "images", "temp");
-            Directory.CreateDirectory(tempDir);
+            if (imageBytes == null || imageBytes.Length == 0)
+            {
+                return new PlagiarismResultDto { Success = false, Summary = "Failed to read image data for plagiarism check." };
+            }
 
-            var tempPath = Path.Combine(tempDir, $"plagcheck_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}");
-            using (var tempStream = new FileStream(tempPath, FileMode.Create))
-                await file.CopyToAsync(tempStream);
-
-            var uploadedBytes = await File.ReadAllBytesAsync(tempPath);
-            File.Delete(tempPath);
-
-            var uploadedSha256 = ComputeSha256(uploadedBytes);
-            var uploadedPHash = ComputePerceptualHash(uploadedBytes);
+            var uploadedSha256 = ComputeSha256(imageBytes);
+            var uploadedPHash = ComputePerceptualHash(imageBytes);
 
             // Fetch all registered hashes
             var allHashes = await _protectionRepo.GetAllHashesAsync();

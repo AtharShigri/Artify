@@ -13,5 +13,6 @@ namespace Artify.Api.Repositories.Interfaces
 
         Task<bool> ArtworkExistsAsync(Guid artworkId, Guid artistId);
         Task<IEnumerable<Artwork>> GetArtworksByArtistIdsAsync(IEnumerable<Guid> artistIds);
+        Task<Category?> GetCategoryByNameAsync(string name);
     }
 }

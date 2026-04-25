@@ -164,6 +164,10 @@ using (var scope = app.Services.CreateScope())
 
     // Seed Admin User
     await DbSeeder.SeedAdminUser(scope.ServiceProvider);
+
+    // Seed Categories
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await DbSeeder.SeedCategories(dbContext);
 }
 
 app.UseStaticFiles();
