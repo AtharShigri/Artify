@@ -1,6 +1,6 @@
-﻿using Artify.Api.DTOs.Auth;
+﻿using artifi.Api.DTOs.Auth;
 
-namespace Artify.Api.Services.Interfaces
+namespace artifi.Api.Services.Interfaces
 {
     public interface IAuthService
     {

@@ -67,8 +67,8 @@ const NotificationBell = ({ user }) => {
 
         return () => {
             if (connectionRef.current) {
-                connectionRef.current.notif?.stop().catch(() => {});
-                connectionRef.current.chat?.stop().catch(() => {});
+                connectionRef.current.notif?.stop().catch(() => { });
+                connectionRef.current.chat?.stop().catch(() => { });
                 connectionRef.current = null;
             }
         };
@@ -163,9 +163,8 @@ const NotificationBell = ({ user }) => {
                                 <div
                                     key={n.id}
                                     onClick={() => !n.isRead && markRead(n.id)}
-                                    className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors group ${
-                                        !n.isRead ? 'bg-primary/5' : ''
-                                    }`}
+                                    className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors group ${!n.isRead ? 'bg-primary/5' : ''
+                                        }`}
                                 >
                                     <div className="flex items-start gap-2">
                                         {!n.isRead && (
@@ -220,19 +219,16 @@ const Navbar = () => {
     const dashboardPath = isArtist
         ? '/dashboard/artist'
         : isAdmin
-        ? '/dashboard/admin'
-        : '/dashboard/buyer/orders';
+            ? '/dashboard/admin'
+            : '/dashboard/buyer/orders';
 
     return (
         <nav className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-border">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
-                    <Link to="/" className="flex-shrink-0 flex items-center gap-2">
-                        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                            <span className="text-accent font-heading font-bold text-lg">A</span>
-                        </div>
-                        <span className="font-heading font-bold text-xl text-primary">Artify</span>
+                    <Link to="/" className="flex-shrink-0 flex items-center">
+                        <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-10 w-auto" />
                     </Link>
 
                     {/* Desktop Navigation */}

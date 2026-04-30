@@ -1,5 +1,5 @@
 ﻿// ========================= SystemSummary.cs =========================
-namespace Artify.Api.Models
+namespace artifi.Api.Models
 {
     public class SystemSummary
     {

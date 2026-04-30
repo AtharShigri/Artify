@@ -1,8 +1,8 @@
 ﻿using System.Security.Claims;
-using Artify.Api.DTOs.Artist;
-using Artify.Api.Models;
+using artifi.Api.DTOs.Artist;
+using artifi.Api.Models;
 
-namespace Artify.Api.Repositories.Interfaces
+namespace artifi.Api.Repositories.Interfaces
 {
     public interface IArtistRepository
     {

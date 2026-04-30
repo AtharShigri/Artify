@@ -1,12 +1,12 @@
-using Artify.Api.Models;
-using Artify.Api.Repositories.Interfaces;
+using artifi.Api.Models;
+using artifi.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Security.Claims;
-using Artify.Api.Data;
+using artifi.Api.Data;
 
 
-namespace Artify.Api.Repositories.Implementations
+namespace artifi.Api.Repositories.Implementations
 {
     public class EscrowRepository : IEscrowRepository
     {

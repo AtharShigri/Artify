@@ -1,4 +1,4 @@
-﻿namespace Artify.Api.DTOs.Buyer
+﻿namespace artifi.Api.DTOs.Buyer
 {
     public class PaymentIntentDto
     {

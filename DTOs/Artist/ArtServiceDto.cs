@@ -1,4 +1,4 @@
-﻿namespace Artify.Api.DTOs.Artist
+﻿namespace artifi.Api.DTOs.Artist
 {
     public class ArtServiceDto
     {

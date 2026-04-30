@@ -61,7 +61,7 @@ const AdminLogin = () => {
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="admin@artify.com"
+                            placeholder="admin@artifi.com"
                         />
                         <Input
                             label="Password"
@@ -84,7 +84,7 @@ const AdminLogin = () => {
                 </form>
 
                 <div className="text-center text-xs text-textSecondary mt-4">
-                    <p>&copy; {(new Date()).getFullYear()} Artify Inc. System Administration.</p>
+                    <p>&copy; {(new Date()).getFullYear()} artifi Inc. System Administration.</p>
                 </div>
             </div>
         </div>

@@ -1,10 +1,10 @@
 using System.Security.Claims;
-using Artify.Api.DTOs.Artist;
-using Artify.Api.Models;
-using Artify.Api.Repositories.Interfaces;
-using Artify.Api.Services.Interfaces;
+using artifi.Api.DTOs.Artist;
+using artifi.Api.Models;
+using artifi.Api.Repositories.Interfaces;
+using artifi.Api.Services.Interfaces;
 
-namespace Artify.Api.Services.Implementations
+namespace artifi.Api.Services.Implementations
 {
     public class ArtworkService : IArtworkService
     {
@@ -160,7 +160,7 @@ namespace Artify.Api.Services.Implementations
         { 
             ArtworkId = artwork.ArtworkId, 
             CopyrightText = dto.CopyrightText,
-            ArtistName = artistProfile?.FullName ?? "Artify Artist",
+            ArtistName = artistProfile?.FullName ?? "artifi Artist",
             Description = dto.Description
         });
     }
@@ -261,7 +261,7 @@ namespace Artify.Api.Services.Implementations
                 {
                     ArtworkId = artwork.ArtworkId,
                     CopyrightText = dto.CopyrightText,
-                    ArtistName = artistProfile?.FullName ?? "Artify Artist",
+                    ArtistName = artistProfile?.FullName ?? "artifi Artist",
                     Description = artwork.Description
                 });
             }

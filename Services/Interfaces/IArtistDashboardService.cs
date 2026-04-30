@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Artify.Api.Services.Interfaces
+namespace artifi.Api.Services.Interfaces
 {
     public interface IArtistDashboardService
     {

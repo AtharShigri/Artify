@@ -1,8 +1,8 @@
-using Artify.Api.DTOs.Auth;
-using Artify.Api.Enums;
-using Artify.Api.Models;
-using Artify.Api.Repositories.Interfaces;
-using Artify.Api.Services.Interfaces;
+using artifi.Api.DTOs.Auth;
+using artifi.Api.Enums;
+using artifi.Api.Models;
+using artifi.Api.Repositories.Interfaces;
+using artifi.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -10,7 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Artify.Api.Services.Implementations
+namespace artifi.Api.Services.Implementations
 {
     public class AuthService : IAuthService
     {

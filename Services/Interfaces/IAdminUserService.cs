@@ -1,8 +1,8 @@
 ﻿// ========================= IAdminUserService.cs =========================
-using Artify.Api.DTOs.Admin;
-using Artify.Api.Models;
+using artifi.Api.DTOs.Admin;
+using artifi.Api.Models;
 
-namespace Artify.Api.Services.Interfaces
+namespace artifi.Api.Services.Interfaces
 {
     public interface IAdminUserService
     {

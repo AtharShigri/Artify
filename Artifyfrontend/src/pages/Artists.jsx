@@ -29,13 +29,13 @@ const Artists = () => {
     };
 
     const filteredArtists = (Array.isArray(artists) ? artists : []).filter(artist => {
-        const matchesSearch = 
+        const matchesSearch =
             (artist.fullName || '').toLowerCase().includes((searchTerm || '').toLowerCase()) ||
             (artist.category || '').toLowerCase().includes((searchTerm || '').toLowerCase());
-        
-        const matchesTab = 
-            activeTab === 'all' || 
-            (activeTab === 'artists' && artist.userType === 0) || 
+
+        const matchesTab =
+            activeTab === 'all' ||
+            (activeTab === 'artists' && artist.userType === 0) ||
             (activeTab === 'agencies' && artist.userType === 1);
 
         return matchesSearch && matchesTab;
@@ -43,16 +43,15 @@ const Artists = () => {
 
     if (loading) return <Loader />;
 
-    const tabClass = (tab) => 
-        `px-6 py-2 rounded-full text-sm font-bold transition-all ${
-            activeTab === tab 
-                ? 'bg-secondary text-white shadow-lg shadow-secondary/20' 
-                : 'text-textSecondary hover:bg-gray-100'
+    const tabClass = (tab) =>
+        `px-6 py-2 rounded-full text-sm font-bold transition-all ${activeTab === tab
+            ? 'bg-secondary text-white shadow-lg shadow-secondary/20'
+            : 'text-textSecondary hover:bg-gray-100'
         }`;
 
     return (
         <div className="min-h-screen bg-background pb-20">
-            <SEO title="Directory - Artify" description="Discover talented artists and creative agencies." />
+            <SEO title="Directory - artifi" description="Discover talented artists and creative agencies." />
 
             {/* Header */}
             <div className="bg-white border-b border-border py-16">
@@ -91,9 +90,9 @@ const Artists = () => {
                 {filteredArtists.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {filteredArtists.map((artist) => (
-                            <Link 
-                                key={artist.artistProfileId || artist.id} 
-                                to={`/artist/${artist.artistProfileId || artist.id}`} 
+                            <Link
+                                key={artist.artistProfileId || artist.id}
+                                to={`/artist/${artist.artistProfileId || artist.id}`}
                                 className="group relative"
                             >
                                 <div className="bg-white rounded-3xl overflow-hidden border border-gray-100 hover:border-secondary/20 shadow-sm hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 h-full flex flex-col">
@@ -110,7 +109,7 @@ const Artists = () => {
                                                 {artist.fullName?.charAt(0)}
                                             </div>
                                         )}
-                                        
+
                                         {/* Status Badges */}
                                         <div className="absolute top-3 left-3 flex flex-col gap-2">
                                             {artist.userType === 1 && (
@@ -139,7 +138,7 @@ const Artists = () => {
                                             </h3>
                                             {artist.rating > 4.5 && <BadgeCheck className="w-4 h-4 text-secondary shrink-0" />}
                                         </div>
-                                        
+
                                         <p className="text-secondary text-sm font-semibold mb-3">
                                             {artist.category || 'Visual Artist'}
                                         </p>

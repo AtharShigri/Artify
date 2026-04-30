@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Artify.Api.DTOs.Shared;
-using Artify.Api.Services.Interfaces;
-using Artify.Api.Models;
+using artifi.Api.DTOs.Shared;
+using artifi.Api.Services.Interfaces;
+using artifi.Api.Models;
 using System.Net.Mime;
 
-namespace Artify.Api.Controllers.Shared
+namespace artifi.Api.Controllers.Shared
 {
     [Route("api/marketplace")]
     [ApiController]

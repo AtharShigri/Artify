@@ -1,12 +1,12 @@
 using AutoMapper;
-using Artify.Api.Extensions;
-using Artify.Api.DTOs.Shared;
-using Artify.Api.Repositories.Interfaces;
-using Artify.Api.Services.Interfaces;
+using artifi.Api.Extensions;
+using artifi.Api.DTOs.Shared;
+using artifi.Api.Repositories.Interfaces;
+using artifi.Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Artify.Api.Models;
+using artifi.Api.Models;
 
-namespace Artify.Api.Services.Implementations
+namespace artifi.Api.Services.Implementations
 {
     public class MarketplaceService : IMarketplaceService
     {

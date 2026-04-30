@@ -1,7 +1,7 @@
 ﻿// ========================= AdminReportMappings.cs =========================
-using Artify.Api.Models;
+using artifi.Api.Models;
 
-namespace Artify.Api.Mappings
+namespace artifi.Api.Mappings
 {
     public static class AdminReportMappings
     {

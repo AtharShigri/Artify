@@ -1,10 +1,10 @@
-﻿using Artify.Api.DTOs.Admin;
-using Artify.Api.Models;
+﻿using artifi.Api.DTOs.Admin;
+using artifi.Api.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Artify.Api.Repositories.Interfaces
+namespace artifi.Api.Repositories.Interfaces
 {
     public interface IAdminTransactionRepository
     {

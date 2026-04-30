@@ -52,7 +52,7 @@ const AppRoutes = () => {
                 <Route path="/artwork/:id" element={<ArtworkDetails />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/artists" element={<Artists />} />
-                <Route path="/about" element={<div className="p-20 text-center text-xl">About Artify — Coming Soon</div>} />
+                <Route path="/about" element={<div className="p-20 text-center text-xl">About artifi — Coming Soon</div>} />
 
                 {/* Project Board — public browse, auth required to submit */}
                 <Route path="/project-board" element={<ProjectBoard />} />

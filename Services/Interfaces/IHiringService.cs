@@ -1,7 +1,7 @@
-using Artify.Api.DTOs.Buyer;
-using Artify.Api.DTOs.Shared;
+using artifi.Api.DTOs.Buyer;
+using artifi.Api.DTOs.Shared;
 
-namespace Artify.Api.Services.Interfaces
+namespace artifi.Api.Services.Interfaces
 {
     public interface IHiringService
     {

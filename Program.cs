@@ -1,11 +1,11 @@
 using AutoMapper;
-using Artify.Api.Data;
-using Artify.Api.Models;
-using Artify.Api.Hubs;
-using Artify.Api.Repositories.Interfaces;
-using Artify.Api.Repositories.Implementations;
-using Artify.Api.Services.Interfaces;
-using Artify.Api.Services.Implementations;
+using artifi.Api.Data;
+using artifi.Api.Models;
+using artifi.Api.Hubs;
+using artifi.Api.Repositories.Interfaces;
+using artifi.Api.Repositories.Implementations;
+using artifi.Api.Services.Interfaces;
+using artifi.Api.Services.Implementations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -20,7 +20,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new() { Title = "Artify API", Version = "v1" });
+    c.SwaggerDoc("v1", new() { Title = "artifi API", Version = "v1" });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {

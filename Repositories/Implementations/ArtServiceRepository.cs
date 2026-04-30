@@ -1,9 +1,9 @@
-﻿using Artify.Api.Models;
-using Artify.Api.Repositories.Interfaces;
-using Artify.Api.Data;
+﻿using artifi.Api.Models;
+using artifi.Api.Repositories.Interfaces;
+using artifi.Api.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace Artify.Api.Repositories.Implementations
+namespace artifi.Api.Repositories.Implementations
 {
     public class ArtServiceRepository : IArtServiceRepository
     {

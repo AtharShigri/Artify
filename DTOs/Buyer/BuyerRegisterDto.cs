@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Artify.Api.DTOs.Buyer
+namespace artifi.Api.DTOs.Buyer
 {
     public class BuyerRegisterDto
     {

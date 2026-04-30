@@ -1,7 +1,7 @@
-﻿using Artify.Api.DTOs.Shared;
-using Artify.Api.Models;
+﻿using artifi.Api.DTOs.Shared;
+using artifi.Api.Models;
 
-namespace Artify.Api.Services.Interfaces
+namespace artifi.Api.Services.Interfaces
 {
     public interface IMarketplaceService
     {

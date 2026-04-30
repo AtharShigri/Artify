@@ -91,7 +91,7 @@ const Home = () => {
         <div className="flex flex-col">
             <SEO
                 title="Home"
-                description="Artify is the premier marketplace for original art. Discover unique paintings, sculptures, and digital art from top artists."
+                description="artifi is the premier marketplace for original art. Discover unique paintings, sculptures, and digital art from top artists."
             />
             {/* Hero Section */}
             <section ref={targetRef} className="relative h-[95vh] flex items-center justify-center overflow-hidden bg-[#020617] text-white">
@@ -143,7 +143,7 @@ const Home = () => {
 
                         {/* Typography - Added font-black and white-shadow */}
                         <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter leading-none text-white drop-shadow-2xl">
-                            Artify Your <br />
+                            artifi Your <br />
                             <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-white to-pink-400">
                                 Digital Horizon
                             </span>
@@ -356,7 +356,7 @@ const Home = () => {
                 <div className="absolute bottom-0 left-0 p-20 bg-accent/10 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
 
                 <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-                    <h2 className="text-3xl md:text-5xl font-heading font-bold mb-6">Artify Protects Your Creativity</h2>
+                    <h2 className="text-3xl md:text-5xl font-heading font-bold mb-6">artifi Protects Your Creativity</h2>
                     <p className="text-gray-300 text-lg mb-10 max-w-2xl mx-auto">
                         We ensure every transaction is secure and every artist gets paid fairly.
                         Our plagiarism detection systems protect authentic work.

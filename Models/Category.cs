@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Artify.Api.Models
+namespace artifi.Api.Models
 {
     public class Category
     {

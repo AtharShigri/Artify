@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
-using Artify.Api.Enums;
+using artifi.Api.Enums;
 
-namespace Artify.Api.Models
+namespace artifi.Api.Models
 {
     public class ApplicationUser : IdentityUser<Guid>
 {

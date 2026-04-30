@@ -1,7 +1,7 @@
 ﻿// ========================= IAdminUserRepository.cs =========================
-using Artify.Api.Models;
+using artifi.Api.Models;
 
-namespace Artify.Api.Repositories.Interfaces
+namespace artifi.Api.Repositories.Interfaces
 {
     public interface IAdminUserRepository
     {

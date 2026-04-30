@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Artify.Api.Migrations
+namespace artifi.Api.Migrations
 {
     /// <inheritdoc />
     public partial class AddProtectionTables : Migration

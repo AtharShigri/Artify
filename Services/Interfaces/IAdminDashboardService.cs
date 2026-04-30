@@ -1,8 +1,8 @@
-using Artify.Api.DTOs.Admin;
+using artifi.Api.DTOs.Admin;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Artify.Api.Services.Interfaces
+namespace artifi.Api.Services.Interfaces
 {
     public interface IAdminDashboardService
     {

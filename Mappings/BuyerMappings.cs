@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Artify.Api.DTOs.Buyer;
-using Artify.Api.Models;
+using artifi.Api.DTOs.Buyer;
+using artifi.Api.Models;
 
-namespace Artify.Api.Mappings
+namespace artifi.Api.Mappings
 {
     public class BuyerMappings : Profile
     {

@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Artify.Api.Services.Interfaces;
-using Artify.Api.DTOs.Admin;
+using artifi.Api.Services.Interfaces;
+using artifi.Api.DTOs.Admin;
 
-namespace Artify.Api.Controllers.Admin
+namespace artifi.Api.Controllers.Admin
 {
     [ApiController]
     [Route("api/admin")]

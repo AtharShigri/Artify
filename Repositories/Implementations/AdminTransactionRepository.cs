@@ -1,14 +1,14 @@
-﻿using Artify.Api.Data;
-using Artify.Api.DTOs.Admin;
-using Artify.Api.Models;
-using Artify.Api.Repositories.Interfaces;
+﻿using artifi.Api.Data;
+using artifi.Api.DTOs.Admin;
+using artifi.Api.Models;
+using artifi.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Artify.Api.Repositories.Implementations
+namespace artifi.Api.Repositories.Implementations
 {
     public class AdminTransactionRepository : IAdminTransactionRepository
     {

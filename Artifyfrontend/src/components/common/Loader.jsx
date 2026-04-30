@@ -5,9 +5,10 @@ const Loader = ({ fullScreen = false }) => {
     if (fullScreen) {
         return (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
-                <div className="flex flex-col items-center gap-2">
-                    <Loader2 className="w-10 h-10 text-secondary animate-spin" />
-                    <p className="text-sm font-medium text-textSecondary">Loading Artify...</p>
+                <div className="flex flex-col items-center gap-4">
+                    <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-8 w-auto mb-2 animate-pulse" />
+                    <Loader2 className="w-8 h-8 text-secondary animate-spin" />
+                    <p className="text-xs font-medium text-textSecondary uppercase tracking-widest">Loading artifi...</p>
                 </div>
             </div>
         );

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 
-namespace Artify.Api.Hubs
+namespace artifi.Api.Hubs
 {
     [Authorize]
     public class NotificationHub : Hub

@@ -1,8 +1,8 @@
-# Artify - Digital Art Marketplace
+# artifi - Digital Art Marketplace
 
-![Artify Hero Section](https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?auto=format&fit=crop&q=80&w=1200)
+![artifi Hero Section](https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?auto=format&fit=crop&q=80&w=1200)
 
-**Artify** is a premium digital marketplace connecting artists with art enthusiasts. It provides a seamless platform for discovering, buying, and selling original artworks, including paintings, calligraphy, sketches, and digital art. The platform is designed with a focus on aesthetics, user experience, and secure transactions.
+**artifi** is a premium digital marketplace connecting artists with art enthusiasts. It provides a seamless platform for discovering, buying, and selling original artworks, including paintings, calligraphy, sketches, and digital art. The platform is designed with a focus on aesthetics, user experience, and secure transactions.
 
 ---
 
@@ -60,8 +60,8 @@ Follow these steps to run the project locally.
 
 1.  **Clone the Repository**
     ```bash
-    git clone https://github.com/yourusername/artify-frontend.git
-    cd artify-frontend
+    git clone https://github.com/yourusername/artifi-frontend.git
+    cd artifi-frontend
     ```
 
 2.  **Install Dependencies**
@@ -92,7 +92,7 @@ Follow these steps to run the project locally.
 
 ## 🤝 Contribution Guidelines
 
-We welcome contributions to make Artify even better!
+We welcome contributions to make artifi even better!
 
 1.  **Fork the Project**
 2.  **Create your Feature Branch** (`git checkout -b feature/AmazingFeature`)
@@ -114,4 +114,4 @@ For any inquiries or support, please contact the development team:
 
 ---
 
-&copy; 2025 Artify. All rights reserved.
+&copy; 2025 artifi. All rights reserved.

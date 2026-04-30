@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Artify.Api.DTOs.Auth
+namespace artifi.Api.DTOs.Auth
 {
     public class ForgotPasswordDto
     {

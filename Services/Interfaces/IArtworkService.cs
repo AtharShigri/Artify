@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
-using Artify.Api.DTOs.Artist;
+using artifi.Api.DTOs.Artist;
 
-namespace Artify.Api.Services.Interfaces
+namespace artifi.Api.Services.Interfaces
 {
     public interface IArtworkService
     {

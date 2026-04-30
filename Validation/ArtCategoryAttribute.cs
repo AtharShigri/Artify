@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace Artify.Api.Validation
+namespace artifi.Api.Validation
 {
     public class ArtCategoryAttribute : ValidationAttribute
     {

@@ -1,7 +1,7 @@
-using Artify.Api.Models;
+using artifi.Api.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace Artify.Api.Data
+namespace artifi.Api.Data
 {
     public static class DbSeeder
     {
@@ -17,7 +17,7 @@ namespace Artify.Api.Data
             }
 
             // Check if admin user exists
-            var adminEmail = "admin@artify.com";
+            var adminEmail = "admin@artifi.com";
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
             if (adminUser == null)

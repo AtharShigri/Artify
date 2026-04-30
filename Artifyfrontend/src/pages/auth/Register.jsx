@@ -64,7 +64,7 @@ const Register = () => {
             // Map teamSize to integer for API
             payload.userType = parseInt(payload.userType);
             payload.teamSize = payload.teamSize ? parseInt(payload.teamSize) : null;
-            
+
             await register(payload);
             navigate('/login');
         } catch (err) {
@@ -75,20 +75,19 @@ const Register = () => {
     };
 
     const toggleClass = (active) =>
-        `flex flex-col items-center justify-center gap-3 p-6 text-center rounded-2xl border-2 transition-all cursor-pointer h-full ${
-            active
-                ? 'bg-secondary/5 border-secondary text-secondary shadow-lg shadow-secondary/10'
-                : 'bg-white border-gray-100 text-textSecondary hover:border-gray-200 hover:bg-gray-50'
+        `flex flex-col items-center justify-center gap-3 p-6 text-center rounded-2xl border-2 transition-all cursor-pointer h-full ${active
+            ? 'bg-secondary/5 border-secondary text-secondary shadow-lg shadow-secondary/10'
+            : 'bg-white border-gray-100 text-textSecondary hover:border-gray-200 hover:bg-gray-50'
         }`;
 
     const renderStep1 = () => (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="text-center">
                 <h3 className="text-xl font-bold text-primary mb-2">First, tell us about yourself</h3>
-                <p className="text-textSecondary text-sm">How do you plan to use Artify?</p>
+                <p className="text-textSecondary text-sm">How do you plan to use artifi?</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
-                <div 
+                <div
                     onClick={() => setFormData({ ...formData, userType: 0 })}
                     className={toggleClass(formData.userType === 0)}
                 >
@@ -100,7 +99,7 @@ const Register = () => {
                         <p className="text-xs mt-1 text-textSecondary opacity-80">Personal account for artists & buyers</p>
                     </div>
                 </div>
-                <div 
+                <div
                     onClick={() => setFormData({ ...formData, userType: 1 })}
                     className={toggleClass(formData.userType === 1)}
                 >
@@ -137,11 +136,10 @@ const Register = () => {
                                     key={size}
                                     type="button"
                                     onClick={() => setFormData({ ...formData, teamSize: size.includes('-') ? size.split('-')[1] : (size.includes('+') ? 50 : size) })}
-                                    className={`py-3 px-4 rounded-xl border-2 transition-all font-medium ${
-                                        (formData.teamSize === (size.includes('-') ? size.split('-')[1] : (size.includes('+') ? 50 : size)) )
+                                    className={`py-3 px-4 rounded-xl border-2 transition-all font-medium ${(formData.teamSize === (size.includes('-') ? size.split('-')[1] : (size.includes('+') ? 50 : size)))
                                             ? 'border-secondary bg-secondary/5 text-secondary'
                                             : 'border-gray-100 hover:border-gray-200'
-                                    }`}
+                                        }`}
                                 >
                                     {size} members
                                 </button>
@@ -182,11 +180,10 @@ const Register = () => {
                     <p className="text-textSecondary text-sm">Choose the role that fits you best</p>
                 </div>
                 <div className="grid grid-cols-1 gap-4">
-                    <div 
+                    <div
                         onClick={() => setFormData({ ...formData, role: 'artist' })}
-                        className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-4 ${
-                            formData.role === 'artist' ? 'border-secondary bg-secondary/5' : 'border-gray-100'
-                        }`}
+                        className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-4 ${formData.role === 'artist' ? 'border-secondary bg-secondary/5' : 'border-gray-100'
+                            }`}
                     >
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${formData.role === 'artist' ? 'bg-secondary text-white' : 'bg-gray-100 text-gray-500'}`}>
                             <CheckCircle2 className="w-5 h-5" />
@@ -196,11 +193,10 @@ const Register = () => {
                             <p className="text-xs text-textSecondary text-balance">I want to showcase and sell my creative masterpieces.</p>
                         </div>
                     </div>
-                    <div 
+                    <div
                         onClick={() => setFormData({ ...formData, role: 'buyer', category: '' })}
-                        className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-4 ${
-                            formData.role === 'buyer' ? 'border-secondary bg-secondary/5' : 'border-gray-100'
-                        }`}
+                        className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-4 ${formData.role === 'buyer' ? 'border-secondary bg-secondary/5' : 'border-gray-100'
+                            }`}
                     >
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${formData.role === 'buyer' ? 'bg-secondary text-white' : 'bg-gray-100 text-gray-500'}`}>
                             <CheckCircle2 className="w-5 h-5" />
@@ -299,19 +295,19 @@ const Register = () => {
 
     return (
         <div className="min-h-[90vh] flex items-center justify-center px-4 py-20 bg-gray-50/30">
-            <SEO title="Register" description="Join Artify as an agency, artist or buyer." />
+            <SEO title="Register" description="Join artifi as an agency, artist or buyer." />
             <div className="w-full max-w-lg bg-white p-10 rounded-[2.5rem] shadow-2xl shadow-primary/5 border border-gray-100">
                 <div className="text-center mb-10">
                     <Link to="/" className="inline-block mb-2">
-                        <span className="font-heading font-black text-4xl text-primary tracking-tight">Artify<span className="text-secondary">.</span></span>
+                        <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-12 w-auto mx-auto" />
                     </Link>
-                    
+
                     {/* Progress Bar */}
                     <div className="flex items-center justify-center gap-2 mt-4">
                         {[1, 2, 3].map(s => (
-                            <div 
-                                key={s} 
-                                className={`h-1.5 rounded-full transition-all duration-300 ${s === step ? 'w-8 bg-secondary' : 'w-4 bg-gray-100'}`} 
+                            <div
+                                key={s}
+                                className={`h-1.5 rounded-full transition-all duration-300 ${s === step ? 'w-8 bg-secondary' : 'w-4 bg-gray-100'}`}
                             />
                         ))}
                     </div>

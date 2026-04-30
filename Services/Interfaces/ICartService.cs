@@ -1,6 +1,6 @@
-﻿using Artify.Api.DTOs.Buyer;
+﻿using artifi.Api.DTOs.Buyer;
 
-namespace Artify.Api.Services.Interfaces
+namespace artifi.Api.Services.Interfaces
 {
     public interface ICartService
     {

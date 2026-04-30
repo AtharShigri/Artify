@@ -9,11 +9,8 @@ const Footer = () => {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                     {/* Brand */}
                     <div className="col-span-1 md:col-span-1">
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                                <span className="text-primary font-heading font-bold text-lg">A</span>
-                            </div>
-                            <span className="font-heading font-bold text-xl text-white">Artify</span>
+                        <div className="flex items-center mb-4">
+                            <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-10 w-auto" />
                         </div>
                         <p className="text-gray-400 text-sm leading-relaxed mb-6">
                             Connecting artists with art lovers worldwide. A premium marketplace for authentic creative work.
@@ -62,7 +59,7 @@ const Footer = () => {
                 </div>
 
                 <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-gray-500 text-sm">© {new Date().getFullYear()} Artify. All rights reserved.</p>
+                    <p className="text-gray-500 text-sm">© {new Date().getFullYear()} artifi. All rights reserved.</p>
                     <div className="flex gap-6">
                         <Link to="/privacy" className="text-gray-500 hover:text-white text-sm">Privacy Policy</Link>
                         <Link to="/terms" className="text-gray-500 hover:text-white text-sm">Terms of Service</Link>

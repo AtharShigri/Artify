@@ -87,12 +87,9 @@ const DashboardLayout = () => {
                 <div className="h-full flex flex-col">
                     {/* Header */}
                     <div className="h-16 flex items-center px-6 border-b border-border justify-between">
-                        <Link to="/" className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                                <span className="text-accent font-heading font-bold text-lg">A</span>
-                            </div>
-                            <span className="font-heading font-bold text-xl text-primary">Artify</span>
-                        </Link>
+                    <Link to="/" className="flex items-center">
+                        <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-10 w-auto" />
+                    </Link>
                         <button onClick={() => setIsSidebarOpen(false)} className="md:hidden">
                             <X className="w-6 h-6 text-textSecondary" />
                         </button>
@@ -131,10 +128,9 @@ const DashboardLayout = () => {
                                 end={link.path === '/dashboard/artist' || link.path === '/dashboard/admin'}
                                 onClick={() => setIsSidebarOpen(false)}
                                 className={({ isActive }) =>
-                                    `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                                        isActive
-                                            ? 'bg-primary text-white shadow-md'
-                                            : 'text-textSecondary hover:bg-gray-50 hover:text-primary'
+                                    `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${isActive
+                                        ? 'bg-primary text-white shadow-md'
+                                        : 'text-textSecondary hover:bg-gray-50 hover:text-primary'
                                     }`
                                 }
                             >
@@ -161,7 +157,9 @@ const DashboardLayout = () => {
             <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
                 {/* Mobile Header */}
                 <header className="md:hidden h-16 bg-white border-b border-border flex items-center justify-between px-4">
-                    <Link to="/" className="font-heading font-bold text-xl text-primary">Artify</Link>
+                    <Link to="/" className="flex items-center">
+                        <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-8 w-auto" />
+                    </Link>
                     <button onClick={() => setIsSidebarOpen(true)}>
                         <Menu className="w-6 h-6 text-primary" />
                     </button>

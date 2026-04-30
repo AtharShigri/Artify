@@ -1,12 +1,12 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using SkiaSharp;
-using Artify.Api.DTOs.Artist;
-using Artify.Api.Models;
-using Artify.Api.Repositories.Interfaces;
-using Artify.Api.Services.Interfaces;
+using artifi.Api.DTOs.Artist;
+using artifi.Api.Models;
+using artifi.Api.Repositories.Interfaces;
+using artifi.Api.Services.Interfaces;
 
-namespace Artify.Api.Services.Implementations
+namespace artifi.Api.Services.Implementations
 {
     public class ProtectionService : IProtectionService
     {
@@ -33,7 +33,7 @@ namespace Artify.Api.Services.Implementations
         {
             var artistId = _artistRepo.GetArtistId(user);
             var artistUser = await _artistRepo.GetByIdAsync(artistId);
-            var artistName = artistUser?.FullName ?? "Artify Artist";
+            var artistName = artistUser?.FullName ?? "artifi Artist";
 
             var wwwRoot = Path.Combine(_env.ContentRootPath, "wwwroot");
             
@@ -64,7 +64,7 @@ namespace Artify.Api.Services.Implementations
             canvas.DrawBitmap(originalBitmap, 0, 0);
 
             // ── Draw diagonal watermark text across the whole image ───────────
-            var watermarkText = $"© {artistName} | Artify";
+            var watermarkText = $"© {artistName} | artifi";
             var fontSize = Math.Max(originalBitmap.Width / 20f, 18f);
 
             using var textPaint = new SKPaint
@@ -313,7 +313,7 @@ namespace Artify.Api.Services.Implementations
                 Matches = matches.OrderByDescending(m => m.SimilarityPercent).ToList(),
                 Summary = detected
                     ? $"⚠️ {matches.Count} potential match(es) found. Highest similarity: {matches.Max(m => m.SimilarityPercent):F1}%."
-                    : "✅ No matching artwork found in the Artify registry. Your work appears to be original."
+                    : "✅ No matching artwork found in the artifi registry. Your work appears to be original."
             };
         }
 

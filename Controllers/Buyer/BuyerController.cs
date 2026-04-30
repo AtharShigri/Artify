@@ -2,10 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using AutoMapper;
-using Artify.Api.DTOs.Buyer;
-using Artify.Api.Services.Interfaces;
+using artifi.Api.DTOs.Buyer;
+using artifi.Api.Services.Interfaces;
 
-namespace Artify.Api.Controllers.Buyer
+namespace artifi.Api.Controllers.Buyer
 {
     [Route("api/buyer")]
     [ApiController]

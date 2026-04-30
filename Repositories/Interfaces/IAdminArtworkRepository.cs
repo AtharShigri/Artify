@@ -1,4 +1,4 @@
-﻿using Artify.Api.Models;
+﻿using artifi.Api.Models;
 
 public interface IAdminArtworkRepository
 {

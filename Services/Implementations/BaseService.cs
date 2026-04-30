@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using Artify.Api.Repositories.Interfaces;
+using artifi.Api.Repositories.Interfaces;
 
-namespace Artify.Api.Services.Implementations
+namespace artifi.Api.Services.Implementations
 {
     public abstract class BaseService
     {

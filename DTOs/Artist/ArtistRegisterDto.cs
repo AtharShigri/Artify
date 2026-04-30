@@ -1,8 +1,8 @@
 ﻿using System.Security.Claims;
 using System.ComponentModel.DataAnnotations;
-using Artify.Api.Validation;
+using artifi.Api.Validation;
 
-namespace Artify.Api.DTOs.Artist
+namespace artifi.Api.DTOs.Artist
 {
     public class ArtistRegisterDto
     {

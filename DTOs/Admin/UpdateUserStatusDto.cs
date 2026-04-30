@@ -1,5 +1,5 @@
 // ========================= UpdateUserStatusDto.cs =========================
-namespace Artify.Api.DTOs.Admin
+namespace artifi.Api.DTOs.Admin
 {
     public class UpdateUserStatusDto
     {

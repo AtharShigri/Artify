@@ -1,10 +1,10 @@
 // ========================= AdminUserRepository.cs =========================
-using Artify.Api.Data;
-using Artify.Api.Models;
-using Artify.Api.Repositories.Interfaces;
+using artifi.Api.Data;
+using artifi.Api.Models;
+using artifi.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Artify.Api.Repositories.Implementations
+namespace artifi.Api.Repositories.Implementations
 {
     public class AdminUserRepository : IAdminUserRepository
     {

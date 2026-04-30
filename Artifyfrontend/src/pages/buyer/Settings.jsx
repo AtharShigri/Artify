@@ -39,11 +39,10 @@ const SecurityTab = () => {
             </div>
 
             {message.text && (
-                <div className={`p-4 rounded-xl text-sm border ${
-                    message.type === 'success'
+                <div className={`p-4 rounded-xl text-sm border ${message.type === 'success'
                         ? 'bg-green-50 text-green-700 border-green-100'
                         : 'bg-red-50 text-red-700 border-red-100'
-                }`}>
+                    }`}>
                     {message.text}
                 </div>
             )}
@@ -142,7 +141,7 @@ const BillingTab = () => {
                 </div>
                 <h3 className="font-bold text-primary mb-1">No payment methods</h3>
                 <p className="text-sm text-textSecondary max-w-xs mx-auto mb-5">
-                    Add a payment method to purchase artwork and commission artists on Artify.
+                    Add a payment method to purchase artwork and commission artists on artifi.
                 </p>
                 <Button variant="primary" size="sm">
                     <CreditCard className="w-4 h-4 mr-2" />
@@ -198,11 +197,10 @@ const Settings = () => {
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                                activeTab === tab.id
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === tab.id
                                     ? 'bg-primary text-white shadow-md'
                                     : 'text-textSecondary hover:bg-gray-50 hover:text-primary'
-                            }`}
+                                }`}
                         >
                             <tab.icon className="w-5 h-5" />
                             {tab.name}

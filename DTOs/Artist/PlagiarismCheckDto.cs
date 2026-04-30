@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
-namespace Artify.Api.DTOs.Artist
+namespace artifi.Api.DTOs.Artist
 {
     public class PlagiarismCheckDto
     {

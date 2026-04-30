@@ -41,7 +41,7 @@ const ProjectBoard = () => {
 
     return (
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
-            <SEO title="Project Board" description="Browse open creative projects and submit your proposal on Artify." />
+            <SEO title="Project Board" description="Browse open creative projects and submit your proposal on artifi." />
 
             {/* Header */}
             <div className="mb-8">

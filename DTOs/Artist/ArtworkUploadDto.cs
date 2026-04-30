@@ -1,7 +1,7 @@
-using Artify.Api.Models;
+using artifi.Api.Models;
 using Microsoft.AspNetCore.Http;
 
-namespace Artify.Api.DTOs.Artist
+namespace artifi.Api.DTOs.Artist
 {
     public class ArtworkUploadDto
     {

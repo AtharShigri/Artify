@@ -6,7 +6,7 @@ const SEO = ({ title, description }) => {
 
     useEffect(() => {
         // Update Title
-        document.title = title ? `${title} | Artify` : 'Artify - Premier Art Marketplace';
+        document.title = title ? `${title} | artifi` : 'artifi - Premier Art Marketplace';
 
         // Update Meta Description
         const metaDesc = document.querySelector('meta[name="description"]');
