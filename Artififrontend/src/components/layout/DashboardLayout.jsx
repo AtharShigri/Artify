@@ -88,7 +88,7 @@ const DashboardLayout = () => {
                     {/* Header */}
                     <div className="h-16 flex items-center px-6 border-b border-border justify-between">
                     <Link to="/" className="flex items-center">
-                        <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-10 w-auto" />
+                        <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-14 w-auto" />
                     </Link>
                         <button onClick={() => setIsSidebarOpen(false)} className="md:hidden">
                             <X className="w-6 h-6 text-textSecondary" />
@@ -158,7 +158,7 @@ const DashboardLayout = () => {
                 {/* Mobile Header */}
                 <header className="md:hidden h-16 bg-white border-b border-border flex items-center justify-between px-4">
                     <Link to="/" className="flex items-center">
-                        <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-8 w-auto" />
+                        <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-10 w-auto" />
                     </Link>
                     <button onClick={() => setIsSidebarOpen(true)}>
                         <Menu className="w-6 h-6 text-primary" />

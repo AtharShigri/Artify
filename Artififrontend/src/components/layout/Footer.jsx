@@ -10,7 +10,7 @@ const Footer = () => {
                     {/* Brand */}
                     <div className="col-span-1 md:col-span-1">
                         <div className="flex items-center mb-4">
-                            <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-10 w-auto" />
+                            <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-14 w-auto" />
                         </div>
                         <p className="text-gray-400 text-sm leading-relaxed mb-6">
                             Connecting artists with art lovers worldwide. A premium marketplace for authentic creative work.

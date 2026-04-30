@@ -299,7 +299,7 @@ const Register = () => {
             <div className="w-full max-w-lg bg-white p-10 rounded-[2.5rem] shadow-2xl shadow-primary/5 border border-gray-100">
                 <div className="text-center mb-10">
                     <Link to="/" className="inline-block mb-2">
-                        <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-12 w-auto mx-auto" />
+                        <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-16 w-auto mx-auto" />
                     </Link>
 
                     {/* Progress Bar */}

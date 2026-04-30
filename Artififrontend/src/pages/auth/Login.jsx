@@ -43,7 +43,7 @@ const Login = () => {
             <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-border">
                 <div className="text-center mb-8">
                     <Link to="/" className="inline-block mb-4">
-                        <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-12 w-auto mx-auto" />
+                        <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-16 w-auto mx-auto" />
                     </Link>
                     <h2 className="text-2xl font-bold text-primary mb-2">Welcome Back</h2>
                     <p className="text-textSecondary">Enter your details to access your account</p>

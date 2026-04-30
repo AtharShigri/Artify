@@ -228,7 +228,7 @@ const Navbar = () => {
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
                     <Link to="/" className="flex-shrink-0 flex items-center">
-                        <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-10 w-auto" />
+                        <img src="/images/logo/artifilogo.png" alt="artifi logo" className="h-14 w-auto" />
                     </Link>
 
                     {/* Desktop Navigation */}
