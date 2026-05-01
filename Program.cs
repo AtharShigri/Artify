@@ -13,10 +13,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. SERVICES REGISTRATION (Must be before builder.Build())
+// 1. SERVICES REGISTRATION
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -43,7 +44,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// CORS Configuration (MOVED UP HERE)
+// CORS Configuration
 var allowedOrigins = builder.Environment.IsDevelopment() 
     ? new[] { "http://localhost:5173", "https://localhost:7294" } 
     : new[] { "https://artifi.art", "https://www.artifi.art" };
@@ -53,12 +54,21 @@ builder.Services.AddCors(options => {
         policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials(); // Often needed for SignalR
+              .AllowCredentials();
     });
 });
 
+// Database with Retry Logic enabled
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sqlServerOptionsAction: sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: null);
+        }));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options => {
     options.Password.RequireDigit = false;
@@ -108,7 +118,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
-// Repositories
+// Dependency Injection: Repositories
 builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
 builder.Services.AddScoped<IArtServiceRepository, ArtServiceRepository>();
 builder.Services.AddScoped<IArtworkRepository, ArtworkRepository>();
@@ -127,7 +137,7 @@ builder.Services.AddScoped<IAdminReportRepository, AdminReportRepository>();
 builder.Services.AddScoped<IAdminTransactionRepository, AdminTransactionRepository>();
 builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
 
-// Services
+// Dependency Injection: Services
 builder.Services.AddScoped<IArtistDashboardService, ArtistDashboardService>();
 builder.Services.AddScoped<IArtistProfileService, ArtistProfileService>();
 builder.Services.AddScoped<IArtServiceListingService, ArtServiceListingService>();
@@ -161,12 +171,32 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    // Global Exception Handler for Production
+    app.UseExceptionHandler(errorApp =>
+    {
+        errorApp.Run(async context =>
+        {
+            context.Response.StatusCode = 500;
+            context.Response.ContentType = "application/json";
+            var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
+            if (contextFeature != null)
+            {
+                // Logic to log error can go here
+                await context.Response.WriteAsJsonAsync(new {
+                    error = "Internal Server Error",
+                    message = "The server is temporarily unable to process the request. Please try again later."
+                });
+            }
+        });
+    });
+}
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-// Use the CORS policy registered above
 app.UseCors("ArtifyPolicy");
 
 app.UseAuthentication();
@@ -177,31 +207,43 @@ app.MapHub<NotificationHub>("/notificationhub");
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
-// 4. DATABASE MIGRATIONS & SEEDING
+// 4. DATABASE MIGRATIONS & SEEDING (With Try-Catch)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    
     try 
     {
         var db = services.GetRequiredService<ApplicationDbContext>();
-        db.Database.Migrate(); 
-
-        var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-        string[] roles = { "Admin", "Artist", "Buyer", "Agency" };
-
-        foreach (var role in roles)
+        
+        // Check if database connection is even possible before migrating
+        if (db.Database.CanConnect())
         {
-            if (!await roleManager.RoleExistsAsync(role))
-                await roleManager.CreateAsync(new IdentityRole<Guid>(role));
-        }
+            db.Database.Migrate(); 
 
-        await DbSeeder.SeedAdminUser(services);
-        await DbSeeder.SeedCategories(db);
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+            string[] roles = { "Admin", "Artist", "Buyer", "Agency" };
+
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                    await roleManager.CreateAsync(new IdentityRole<Guid>(role));
+            }
+
+            await DbSeeder.SeedAdminUser(services);
+            await DbSeeder.SeedCategories(db);
+            logger.LogInformation("Database migration and seeding completed successfully.");
+        }
+        else
+        {
+            logger.LogWarning("Database connection failed during startup. Skipping seeding to allow app to start.");
+        }
     }
     catch (Exception ex)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred during migration or seeding.");
+        // This prevents the "Application Error" crash on startup
+        logger.LogError(ex, "CRITICAL: An error occurred during migration or seeding. App will still attempt to start.");
     }
 }
 
