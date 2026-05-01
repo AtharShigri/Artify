@@ -1,10 +1,10 @@
 using System.Security.Claims;
-using Artify.Api.DTOs.Artist;
-using Artify.Api.Models;
-using Artify.Api.Repositories.Interfaces;
-using Artify.Api.Services.Interfaces;
+using artifi.Api.DTOs.Artist;
+using artifi.Api.Models;
+using artifi.Api.Repositories.Interfaces;
+using artifi.Api.Services.Interfaces;
 
-namespace Artify.Api.Services.Implementations
+namespace artifi.Api.Services.Implementations
 {
     public class ArtworkService : IArtworkService
     {
@@ -120,6 +120,17 @@ namespace Artify.Api.Services.Implementations
         }
     }
 
+    // Resolve Category ID from name if provided
+    var categoryId = dto.CategoryId;
+    if (!categoryId.HasValue && !string.IsNullOrEmpty(dto.Category))
+    {
+        var category = await _artworkRepo.GetCategoryByNameAsync(dto.Category);
+        if (category != null)
+        {
+            categoryId = category.Id;
+        }
+    }
+
     var artwork = new Artwork
     {
         ArtistProfileId = artistId,
@@ -129,7 +140,7 @@ namespace Artify.Api.Services.Implementations
         Metadata = dto.Metadata,     
         ImageUrl = imageUrl,
         IsForSale = true,
-        CategoryId  = dto.CategoryId,
+        CategoryId  = categoryId,
         Status = "Pending",
         IsApproved = false
     };
@@ -149,13 +160,15 @@ namespace Artify.Api.Services.Implementations
         { 
             ArtworkId = artwork.ArtworkId, 
             CopyrightText = dto.CopyrightText,
-            ArtistName = artistProfile?.FullName ?? "Artify Artist",
+            ArtistName = artistProfile?.FullName ?? "artifi Artist",
             Description = dto.Description
         });
     }
 
     // Auto Plagiarism Check
-    var plagiarismResult = await _protectionService.CheckPlagiarismAsync(user, dto.File);
+    var savedFilePath = Path.Combine(_environment.ContentRootPath, "wwwroot", artwork.ImageUrl.TrimStart('/').Replace("/", "\\"));
+    var imageBytes = await File.ReadAllBytesAsync(savedFilePath);
+    var plagiarismResult = await _protectionService.CheckPlagiarismAsync(user, imageBytes);
     if (plagiarismResult.PlagiarismDetected)
     {
         artwork.Status = "Flagged";
@@ -180,7 +193,21 @@ namespace Artify.Api.Services.Implementations
             artwork.Title = dto.Title ?? artwork.Title;
             artwork.Description = dto.Description ?? artwork.Description;
             artwork.Price = dto.Price ?? artwork.Price;
-            artwork.CategoryId = dto.CategoryId ?? artwork.CategoryId;
+            
+            // Resolve Category ID
+            if (dto.CategoryId.HasValue)
+            {
+                artwork.CategoryId = dto.CategoryId.Value;
+            }
+            else if (!string.IsNullOrEmpty(dto.Category))
+            {
+                var category = await _artworkRepo.GetCategoryByNameAsync(dto.Category);
+                if (category != null)
+                {
+                    artwork.CategoryId = category.Id;
+                }
+            }
+
             artwork.IsForSale = dto.IsAvailable ?? artwork.IsForSale;
             artwork.Metadata = dto.Metadata ?? artwork.Metadata;
 
@@ -234,14 +261,16 @@ namespace Artify.Api.Services.Implementations
                 {
                     ArtworkId = artwork.ArtworkId,
                     CopyrightText = dto.CopyrightText,
-                    ArtistName = artistProfile?.FullName ?? "Artify Artist",
+                    ArtistName = artistProfile?.FullName ?? "artifi Artist",
                     Description = artwork.Description
                 });
             }
 
             if (dto.File != null && dto.File.Length > 0)
             {
-                var plagiarismResult = await _protectionService.CheckPlagiarismAsync(user, dto.File);
+                var savedFilePath = Path.Combine(_environment.ContentRootPath, "wwwroot", artwork.ImageUrl.TrimStart('/').Replace("/", "\\"));
+                var imageBytes = await File.ReadAllBytesAsync(savedFilePath);
+                var plagiarismResult = await _protectionService.CheckPlagiarismAsync(user, imageBytes);
                 if (plagiarismResult.PlagiarismDetected)
                 {
                     artwork.Status = "Flagged";

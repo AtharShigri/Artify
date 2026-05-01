@@ -1,8 +1,8 @@
-﻿using Artify.Api.Data;
+﻿using artifi.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace Artify.Api.Repositories.Implementations
+namespace artifi.Api.Repositories.Implementations
 {
     public abstract class BaseRepository
     {

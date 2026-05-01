@@ -1,7 +1,7 @@
-﻿using Artify.Api.DTOs.Buyer;
+﻿using artifi.Api.DTOs.Buyer;
 using System.Security.Claims;
 
-namespace Artify.Api.Services.Interfaces
+namespace artifi.Api.Services.Interfaces
 {
     public interface IOrderService
     {

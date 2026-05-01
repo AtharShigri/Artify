@@ -3,12 +3,12 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Artify.Api.Data;
-using Artify.Api.Models;
-using Artify.Api.DTOs.Admin;
-using Artify.Api.Repositories.Interfaces;
+using artifi.Api.Data;
+using artifi.Api.Models;
+using artifi.Api.DTOs.Admin;
+using artifi.Api.Repositories.Interfaces;
 
-namespace Artify.Api.Repositories.Implementations
+namespace artifi.Api.Repositories.Implementations
 {
     public class AdminReportRepository : IAdminReportRepository
     {

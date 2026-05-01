@@ -1,8 +1,8 @@
 // ========================= AdminArtworkMappings.cs =========================
-using Artify.Api.DTOs.Admin;
-using Artify.Api.Models;
+using artifi.Api.DTOs.Admin;
+using artifi.Api.Models;
 
-namespace Artify.Api.Mappings
+namespace artifi.Api.Mappings
 {
     public static class AdminArtworkMappings
     {

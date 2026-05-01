@@ -1,13 +1,13 @@
 ﻿using System.Security.Claims;
-using Artify.Api.Data;
-using Artify.Api.Models;
-using Artify.Api.Repositories.Interfaces;
-using Artify.Api.Services.Interfaces;
+using artifi.Api.Data;
+using artifi.Api.Models;
+using artifi.Api.Repositories.Interfaces;
+using artifi.Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Artify.Api.Enums;
+using artifi.Api.Enums;
 
 
-namespace Artify.Api.Services.Implementations
+namespace artifi.Api.Services.Implementations
 {
     public class ArtistDashboardService : IArtistDashboardService
     {

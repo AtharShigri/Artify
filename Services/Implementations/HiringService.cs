@@ -1,13 +1,13 @@
 using AutoMapper;
-using Artify.Api.DTOs.Buyer;
-using Artify.Api.Models;
-using Artify.Api.Repositories.Interfaces;
-using Artify.Api.Services.Interfaces;
-using Artify.Api.DTOs.Shared;
+using artifi.Api.DTOs.Buyer;
+using artifi.Api.Models;
+using artifi.Api.Repositories.Interfaces;
+using artifi.Api.Services.Interfaces;
+using artifi.Api.DTOs.Shared;
 using Microsoft.EntityFrameworkCore;
-using Artify.Api.Data;
+using artifi.Api.Data;
 
-namespace Artify.Api.Services.Implementations
+namespace artifi.Api.Services.Implementations
 {
     public class HiringService : BaseService, IHiringService
     {

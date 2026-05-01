@@ -1,6 +1,6 @@
-# Artify – Digital Art Marketplace
+# artifi – Digital Art Marketplace
 
-**Artify** is a premium digital marketplace that connects artists with buyers and agencies through a secure and intelligent platform. It provides a seamless experience for discovering, buying, and selling original artworks while protecting artist originality.
+**artifi** is a premium digital marketplace that connects artists with buyers and agencies through a secure and intelligent platform. It provides a seamless experience for discovering, buying, and selling original artworks while protecting artist originality.
 
 ---
 
@@ -61,18 +61,18 @@ To quickly start the entire application stack (both Frontend and Backend):
 - **SQL Server**
 
 ### 1. Backend Setup
-1. Open the solution `Artify.sln` in **Visual Studio** or your preferred IDE.
-2. Update the connection string in `Artify.Api/appsettings.json` to point to your local SQL Server instance.
+1. Open the solution `artifi.sln` in **Visual Studio** or your preferred IDE.
+2. Update the connection string in `artifi.Api/appsettings.json` to point to your local SQL Server instance.
 3. Apply Entity Framework Migrations to create the database:
    ```powershell
-   dotnet ef database update --project Artify.Api
+   dotnet ef database update --project artifi.Api
    ```
 4. Start the backend API. It will run on `https://localhost:7294`.
 
 ### 2. Frontend Setup
 1. Navigate to the frontend directory:
    ```bash
-   cd Artifyfrontend
+   cd artififrontend
    ```
 2. Install dependencies:
    ```bash
@@ -88,7 +88,7 @@ To quickly start the entire application stack (both Frontend and Backend):
 
 ## 📖 Usage Instructions & Roles
 
-Artify operates using a robust Role-Based Access Control (RBAC) system. Depending on the account type, the user experience completely changes:
+artifi operates using a robust Role-Based Access Control (RBAC) system. Depending on the account type, the user experience completely changes:
 
 ### 1. Admin
 - **Access**: Log in via the `/admin` portal.
@@ -136,4 +136,4 @@ For inquiries, support, or collaboration, please contact the development team:
 
 ---
 
-&copy; 2026 Artify. All rights reserved.
+&copy; 2026 artifi. All rights reserved.

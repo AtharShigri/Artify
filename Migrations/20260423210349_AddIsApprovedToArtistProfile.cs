@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Artify.Api.Migrations
+namespace artifi.Api.Migrations
 {
     /// <inheritdoc />
     public partial class AddIsApprovedToArtistProfile : Migration

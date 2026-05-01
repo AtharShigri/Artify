@@ -1,11 +1,11 @@
 using AutoMapper;
-using Artify.Api.Data;
-using Artify.Api.Models;
-using Artify.Api.Hubs;
-using Artify.Api.Repositories.Interfaces;
-using Artify.Api.Repositories.Implementations;
-using Artify.Api.Services.Interfaces;
-using Artify.Api.Services.Implementations;
+using artifi.Api.Data;
+using artifi.Api.Models;
+using artifi.Api.Hubs;
+using artifi.Api.Repositories.Interfaces;
+using artifi.Api.Repositories.Implementations;
+using artifi.Api.Services.Interfaces;
+using artifi.Api.Services.Implementations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -20,7 +20,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new() { Title = "Artify API", Version = "v1" });
+    c.SwaggerDoc("v1", new() { Title = "artifi API", Version = "v1" });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -154,7 +154,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-    string[] roles = { "Admin", "Artist", "Buyer" };
+    string[] roles = { "Admin", "Artist", "Buyer", "Agency" };
 
     foreach (var role in roles)
     {
@@ -164,7 +164,22 @@ using (var scope = app.Services.CreateScope())
 
     // Seed Admin User
     await DbSeeder.SeedAdminUser(scope.ServiceProvider);
+
+    // Seed Categories
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await DbSeeder.SeedCategories(dbContext);
 }
+
+var allowedOrigins = builder.Environment.IsDevelopment() 
+    ? new[] { "http://localhost:5173", "https://localhost:7294" } 
+    : new[] { "https://artifi.art", "https://www.artifi.art" };
+builder.Services.AddCors(options => {
+    options.AddPolicy("ArtifyPolicy", policy => {
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 app.UseStaticFiles();
 app.UseRouting();
@@ -175,13 +190,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseCors(builder => builder
-    .WithOrigins("http://localhost:5173")
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .AllowCredentials());
-
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapHub<ChatHub>("/chathub");
@@ -189,4 +197,9 @@ app.MapHub<NotificationHub>("/notificationhub");
 
 app.MapControllers();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate(); 
+}
 app.Run();

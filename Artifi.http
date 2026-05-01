@@ -1,0 +1,6 @@
+@artifi_HostAddress = http://localhost:5181
+
+GET {{artifi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,12 +1,12 @@
-using Artify.Api.DTOs.Shared;
-using Artify.Api.Models;
-using Artify.Api.Repositories.Interfaces;
-using Artify.Api.Services.Interfaces;
-using Artify.Api.Hubs;
+using artifi.Api.DTOs.Shared;
+using artifi.Api.Models;
+using artifi.Api.Repositories.Interfaces;
+using artifi.Api.Services.Interfaces;
+using artifi.Api.Hubs;
 using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Artify.Api.Services.Implementations
+namespace artifi.Api.Services.Implementations
 {
     public class NotificationService : INotificationService
     {

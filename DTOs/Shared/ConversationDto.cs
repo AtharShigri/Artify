@@ -1,6 +1,6 @@
 using System;
 
-namespace Artify.Api.DTOs.Shared
+namespace artifi.Api.DTOs.Shared
 {
     public class ConversationDto
     {

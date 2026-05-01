@@ -1,6 +1,6 @@
-﻿using Artify.Api.DTOs.Admin;
+﻿using artifi.Api.DTOs.Admin;
 
-namespace Artify.Api.Repositories.Interfaces
+namespace artifi.Api.Repositories.Interfaces
 {
     public interface IAdminReportRepository
     {

@@ -1,4 +1,4 @@
-﻿namespace Artify.Api.Enums
+﻿namespace artifi.Api.Enums
 {
     public enum OrderStatus
     {

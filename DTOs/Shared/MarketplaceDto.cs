@@ -1,4 +1,4 @@
-namespace Artify.Api.DTOs.Shared
+namespace artifi.Api.DTOs.Shared
 {
     public class ArtworkResponseDto
     {

@@ -1,9 +1,9 @@
-using Artify.Api.DTOs.Admin;
-using Artify.Api.Mappings;
-using Artify.Api.Repositories.Interfaces;
-using Artify.Api.Services.Interfaces;
+using artifi.Api.DTOs.Admin;
+using artifi.Api.Mappings;
+using artifi.Api.Repositories.Interfaces;
+using artifi.Api.Services.Interfaces;
 
-namespace Artify.Api.Services.Implementations
+namespace artifi.Api.Services.Implementations
 {
     public class AdminArtworkService : IAdminArtworkService
     {

@@ -1,9 +1,9 @@
 using AutoMapper;
-using Artify.Api.DTOs.Shared;
-using Artify.Api.Models;
+using artifi.Api.DTOs.Shared;
+using artifi.Api.Models;
 using System.Linq;
 
-namespace Artify.Api.Mappings
+namespace artifi.Api.Mappings
 {
     public class ChatMappings : Profile
     {

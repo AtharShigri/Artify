@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using Artify.Api.Services.Interfaces;
+using artifi.Api.Services.Interfaces;
 using System;
 using System.Threading.Tasks;
 
-namespace Artify.Api.Controllers.Buyer
+namespace artifi.Api.Controllers.Buyer
 {
     [Route("api/buyer/payment")]
     [ApiController]

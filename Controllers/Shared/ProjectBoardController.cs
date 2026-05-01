@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Artify.Api.Data;
-using Artify.Api.Models;
-using Artify.Api.DTOs.Shared;
-using Artify.Api.Services.Interfaces;
+using artifi.Api.Data;
+using artifi.Api.Models;
+using artifi.Api.DTOs.Shared;
+using artifi.Api.Services.Interfaces;
 using System.Security.Claims;
 
-namespace Artify.Api.Controllers.Shared
+namespace artifi.Api.Controllers.Shared
 {
     [Route("api/projectboard")]
     [ApiController]

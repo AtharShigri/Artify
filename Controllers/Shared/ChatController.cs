@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Artify.Api.Repositories.Interfaces;
-using Artify.Api.Services.Interfaces;
+using artifi.Api.Repositories.Interfaces;
+using artifi.Api.Services.Interfaces;
 using System;
 using System.Threading.Tasks;
 
-namespace Artify.Api.Controllers.Shared
+namespace artifi.Api.Controllers.Shared
 {
     [Route("api/chat")]
     [ApiController]

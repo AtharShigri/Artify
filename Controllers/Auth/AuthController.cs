@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Artify.Api.DTOs.Auth;
-using Artify.Api.Services.Interfaces;
+using artifi.Api.DTOs.Auth;
+using artifi.Api.Services.Interfaces;
 
-namespace Artify.Api.Controllers.Auth
+namespace artifi.Api.Controllers.Auth
 {
     [Route("api/auth")]
     [ApiController]

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Artify.Api.Services.Interfaces;
+using artifi.Api.Services.Interfaces;
 
-namespace Artify.Api.Controllers.Artist
+namespace artifi.Api.Controllers.Artist
 {
     [Route("api/artist/dashboard")]
     [ApiController]

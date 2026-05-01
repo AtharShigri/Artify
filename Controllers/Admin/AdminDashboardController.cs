@@ -1,9 +1,9 @@
-using Artify.Api.Services.Interfaces;
+using artifi.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace Artify.Api.Controllers.Admin
+namespace artifi.Api.Controllers.Admin
 {
     [ApiController]
     [Route("api/admin/dashboard")]

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Artify.Api.DTOs.Artist
+namespace artifi.Api.DTOs.Artist
 {
     // ── Watermark ──────────────────────────────────────────────────────────────
     public class WatermarkResultDto

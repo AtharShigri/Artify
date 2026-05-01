@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Authorization;
-using Artify.Api.Services.Interfaces;
+using artifi.Api.Services.Interfaces;
 using System.Security.Claims;
 
-namespace Artify.Api.Hubs
+namespace artifi.Api.Hubs
 {
     [Authorize]
     public class ChatHub : Hub
@@ -62,7 +62,7 @@ namespace Artify.Api.Hubs
             if (messageDto.IsFlagged)
             {
                 await Clients.Caller.SendAsync("ReceiveWarning",
-                    "⚠️ Policy Alert: Sharing contact details or off-platform payment methods violates Artify's Terms of Service. Repeated violations may result in account suspension.");
+                    "⚠️ Policy Alert: Sharing contact details or off-platform payment methods violates artifi's Terms of Service. Repeated violations may result in account suspension.");
             }
         }
 

@@ -1,4 +1,4 @@
-namespace Artify.Api.DTOs.Auth
+namespace artifi.Api.DTOs.Auth
 {
     public class AuthResponseDto
     {

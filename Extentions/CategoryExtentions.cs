@@ -1,6 +1,6 @@
-﻿using Artify.Api.Models;
+﻿using artifi.Api.Models;
 
-namespace Artify.Api.Extensions
+namespace artifi.Api.Extensions
 {
     public static class CategoryExtensions
     {

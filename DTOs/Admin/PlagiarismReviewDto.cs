@@ -1,5 +1,5 @@
 ﻿// ========================= PlagiarismReviewDto.cs =========================
-namespace Artify.Api.DTOs.Admin
+namespace artifi.Api.DTOs.Admin
 {
     public class PlagiarismReviewDto
     {

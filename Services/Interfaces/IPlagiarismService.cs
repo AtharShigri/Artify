@@ -1,7 +1,7 @@
 ﻿// ========================= IPlagiarismService.cs =========================
-using Artify.Api.DTOs.Admin;
+using artifi.Api.DTOs.Admin;
 
-namespace Artify.Api.Services.Interfaces
+namespace artifi.Api.Services.Interfaces
 {
     public interface IPlagiarismService
     {

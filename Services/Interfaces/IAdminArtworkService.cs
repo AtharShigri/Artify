@@ -1,9 +1,9 @@
-﻿using Artify.Api.DTOs.Admin;
-using Artify.Api.Models;
+﻿using artifi.Api.DTOs.Admin;
+using artifi.Api.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Artify.Api.Services.Interfaces
+namespace artifi.Api.Services.Interfaces
 {
     public interface IAdminArtworkService
     {

@@ -1,9 +1,9 @@
-using Artify.Api.Services.Interfaces;
+using artifi.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace Artify.Api.Controllers.Shared
+namespace artifi.Api.Controllers.Shared
 {
     [Route("api/notifications")]
     [ApiController]

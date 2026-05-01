@@ -1,6 +1,6 @@
-using Artify.Api.Models;
+using artifi.Api.Models;
 
-namespace Artify.Api.Repositories.Interfaces
+namespace artifi.Api.Repositories.Interfaces
 {
     public interface IArtworkRepository
     {
@@ -13,5 +13,6 @@ namespace Artify.Api.Repositories.Interfaces
 
         Task<bool> ArtworkExistsAsync(Guid artworkId, Guid artistId);
         Task<IEnumerable<Artwork>> GetArtworksByArtistIdsAsync(IEnumerable<Guid> artistIds);
+        Task<Category?> GetCategoryByNameAsync(string name);
     }
 }

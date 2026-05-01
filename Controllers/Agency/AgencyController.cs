@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Artify.Api.Data;
-using Artify.Api.Models;
-using Artify.Api.DTOs.Shared;
+using artifi.Api.Data;
+using artifi.Api.Models;
+using artifi.Api.DTOs.Shared;
 using System.Security.Claims;
 
-namespace Artify.Api.Controllers.Agency
+namespace artifi.Api.Controllers.Agency
 {
     [Route("api/agency")]
     [ApiController]
@@ -37,7 +37,7 @@ namespace Artify.Api.Controllers.Agency
             }
             else
             {
-                var agency = new Artify.Api.Models.Agency
+                var agency = new artifi.Api.Models.Agency
                 {
                     Id = Guid.NewGuid(),
                     OwnerId = userId,

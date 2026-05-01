@@ -1,16 +1,16 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
-using Artify.Api.DTOs.Artist;
-using Artify.Api.DTOs.Auth;
-using Artify.Api.Models;
-using Artify.Api.Repositories.Interfaces;
-using Artify.Api.Services.Interfaces;
+using artifi.Api.DTOs.Artist;
+using artifi.Api.DTOs.Auth;
+using artifi.Api.Models;
+using artifi.Api.Repositories.Interfaces;
+using artifi.Api.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using Artify.Api.Enums;
+using artifi.Api.Enums;
 
-namespace Artify.Api.Services.Implementations
+namespace artifi.Api.Services.Implementations
 {
     public class ArtistProfileService : IArtistProfileService
     {

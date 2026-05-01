@@ -1,15 +1,15 @@
 @echo off
-echo Starting Artify Application...
+echo Starting artifi Application...
 
 set ROOT_DIR=%~dp0
 
 :: Start Backend
 echo Starting Backend (ASP.NET Core)...
-start "Artify Backend" cmd /k "cd /d %ROOT_DIR% && dotnet run --project Artify.Api.csproj"
+start "artifi Backend" cmd /k "cd /d %ROOT_DIR% && dotnet run --project artifi.Api.csproj"
 
 :: Start Frontend
 echo Starting Frontend (Vite)...
-start "Artify Frontend" cmd /k "cd /d %ROOT_DIR%Artifyfrontend && npm run dev"
+start "artifi Frontend" cmd /k "cd /d %ROOT_DIR%artififrontend && npm run dev"
 
 echo Both services are starting...
 echo Backend: https://localhost:7294/swagger
