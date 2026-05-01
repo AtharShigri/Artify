@@ -154,7 +154,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-    string[] roles = { "Admin", "Artist", "Buyer" };
+    string[] roles = { "Admin", "Artist", "Buyer", "Agency" };
 
     foreach (var role in roles)
     {
@@ -170,6 +170,17 @@ using (var scope = app.Services.CreateScope())
     await DbSeeder.SeedCategories(dbContext);
 }
 
+var allowedOrigins = builder.Environment.IsDevelopment() 
+    ? new[] { "http://localhost:5173", "https://localhost:7294" } 
+    : new[] { "https://artifi.art", "https://www.artifi.art" };
+builder.Services.AddCors(options => {
+    options.AddPolicy("ArtifyPolicy", policy => {
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 app.UseStaticFiles();
 app.UseRouting();
 if (app.Environment.IsDevelopment())
@@ -179,13 +190,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseCors(builder => builder
-    .WithOrigins("http://localhost:5173")
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .AllowCredentials());
-
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapHub<ChatHub>("/chathub");
@@ -193,4 +197,9 @@ app.MapHub<NotificationHub>("/notificationhub");
 
 app.MapControllers();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate(); 
+}
 app.Run();

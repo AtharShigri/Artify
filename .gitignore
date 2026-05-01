@@ -9,7 +9,11 @@
 *.user
 *.userosscache
 *.sln.docstates
-*.env
+.env*
+wwwroot/assets/
+wwwroot/index.html
+wwwroot/vite.svg
+wwwroot/images/temp/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
