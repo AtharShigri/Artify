@@ -16,12 +16,12 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 1. SERVICES REGISTRATION (Must be before builder.Build())
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "artifi API", Version = "v1" });
-
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -31,20 +31,29 @@ builder.Services.AddSwaggerGen(c =>
         In = ParameterLocation.Header,
         Description = "Enter: Bearer {your JWT token}"
     });
-
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
             },
             Array.Empty<string>()
         }
+    });
+});
+
+// CORS Configuration (MOVED UP HERE)
+var allowedOrigins = builder.Environment.IsDevelopment() 
+    ? new[] { "http://localhost:5173", "https://localhost:7294" } 
+    : new[] { "https://artifi.art", "https://www.artifi.art" };
+
+builder.Services.AddCors(options => {
+    options.AddPolicy("ArtifyPolicy", policy => {
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // Often needed for SignalR
     });
 });
 
@@ -61,8 +70,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options => {
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-var jwtSettings = builder.Configuration.GetSection("Jwt");
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -74,9 +81,7 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
-        ),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
@@ -85,7 +90,6 @@ builder.Services.AddAuthentication(options =>
         NameClaimType = ClaimTypes.NameIdentifier
     };
 
-    // Allow SignalR WebSocket connections to pass JWT via query string
     options.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>
@@ -102,11 +106,9 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-
-
-
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
+// Repositories
 builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
 builder.Services.AddScoped<IArtServiceRepository, ArtServiceRepository>();
 builder.Services.AddScoped<IArtworkRepository, ArtworkRepository>();
@@ -125,6 +127,7 @@ builder.Services.AddScoped<IAdminReportRepository, AdminReportRepository>();
 builder.Services.AddScoped<IAdminTransactionRepository, AdminTransactionRepository>();
 builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
 
+// Services
 builder.Services.AddScoped<IArtistDashboardService, ArtistDashboardService>();
 builder.Services.AddScoped<IArtistProfileService, ArtistProfileService>();
 builder.Services.AddScoped<IArtServiceListingService, ArtServiceListingService>();
@@ -149,40 +152,10 @@ builder.Services.AddScoped<IPlagiarismService, PlagiarismService>();
 
 builder.Services.AddSignalR();
 
+// 2. BUILD THE APP
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-    string[] roles = { "Admin", "Artist", "Buyer", "Agency" };
-
-    foreach (var role in roles)
-    {
-        if (!await roleManager.RoleExistsAsync(role))
-            await roleManager.CreateAsync(new IdentityRole<Guid>(role));
-    }
-
-    // Seed Admin User
-    await DbSeeder.SeedAdminUser(scope.ServiceProvider);
-
-    // Seed Categories
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await DbSeeder.SeedCategories(dbContext);
-}
-
-var allowedOrigins = builder.Environment.IsDevelopment() 
-    ? new[] { "http://localhost:5173", "https://localhost:7294" } 
-    : new[] { "https://artifi.art", "https://www.artifi.art" };
-builder.Services.AddCors(options => {
-    options.AddPolicy("ArtifyPolicy", policy => {
-        policy.WithOrigins(allowedOrigins)
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
-
-app.UseStaticFiles();
-app.UseRouting();
+// 3. MIDDLEWARE PIPELINE
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -190,17 +163,46 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+
+// Use the CORS policy registered above
+app.UseCors("ArtifyPolicy");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapHub<ChatHub>("/chathub");
 app.MapHub<NotificationHub>("/notificationhub");
-
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
+// 4. DATABASE MIGRATIONS & SEEDING
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate(); 
+    var services = scope.ServiceProvider;
+    try 
+    {
+        var db = services.GetRequiredService<ApplicationDbContext>();
+        db.Database.Migrate(); 
+
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+        string[] roles = { "Admin", "Artist", "Buyer", "Agency" };
+
+        foreach (var role in roles)
+        {
+            if (!await roleManager.RoleExistsAsync(role))
+                await roleManager.CreateAsync(new IdentityRole<Guid>(role));
+        }
+
+        await DbSeeder.SeedAdminUser(services);
+        await DbSeeder.SeedCategories(db);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred during migration or seeding.");
+    }
 }
+
 app.Run();
