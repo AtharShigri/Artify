@@ -50,7 +50,7 @@ var allowedOrigins = builder.Environment.IsDevelopment()
     : new[] { "https://artifi.art", "https://www.artifi.art" };
 
 builder.Services.AddCors(options => {
-    options.AddPolicy("ArtifyPolicy", policy => {
+    options.AddPolicy("ArtifiPolicy", policy => {
         policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
@@ -237,7 +237,7 @@ else
 app.UseHttpsRedirection();
 app.UseRouting();
 
-app.UseCors("ArtifyPolicy");
+app.UseCors("ArtifiPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();
