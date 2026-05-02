@@ -45,8 +45,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // CORS Configuration
-var allowedOrigins = builder.Environment.IsDevelopment() 
-    ? new[] { "http://localhost:5173", "https://localhost:7294" } 
+var allowedOrigins = builder.Environment.IsDevelopment()
+    ? new[] { "http://localhost:5173", "https://localhost:7294" }
     : new[] { "https://artifi.art", "https://www.artifi.art" };
 
 builder.Services.AddCors(options => {
@@ -58,7 +58,7 @@ builder.Services.AddCors(options => {
     });
 });
 
-// Database with Retry Logic enabled
+// Database with Retry Logic
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -165,62 +165,19 @@ builder.Services.AddSignalR();
 // 2. BUILD THE APP
 var app = builder.Build();
 
-// 3. MIDDLEWARE PIPELINE
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-else
-{
-    // Global Exception Handler for Production
-    app.UseExceptionHandler(errorApp =>
-    {
-        errorApp.Run(async context =>
-        {
-            context.Response.StatusCode = 500;
-            context.Response.ContentType = "application/json";
-            var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
-            if (contextFeature != null)
-            {
-                // Logic to log error can go here
-                await context.Response.WriteAsJsonAsync(new {
-                    error = "Internal Server Error",
-                    message = "The server is temporarily unable to process the request. Please try again later."
-                });
-            }
-        });
-    });
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseRouting();
-
-app.UseCors("ArtifyPolicy");
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapHub<ChatHub>("/chathub");
-app.MapHub<NotificationHub>("/notificationhub");
-app.MapControllers();
-app.MapFallbackToFile("index.html");
-
-// 4. DATABASE MIGRATIONS & SEEDING (With Try-Catch)
+// 3. DATABASE MIGRATIONS & SEEDING — must run before app.Run()
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var logger = services.GetRequiredService<ILogger<Program>>();
-    
-    try 
+
+    try
     {
         var db = services.GetRequiredService<ApplicationDbContext>();
-        
-        // Check if database connection is even possible before migrating
-        if (db.Database.CanConnect())
+
+        if (await db.Database.CanConnectAsync())
         {
-            db.Database.Migrate(); 
+            await db.Database.MigrateAsync();
 
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
             string[] roles = { "Admin", "Artist", "Buyer", "Agency" };
@@ -233,18 +190,62 @@ using (var scope = app.Services.CreateScope())
 
             await DbSeeder.SeedAdminUser(services);
             await DbSeeder.SeedCategories(db);
+
             logger.LogInformation("Database migration and seeding completed successfully.");
         }
         else
         {
-            logger.LogWarning("Database connection failed during startup. Skipping seeding to allow app to start.");
+            logger.LogWarning("Cannot connect to database at startup. Skipping migrations — app will still start.");
         }
     }
     catch (Exception ex)
     {
-        // This prevents the "Application Error" crash on startup
-        logger.LogError(ex, "CRITICAL: An error occurred during migration or seeding. App will still attempt to start.");
+        var logger2 = app.Services.GetRequiredService<ILogger<Program>>();
+        logger2.LogError(ex, "An error occurred during migration/seeding. App will still attempt to start.");
     }
 }
+
+// 4. MIDDLEWARE PIPELINE
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+else
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "artifi API v1"));
+
+    app.UseExceptionHandler(errorApp =>
+    {
+        errorApp.Run(async context =>
+        {
+            context.Response.StatusCode = 500;
+            context.Response.ContentType = "application/json";
+            var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
+            if (contextFeature != null)
+            {
+                await context.Response.WriteAsJsonAsync(new {
+                    error = "Internal Server Error",
+                    message = "The server is temporarily unable to process the request. Please try again later."
+                });
+            }
+        });
+    });
+}
+
+app.UseHttpsRedirection();
+app.UseRouting();
+
+app.UseCors("ArtifyPolicy");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapHub<ChatHub>("/chathub");
+app.MapHub<NotificationHub>("/notificationhub");
+app.MapControllers();
+
+// REMOVED: app.MapFallbackToFile("index.html") — this is an API, not a SPA host
 
 app.Run();
