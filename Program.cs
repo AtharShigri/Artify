@@ -235,6 +235,8 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseDefaultFiles();
 app.UseRouting();
 
 app.UseCors("ArtifiPolicy");
