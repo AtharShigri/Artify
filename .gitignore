@@ -14,6 +14,7 @@ wwwroot/assets/
 wwwroot/index.html
 wwwroot/vite.svg
 wwwroot/images/temp/
+appsettings.Development.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
