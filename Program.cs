@@ -249,6 +249,4 @@ app.MapControllers();
 // REMOVED: app.MapFallbackToFile("index.html") — this is an API, not a SPA host
 
 app.Run();
-//the end of file
-
-////////////////-----------/////////
+ 
