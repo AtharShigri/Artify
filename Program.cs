@@ -246,7 +246,6 @@ app.MapHub<ChatHub>("/chathub");
 app.MapHub<NotificationHub>("/notificationhub");
 app.MapControllers();
 
-// REMOVED: app.MapFallbackToFile("index.html") — this is an API, not a SPA host
-
 app.Run();
- 
+
+//.....//
