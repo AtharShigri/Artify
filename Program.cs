@@ -249,6 +249,7 @@ app.MapHub<ChatHub>("/chathub");
 app.MapHub<NotificationHub>("/notificationhub");
 app.MapControllers();
 
+app.MapFallbackToFile("index.html");
 app.Run();
 
 //.....//
