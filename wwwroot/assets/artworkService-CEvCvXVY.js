@@ -1,0 +1,1 @@
+import{d as s}from"./index-BoBjrkoK.js";const o={getAllByArtist:async()=>(await s.get("/artist/artworks")).data,getById:async t=>(await s.get(`/artist/artworks/${t}`)).data,create:async t=>(await s.post("/artist/artworks/upload",t)).data,update:async(t,a)=>(await s.put(`/artist/artworks/${t}`,a)).data,delete:async t=>(await s.delete(`/artist/artworks/${t}`)).data};export{o as a};
