@@ -47,7 +47,7 @@ builder.Services.AddSwaggerGen(c =>
 // CORS Configuration
 var allowedOrigins = builder.Environment.IsDevelopment()
     ? new[] { "http://localhost:5173", "https://localhost:7294" }
-    : new[] { "https://artifi.art", "https://www.artifi.art", "https://artifi-api-hghgeyd2apcgcsfg.centralindia-01.azurewebsites.net" };
+    : new[] { "https://artifi.art", "https://www.artifi.art" };
 
 builder.Services.AddCors(options => {
     options.AddPolicy("ArtifiPolicy", policy => {
