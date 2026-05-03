@@ -47,7 +47,7 @@ builder.Services.AddSwaggerGen(c =>
 // CORS Configuration
 var allowedOrigins = builder.Environment.IsDevelopment()
     ? new[] { "http://localhost:5173", "https://localhost:7294" }
-    : new[] { "https://artifi.art", "https://www.artifi.art" };
+    : new[] { "https://artifi.art", "https://www.artifi.art", "https://artifi-api-hghgeyd2apcgcsfg.centralindia-01.azurewebsites.net" };
 
 builder.Services.AddCors(options => {
     options.AddPolicy("ArtifiPolicy", policy => {
@@ -234,9 +234,10 @@ else
     });
 }
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+
 app.UseDefaultFiles();
+app.UseStaticFiles();
+app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseCors("ArtifiPolicy");
